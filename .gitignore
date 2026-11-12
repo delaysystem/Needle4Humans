@@ -10,3 +10,4 @@ staging_input/
 staging_kernel/
 staging_output/
 checkpoints/
+task/

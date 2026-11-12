@@ -44,10 +44,11 @@ backend = "cpu"
 # train step instead of recompiling (the trainer itself saves only the
 # final adapter, so step progress itself cannot resume).
 jax_cache_dir = "out/jax_cache"
-# 15 epochs, not 20: round-3 val already beat v2-final (0.0134 < 0.0162)
-# by epoch 11 and was flattening; 20 epochs overruns a 5h stage (2580
-# steps at ~7 s/step on rank 32).
-epochs = 15
+# 14 epochs: round-4 attempt 1 finished all 15 epochs but the stage
+# timeout fired during final scoring/save (2385 steps at ~7.5 s/step
+# overran 5h); val was flat 0.0203-0.0208 over epochs 13-15, so 14 loses
+# nothing measurable and fits with margin.
+epochs = 14
 # batch 4, not the guide default 16: XLA CPU compile at batch 16 grew past
 # 8.6 GB RSS (global OOM kill) and at batch 8 past the 6 GB cgroup ceiling
 # (cgroup-scoped kill, box untouched; both measured 2026-11-10). Last local
@@ -84,10 +85,11 @@ kernel = "needle3-handoff-train"
 accelerator = "NvidiaTeslaT4"
 # Hard cap on the kernel run in seconds; the server bounds it further.
 timeout = 21600
-# Per-stage cap in seconds. Was 3h, which killed healthy round-3 training
-# at step 1428/2580 (rank 32 + 2282 rows run ~7 s/step); 5h covers the
-# ~3.8h a 15-epoch run needs with margin, still inside kernel timeout.
-stage_timeout = 18000
+# Per-stage cap in seconds. 3h killed healthy round-3 training mid-run;
+# 5h killed healthy round-4 training during final scoring after epoch 15
+# (2385 steps at ~7.5 s/step). 5.5h covers a 14-epoch run (~4.9h) with
+# margin, still inside the 6h kernel timeout.
+stage_timeout = 19800
 poll_interval = 60
 poll_timeout = 25200
 # Train settings used on Kaggle (override the weak-box [train] values).

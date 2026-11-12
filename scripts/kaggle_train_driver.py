@@ -30,10 +30,15 @@ from pathlib import Path
 INPUT_ROOT = os.environ.get("KAGGLE_INPUT_ROOT", "/kaggle/input")
 WORKSPACE = os.environ.get("KAGGLE_WORKSPACE", "/kaggle/working")
 
-# Origin: Fine-tuning Needle guide, NVIDIA training extra.
-TRAIN_PACKAGE = "cactus-compute[train,gpu]"
+# Pinned: kaggle_train_loop imports this release's training internals
+# (verified identical between 4.1.0 and 4.2.0); floating would risk a
+# silent internal-API mismatch. Origin: Fine-tuning Needle guide + pin.
+TRAIN_PACKAGE = "cactus-compute[train,gpu]==4.2.0"
 
 STAGES = ("generate_data", "validate_data", "finetune", "build")
+
+# Origin: kaggle_train_loop.py checkpoint layout.
+CHECKPOINTS_DIRNAME = "checkpoints"
 
 
 def find_task(input_root: str) -> Path:
@@ -65,6 +70,63 @@ def build_stage_argv(
     return [sys.executable, str(script_path), "--task", str(task_file), *extra]
 
 
+def find_prior_checkpoints(input_root: str) -> list[Path]:
+    """latest.json pointers under the mounts with checkpoint files beside.
+
+    The checkpoints dataset stages files flat (dataset upload skips
+    subdirectories), so any latest.json with ckpt-*.npz siblings counts.
+    """
+    found = []
+    for pointer in sorted(Path(input_root).rglob("latest.json")):
+        if list(pointer.parent.glob("ckpt-*.npz")):
+            found.append(pointer)
+    return found
+
+
+def stage_prior_checkpoints(input_root: str, dest_dir: Path) -> bool:
+    """Copy a previous run's checkpoints into the workspace, if exactly one.
+
+    Returns False when none are mounted (fresh run). Dies on several:
+    resuming the wrong run's weights would silently corrupt training.
+    """
+    found = find_prior_checkpoints(input_root)
+    if not found:
+        print("no prior checkpoints mounted; fresh run", flush=True)
+        return False
+    if len(found) > 1:
+        raise SystemExit(f"ambiguous prior checkpoints: {found}")
+    src_dir = found[0].parent
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    for path in sorted(src_dir.iterdir()):
+        if path.is_file():
+            shutil.copy2(path, dest_dir / path.name)
+    print(f"staged prior checkpoints from {src_dir}", flush=True)
+    return True
+
+
+def build_loop_argv(
+    loop_path: Path, task: dict, out_dir: Path, batch_size: str
+) -> list[str]:
+    """Argv for the resumable training loop from the task config."""
+    train_file = out_dir / "train.jsonl"
+    return [
+        sys.executable,
+        str(loop_path),
+        str(train_file),
+        "--epochs", str(task["epochs"]),
+        "--batch-size", str(batch_size),
+        "--lr", str(task["lr"]),
+        "--lora-rank", str(task["lora_rank"]),
+        "--lora-alpha", str(task["lora_alpha"]),
+        "--max-len", str(task["max_len"]),
+        "--val-split", str(task["val_split"]),
+        "--seed", str(task["seed"]),
+        "--out", str(out_dir / task["adapter_file"]),
+        "--checkpoint-dir", str(out_dir / CHECKPOINTS_DIRNAME),
+        "--save-every-min", str(task["save_every_min"]),
+    ]
+
+
 def get_stage_timeout(task_file: Path) -> float | None:
     """Per-stage timeout from ``[kaggle] stage_timeout`` (None = unbounded).
 
@@ -79,18 +141,25 @@ def get_stage_timeout(task_file: Path) -> float | None:
 
 
 def run_stage(
-    argv: list[str], status: list[dict], timeout: float | None
+    argv: list[str],
+    status: list[dict],
+    timeout: float | None,
+    name: str | None = None,
+    env: dict[str, str] | None = None,
 ) -> None:
     """Run one stage, bannered and recorded; fail fast on error.
 
     A stage past ``timeout`` is recorded with timeout=true and stops the
     run instead of hanging until the kernel timeout.
     """
-    name = Path(argv[1]).stem
+    name = name or Path(argv[1]).stem
     print(f"=== stage {name} ===", flush=True)
     start = time.monotonic()
+    merged = dict(os.environ)
+    if env:
+        merged.update(env)
     try:
-        completed = subprocess.run(argv, check=False, timeout=timeout)
+        completed = subprocess.run(argv, check=False, timeout=timeout, env=merged)
     except subprocess.TimeoutExpired:
         status.append(
             {
@@ -126,12 +195,18 @@ def main(argv: list[str] | None = None) -> int:
         help="Batch-size override passed to finetune.py.",
     )
     args = parser.parse_args(argv)
+    if args.backend not in ("cpu", "gpu", "auto"):
+        raise SystemExit(
+            f"unknown --backend: {args.backend!r} (want cpu/gpu/auto)"
+        )
     task_src = find_task(INPUT_ROOT)
     task_dir = Path(WORKSPACE) / "task"
     if task_dir.exists():
         shutil.rmtree(task_dir)
     shutil.copytree(task_src, task_dir)
     task_file = task_dir / "task.toml"
+    out_dir = task_dir / "out"
+    stage_prior_checkpoints(INPUT_ROOT, out_dir / CHECKPOINTS_DIRNAME)
     # Scripts sit flat beside task.toml: `datasets create` skips
     # subdirectories by default, so the input dataset has no scripts/ dir.
     scripts_dir = task_dir
@@ -156,17 +231,26 @@ def main(argv: list[str] | None = None) -> int:
     if completed.returncode != 0:
         raise SystemExit("pip install of the training stack failed")
 
+    import tomllib
+
+    with open(task_file, "rb") as handle:
+        train_config = tomllib.load(handle)["train"]
+    loop_env = {"CUDA_VISIBLE_DEVICES": ""} if args.backend == "cpu" else None
     for stage in STAGES:
-        extra = (
-            ["--backend", args.backend, "--batch-size", args.batch_size]
-            if stage == "finetune"
-            else []
-        )
-        run_stage(
-            build_stage_argv(scripts_dir / f"{stage}.py", task_file, extra),
-            status,
-            stage_timeout,
-        )
+        if stage == "finetune":
+            argv = build_loop_argv(
+                scripts_dir / "kaggle_train_loop.py",
+                train_config,
+                out_dir,
+                args.batch_size,
+            )
+            run_stage(argv, status, stage_timeout, name="finetune", env=loop_env)
+        else:
+            run_stage(
+                build_stage_argv(scripts_dir / f"{stage}.py", task_file, []),
+                status,
+                stage_timeout,
+            )
         status_path.parent.mkdir(parents=True, exist_ok=True)
         with open(status_path, "w", encoding="utf-8") as handle:
             json.dump(status, handle, indent=2)

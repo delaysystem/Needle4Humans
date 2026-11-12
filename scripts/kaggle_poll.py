@@ -164,6 +164,11 @@ def main(argv: list[str] | None = None) -> int:
                     return 1
                 print(logs.stdout, flush=True)
                 print(logs.stderr, file=sys.stderr)
+                print(
+                    "hint: rescue checkpoints with kaggle_save_checkpoints.py, "
+                    "then re-push with --resume to continue instead of restarting",
+                    flush=True,
+                )
                 return 1
             if state == "unknown":
                 print(

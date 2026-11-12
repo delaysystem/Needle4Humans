@@ -95,3 +95,61 @@ def test_build_stage_argv(tmp_path):
         "--task", str(tmp_path / "task.toml"),
         "--backend", "gpu",
     ]
+
+
+def test_find_prior_checkpoints_none_and_one(tmp_path):
+    assert kaggle_train_driver.find_prior_checkpoints(str(tmp_path)) == []
+    ckpt_dir = tmp_path / "datasets" / "o" / "s"
+    ckpt_dir.mkdir(parents=True)
+    (ckpt_dir / "latest.json").write_text("{}", encoding="utf-8")
+    # latest.json without ckpt siblings does not count.
+    assert kaggle_train_driver.find_prior_checkpoints(str(tmp_path)) == []
+    (ckpt_dir / "ckpt-000001.npz").write_text("x", encoding="utf-8")
+    found = kaggle_train_driver.find_prior_checkpoints(str(tmp_path))
+    assert found == [ckpt_dir / "latest.json"]
+
+
+def test_stage_prior_checkpoints_none_is_fresh(tmp_path, capsys):
+    dest = tmp_path / "out" / "checkpoints"
+    assert kaggle_train_driver.stage_prior_checkpoints(str(tmp_path), dest) is False
+    assert "fresh run" in capsys.readouterr().out
+
+
+def test_stage_prior_checkpoints_copies_single(tmp_path):
+    ckpt_dir = tmp_path / "m" / "checkpoints"
+    ckpt_dir.mkdir(parents=True)
+    (ckpt_dir / "latest.json").write_text("{}", encoding="utf-8")
+    (ckpt_dir / "ckpt-000001.npz").write_text("x", encoding="utf-8")
+    dest = tmp_path / "out" / "checkpoints"
+    assert kaggle_train_driver.stage_prior_checkpoints(str(tmp_path), dest) is True
+    assert (dest / "latest.json").is_file()
+    assert (dest / "ckpt-000001.npz").is_file()
+
+
+def test_stage_prior_checkpoints_ambiguous_dies(tmp_path):
+    for name in ("a", "b"):
+        ckpt_dir = tmp_path / name
+        ckpt_dir.mkdir(parents=True)
+        (ckpt_dir / "latest.json").write_text("{}", encoding="utf-8")
+        (ckpt_dir / "ckpt-000001.npz").write_text("x", encoding="utf-8")
+    with pytest.raises(SystemExit):
+        kaggle_train_driver.stage_prior_checkpoints(
+            str(tmp_path), tmp_path / "out" / "checkpoints"
+        )
+
+
+def test_build_loop_argv(tmp_path):
+    task = {
+        "epochs": 14, "lr": 0.0001, "lora_rank": 32, "lora_alpha": 32,
+        "max_len": 1024, "val_split": 0.1, "seed": 0,
+        "adapter_file": "a.safetensors", "save_every_min": 30,
+    }
+    argv = kaggle_train_driver.build_loop_argv(
+        tmp_path / "kaggle_train_loop.py", task, tmp_path / "out", "16"
+    )
+    assert argv[1] == str(tmp_path / "kaggle_train_loop.py")
+    assert argv[2] == str(tmp_path / "out" / "train.jsonl")
+    assert "--batch-size" in argv and "16" in argv
+    assert "--save-every-min" in argv and "30" in argv
+    assert "--checkpoint-dir" in argv
+    assert str(tmp_path / "out" / "checkpoints") in argv

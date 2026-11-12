@@ -78,8 +78,12 @@ report_file = "eval_report.json"
 [kaggle]
 # Owner for dataset/kernel refs. Origin: `kaggle config view` on this box.
 username = "blonded2"
+# Set false for CPU-only probe kernels (saves GPU quota); training runs
+# stay on GPU.
+gpu = true
 input_dataset = "needle3-handoff-input"
 output_dataset = "needle3-handoff-outputs"
+checkpoints_dataset = "needle3-handoff-checkpoints"
 kernel = "needle3-handoff-train"
 # GPU type for the kernel run (metadata machine_shape).
 accelerator = "NvidiaTeslaT4"
@@ -90,6 +94,9 @@ timeout = 21600
 # (2385 steps at ~7.5 s/step). 5.5h covers a 14-epoch run (~4.9h) with
 # margin, still inside the 6h kernel timeout.
 stage_timeout = 19800
+# Minutes between training checkpoints (kaggle_train_loop.py). A killed
+# run loses at most this much work; a re-push with --resume continues.
+save_every_min = 30
 poll_interval = 60
 poll_timeout = 25200
 # Train settings used on Kaggle (override the weak-box [train] values).

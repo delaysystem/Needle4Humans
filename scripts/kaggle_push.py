@@ -33,9 +33,22 @@ def kernel_ref(config: dict) -> str:
     return f"{kaggle['username']}/{kaggle['kernel']}"
 
 
-def render_kernel_metadata(config: dict) -> dict:
-    """Render ``kernel-metadata.json`` for a GPU training run."""
+def render_kernel_metadata(config: dict, resume: bool = False) -> dict:
+    """Render ``kernel-metadata.json`` for a GPU training run.
+
+    With ``resume``, the kernel also mounts the checkpoints dataset
+    (populated from a failed run by kaggle_save_checkpoints.py) so the
+    driver finds prior checkpoints and continues instead of restarting.
+    A kernel cannot source its own failed outputs, so checkpoints travel
+    through a dataset, whose mounts are proven.
+    """
     kaggle = config["kaggle"]
+    gpu = bool(kaggle.get("gpu", True))
+    sources = [_kaggle.dataset_ref(config, "input_dataset")]
+    if resume:
+        if "checkpoints_dataset" not in kaggle:
+            _common.die("[kaggle] checkpoints_dataset is required for --resume")
+        sources.append(_kaggle.dataset_ref(config, "checkpoints_dataset"))
     return {
         "id": kernel_ref(config),
         "title": _kaggle.title_from_slug(kaggle["kernel"]),
@@ -43,17 +56,19 @@ def render_kernel_metadata(config: dict) -> dict:
         "language": "python",
         "kernel_type": "script",
         "is_private": TRUE,
-        "enable_gpu": TRUE,
+        "enable_gpu": TRUE if gpu else "false",
         "enable_internet": TRUE,
-        "machine_shape": kaggle["accelerator"],
-        "dataset_sources": [_kaggle.dataset_ref(config, "input_dataset")],
+        "machine_shape": kaggle["accelerator"] if gpu else "",
+        "dataset_sources": sources,
         "competition_sources": [],
         "kernel_sources": [],
         "model_sources": [],
     }
 
 
-def stage_kernel(config: dict, task_dir: Path, staging_dir: Path) -> Path:
+def stage_kernel(
+    config: dict, task_dir: Path, staging_dir: Path, resume: bool = False
+) -> Path:
     """Copy the driver and write metadata into the kernel staging dir."""
     if staging_dir.exists():
         shutil.rmtree(staging_dir)
@@ -61,7 +76,7 @@ def stage_kernel(config: dict, task_dir: Path, staging_dir: Path) -> Path:
     driver = task_dir.parent.parent / "scripts" / DRIVER_NAME
     shutil.copy2(driver, staging_dir / DRIVER_NAME)
     with open(staging_dir / "kernel-metadata.json", "w", encoding="utf-8") as handle:
-        json.dump(render_kernel_metadata(config), handle, indent=2)
+        json.dump(render_kernel_metadata(config, resume), handle, indent=2)
     return staging_dir
 
 
@@ -82,13 +97,20 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Stage files and print the kaggle argv without executing it.",
     )
+    parser.add_argument(
+        "--resume",
+        action="store_true",
+        help="Mount the checkpoints dataset so training resumes from it "
+        "instead of restarting. Populate it first with "
+        "kaggle_save_checkpoints.py from the failed run.",
+    )
     args = parser.parse_args(argv)
     config, task_dir = _common.load_task_config(args.task)
     kaggle = _common.kaggle_bin()
     staging = _common.task_relative_path(
         task_dir, config["task"]["out_dir"]
     ) / "staging_kernel"
-    stage_kernel(config, task_dir, staging)
+    stage_kernel(config, task_dir, staging, args.resume)
     argv = build_push_argv(kaggle, staging, config["kaggle"]["timeout"])
     print(f"kernel {kernel_ref(config)}")
     return _kaggle.run_or_print(argv, args.dry_run)

@@ -40,6 +40,32 @@ def test_render_kernel_metadata():
     }
 
 
+def test_render_kernel_metadata_cpu():
+    config = make_config()
+    config["kaggle"]["gpu"] = False
+    metadata = kaggle_push.render_kernel_metadata(config)
+    assert metadata["enable_gpu"] == "false"
+    assert metadata["machine_shape"] == ""
+
+
+def test_render_kernel_metadata_resume_mounts_checkpoints():
+    config = make_config()
+    config["kaggle"]["checkpoints_dataset"] = "mini-checkpoints"
+    assert kaggle_push.render_kernel_metadata(
+        config, resume=True
+    )["dataset_sources"] == ["someone/mini-input", "someone/mini-checkpoints"]
+    assert kaggle_push.render_kernel_metadata(
+        config
+    )["dataset_sources"] == ["someone/mini-input"]
+
+
+def test_render_kernel_metadata_resume_needs_slug():
+    import pytest
+
+    with pytest.raises(SystemExit):
+        kaggle_push.render_kernel_metadata(make_config(), resume=True)
+
+
 def test_stage_kernel_copies_driver_and_metadata(tmp_path):
     root = tmp_path / "root"
     task_dir = root / "tasks" / "t"

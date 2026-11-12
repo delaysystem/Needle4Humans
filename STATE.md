@@ -59,6 +59,16 @@ edge 20, negative 22 (~12% `[]` refusals). Eval is 6 per
 language×category cell (252 total), phrased distinctly from train, zero
 query overlap (validator-enforced).
 
+## TPU verdict (2026-11-12): not provisionable via API
+
+Four probes (script+string shape, script+bool, correct Tpu1VmV38 shape,
+notebook kernel) all landed on CPU despite enable_tpu and a 20h TPU
+quota balance. Code audit says the model is TPU-clean (single backend
+check falls back for fp32; no CUDA-only ops), so this is account or
+capacity gating with silent CPU fallback, not a code problem. Options:
+check the website notebook UI for a TPU accelerator choice, or stay on
+GPU (5.25h left, refreshes Nov 14). No TPU code was merged.
+
 ## Outcome on Kaggle (2026-11-11/12, account blonded2)
 
 - Input dataset `blonded2/needle3-handoff-input` (private, v1), kernel

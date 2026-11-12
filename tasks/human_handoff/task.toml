@@ -1,0 +1,93 @@
+# Human-handoff finetune task for Needle 3.
+# Every value a script needs lives here (agents2.md Rule 1). Origins for
+# training defaults are the Fine-tuning Needle guide:
+# https://cactuscompute.com/blog/finetuning-needle
+
+[task]
+name = "human_handoff"
+tools = "tools.json"
+slot_banks = "slot_banks.json"
+seed_bank = "seeds_train.jsonl"
+eval_bank = "seeds_eval.jsonl"
+out_dir = "out"
+
+[data]
+languages = ["en", "de", "fr", "es", "it", "nl", "pl"]
+categories = ["explicit", "implicit", "sarcastic", "multisentence", "edge", "negative"]
+# Minimum train examples per (language, category) cell after expansion.
+train_per_cell = 20
+# Exact eval examples per (language, category) cell, from the eval bank only.
+eval_per_cell = 6
+# Off-topic [] share. Origin: finetuning guide, "the built-in generator
+# produces about one in eight".
+negative_ratio_min = 0.10
+negative_ratio_max = 0.16
+train_seed = 7
+# Cap on expanded variants per seed; guards against slot-product explosion.
+max_variants_per_seed = 12
+train_file = "train.jsonl"
+eval_file = "eval.jsonl"
+manifest_file = "manifest.json"
+# Must match [train] max_len. Origin: finetuning guide default 1024; longer
+# examples are silently truncated, so validation warns near the cap.
+max_len_tokens = 1024
+# Origin: finetuning guide, non-English fragments into ~1.7x tokens
+# (measured on Spanish). Used only for length warnings.
+fragmentation_warning = 1.7
+
+[train]
+# All defaults below are the finetuning guide defaults unless noted.
+# backend cpu: the 20-layer fp32 train step OOMs on this 4 GB GTX 1650
+# (RESOURCE_EXHAUSTED at CUBIN load even at batch 4; measured 2026-11-10).
+backend = "cpu"
+# Persistent XLA compilation cache: a restarted run reloads the compiled
+# train step instead of recompiling (the trainer itself saves only the
+# final adapter, so step progress itself cannot resume).
+jax_cache_dir = "out/jax_cache"
+epochs = 20
+# batch 4, not the guide default 16: XLA CPU compile at batch 16 grew past
+# 8.6 GB RSS (global OOM kill) and at batch 8 past the 6 GB cgroup ceiling
+# (cgroup-scoped kill, box untouched; both measured 2026-11-10). Last local
+# lever: if batch 4 also exceeds 6 GB, this box cannot train Needle 3
+# 20-layer LoRA and the run moves to the platform path or a bigger machine.
+batch_size = 4
+lr = 0.0001
+# Rank 32, not the guide default 16: grounding-heavy task (reason/details
+# args), and the guide prescribes doubling adapter capacity for these.
+lora_rank = 32
+lora_alpha = 32
+max_len = 1024
+val_split = 0.1
+seed = 0
+adapter_file = "adapter.safetensors"
+log_file = "train.log"
+
+[build]
+# Full model. Origin: owner decision; CLI default is 20 (cactus build --help).
+layers = 20
+weights_file = "handoff_20l.cact"
+
+[eval]
+# DroidCall-style exact-calls-in-order scoring; see scripts/evaluate.py.
+report_file = "eval_report.json"
+
+[kaggle]
+# Owner for dataset/kernel refs. Origin: `kaggle config view` on this box.
+username = "blonded2"
+input_dataset = "needle3-handoff-input"
+output_dataset = "needle3-handoff-outputs"
+kernel = "needle3-handoff-train"
+# GPU type for the kernel run (metadata machine_shape).
+accelerator = "NvidiaTeslaT4"
+# Hard cap on the kernel run in seconds; the server bounds it further.
+timeout = 21600
+# Per-stage cap in seconds (3h > measured 94 min train); a hung stage
+# fails fast instead of burning the whole kernel timeout in GPU quota.
+stage_timeout = 10800
+poll_interval = 60
+poll_timeout = 25200
+# Train settings used on Kaggle (override the weak-box [train] values).
+backend = "gpu"
+batch_size = 16
+# Output files published to the binaries dataset (relative to out/).
+publish_files = ["adapter.safetensors", "handoff_20l.cact", "eval_report.json", "train.log", "manifest.json", "train.jsonl", "eval.jsonl"]

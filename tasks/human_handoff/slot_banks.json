@@ -1,0 +1,11 @@
+{
+  "ask": {
+    "en": ["talk to a human", "speak to a real person", "talk to an agent", "speak to someone", "talk to a real person", "speak to a human", "talk to support staff", "reach a real person"],
+    "de": ["mit einem Menschen sprechen", "mit einem Mitarbeiter sprechen", "mit einer echten Person sprechen", "mit jemandem sprechen", "einen Mitarbeiter sprechen", "mit dem Support sprechen", "eine echte Person sprechen", "mich mit einem Menschen verbinden"],
+    "fr": ["parler à un humain", "parler à une vraie personne", "parler à un agent", "parler à quelqu'un", "parler à un conseiller", "être mis en relation avec une personne", "parler au support", "parler à un être humain"],
+    "es": ["hablar con un humano", "hablar con una persona real", "hablar con un agente", "hablar con alguien", "hablar con un asesor", "ser atendido por una persona", "hablar con soporte", "hablar con una persona de verdad"],
+    "it": ["parlare con un umano", "parlare con una persona vera", "parlare con un operatore", "parlare con qualcuno", "parlare con un consulente", "farmi passare una persona", "parlare con il supporto", "parlare con una persona reale"],
+    "nl": ["met een mens spreken", "met een echt persoon spreken", "met een medewerker spreken", "met iemand spreken", "een medewerker spreken", "met de support spreken", "doorverbonden worden met een persoon", "met een persoon spreken"],
+    "pl": ["porozmawiać z człowiekiem", "porozmawiać z prawdziwą osobą", "porozmawiać z konsultantem", "porozmawiać z kimś", "porozmawiać z agentem", "połączyć mnie z człowiekiem", "porozmawiać z obsługą", "porozmawiać z żywą osobą"]
+  }
+}

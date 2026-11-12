@@ -1,0 +1,12 @@
+# Machine-generated artifacts: rebuilt by install, generate, or train runs.
+# Model binaries live versioned on Kaggle, not in git.
+.venv/
+__pycache__/
+.pytest_cache/
+*.safetensors
+*.cact
+jax_cache/
+staging_input/
+staging_kernel/
+staging_output/
+checkpoints/

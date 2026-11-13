@@ -16,6 +16,19 @@ def test_resolve_devices():
         kaggle_train_loop.resolve_devices("2", 2)
 
 
+def test_apply_backend_tuning():
+    from types import SimpleNamespace
+
+    cuda = SimpleNamespace(flash=True, remat=True, scan_unroll=1,
+                           num_layers=20)
+    kaggle_train_loop.apply_backend_tuning(cuda, "cuda")
+    assert (cuda.flash, cuda.remat, cuda.scan_unroll) == (True, False, 1)
+    metal = SimpleNamespace(flash=True, remat=True, scan_unroll=1,
+                            num_layers=20)
+    kaggle_train_loop.apply_backend_tuning(metal, "metal")
+    assert (metal.flash, metal.remat, metal.scan_unroll) == (False, False, 20)
+
+
 def test_shard_batch_even_split():
     ids = np.arange(32 * 8, dtype=np.int32).reshape(32, 8)
     masks = np.ones((32, 8), dtype=np.float32)

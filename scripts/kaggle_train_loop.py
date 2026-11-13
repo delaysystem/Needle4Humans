@@ -293,6 +293,22 @@ def warm_lora_from_adapter(adapter: dict, fresh_shapes: dict) -> dict:
     return lora
 
 
+def apply_backend_tuning(config, backend: str) -> None:
+    """Speed toggles per backend; training math stays identical.
+
+    Metal keeps the stock finetune path (no flash, no remat, full
+    unroll). CUDA disables remat: activation recompute trades speed
+    for memory, and a ~150M-param LoRA run has gigabytes to spare on
+    a 16 GB T4 — same numerics, roughly a fifth faster per step.
+    """
+    if backend == "metal":
+        config.flash = False
+        config.remat = False
+        config.scan_unroll = config.num_layers
+    else:
+        config.remat = False
+
+
 def advance_past_completed_epoch(start_epoch, start_pos, count):
     """Resume position, skipping an epoch that already completed.
 
@@ -355,12 +371,11 @@ def train(args) -> int:
     config.dtype = "float32"
     params = jax.tree.map(lambda a: np.asarray(a).astype(np.float32), params)
     backend = jax.default_backend().lower()
-    if backend == "metal":
-        config.flash = False
-        config.remat = False
-        config.scan_unroll = config.num_layers
+    apply_backend_tuning(config, backend)
     params = jax.device_put(params)
     emit(f"  {'backend':<9} {backend}  float32")
+    emit(f"  {'tuning':<9} remat {config.remat}  flash {config.flash}  "
+         f"unroll {config.scan_unroll}")
     emit(f"  {'depth':<9} {config.num_layers} layers")
     tokenizer = get_tokenizer(config.vocab_size)
     max_len = fit_max_len(args.jsonl_path, tokenizer, args.max_len)

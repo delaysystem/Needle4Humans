@@ -114,14 +114,16 @@ def _fetch_dataset_rows(kaggle: str) -> list:
 
 
 def dataset_last_updated(kaggle: str, ref: str):
-    """lastUpdated of ``ref`` as naive UTC datetime, else None."""
+    """lastUpdated of ``ref`` as naive UTC datetime, else None.
+
+    The JSON listing returns ISO timestamps (``2026-11-13T02:56:30...``),
+    not the CSV's space-separated form; fromisoformat parses both.
+    """
     for row in _fetch_dataset_rows(kaggle):
         if not isinstance(row, dict) or row.get("ref") != ref:
             continue
         try:
-            return datetime.strptime(
-                row["lastUpdated"][:19], "%Y-%m-%d %H:%M:%S"
-            )
+            return datetime.fromisoformat(row["lastUpdated"])
         except (KeyError, ValueError, TypeError):
             return None
     return None

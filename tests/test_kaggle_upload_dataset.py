@@ -75,13 +75,19 @@ def test_dataset_last_updated_parses(monkeypatch):
     import datetime
 
     rows = [
-        {"ref": "o/other", "lastUpdated": "2026-11-13 00:00:00.000000"},
-        {"ref": "o/s", "lastUpdated": "2026-11-13 02:23:26.810000"},
+        # Real `--format json` shape (ISO with T); the space form is the
+        # CSV shape. Both must parse — the wait loop compares datetimes.
+        {"ref": "o/other", "lastUpdated": "2026-11-13T00:00:00.000000"},
+        {"ref": "o/s", "lastUpdated": "2026-11-13T02:23:26.810000"},
+        {"ref": "o/csv", "lastUpdated": "2026-11-13 02:23:26.810000"},
         {"ref": "o/bad", "lastUpdated": "not-a-date"},
     ]
     monkeypatch.setattr(_kaggle, "_fetch_dataset_rows", lambda k: rows)
     assert _kaggle.dataset_last_updated("kaggle", "o/s") == datetime.datetime(
-        2026, 11, 13, 2, 23, 26
+        2026, 11, 13, 2, 23, 26, 810000
+    )
+    assert _kaggle.dataset_last_updated("kaggle", "o/csv") == datetime.datetime(
+        2026, 11, 13, 2, 23, 26, 810000
     )
     assert _kaggle.dataset_last_updated("kaggle", "o/missing") is None
     assert _kaggle.dataset_last_updated("kaggle", "o/bad") is None

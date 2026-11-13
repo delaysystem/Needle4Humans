@@ -89,11 +89,10 @@ kernel = "needle3-handoff-train"
 accelerator = "NvidiaTeslaT4"
 # Hard cap on the kernel run in seconds; the server bounds it further.
 timeout = 21600
-# Per-stage cap in seconds. 3h killed healthy round-3 training mid-run;
-# 5h killed healthy round-4 training during final scoring after epoch 15
-# (2385 steps at ~7.5 s/step). 5.5h covers a 14-epoch run (~4.9h) with
-# margin, still inside the 6h kernel timeout.
-stage_timeout = 19800
+# Per-stage cap in seconds. Disabled (0): fixed caps kept killing healthy
+# slow runs (3h mid-train, 5h during final scoring). The 6h kernel timeout
+# stays the outer backstop, and 30-min checkpoints bound any kill's cost.
+stage_timeout = 0
 # Minutes between training checkpoints (kaggle_train_loop.py). A killed
 # run loses at most this much work; a re-push with --resume continues.
 save_every_min = 30

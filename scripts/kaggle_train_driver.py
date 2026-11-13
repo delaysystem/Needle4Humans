@@ -128,16 +128,17 @@ def build_loop_argv(
 
 
 def get_stage_timeout(task_file: Path) -> float | None:
-    """Per-stage timeout from ``[kaggle] stage_timeout`` (None = unbounded).
+    """Per-stage timeout from ``[kaggle] stage_timeout``.
 
-    Bounds GPU-quota burn: without it a hung stage runs until the whole
-    kernel timeout instead of failing fast.
+    Zero or missing means unbounded: the kernel timeout stays the outer
+    backstop, and periodic checkpoints bound any kill's cost to the
+    save interval instead of the whole run.
     """
     import tomllib
 
     with open(task_file, "rb") as handle:
         config = tomllib.load(handle)
-    return config.get("kaggle", {}).get("stage_timeout")
+    return config.get("kaggle", {}).get("stage_timeout") or None
 
 
 def run_stage(

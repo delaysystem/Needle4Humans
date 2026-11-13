@@ -62,6 +62,9 @@ def test_get_stage_timeout_present_and_missing(tmp_path):
     missing = tmp_path / "b.toml"
     missing.write_text("[task]\nname = \"x\"\n", encoding="utf-8")
     assert kaggle_train_driver.get_stage_timeout(missing) is None
+    disabled = tmp_path / "c.toml"
+    disabled.write_text("[kaggle]\nstage_timeout = 0\n", encoding="utf-8")
+    assert kaggle_train_driver.get_stage_timeout(disabled) is None
 
 
 def test_run_stage_timeout_records_and_dies(tmp_path, capsys):

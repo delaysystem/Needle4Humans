@@ -471,7 +471,7 @@ def train(args) -> int:
     else:
         emit(f"  {'devices':<9} 1 x {backend}")
 
-    def first(tree):
+    def unreplicate(tree):
         """Device-0 replica back on host (checkpoints stay unreplicated)."""
         return jax.tree.map(lambda x: np.asarray(x)[0], tree)
 
@@ -540,13 +540,19 @@ def train(args) -> int:
             if step_i % every == 0:
                 emit(f"  {'step':<9} {step_i}/{total_steps}  loss {last:.4f}")
             if time.monotonic() - last_save >= save_every_s:
-                snap_lora = first(lora) if use_pmap else lora
-                snap_opt = first(opt_state) if use_pmap else opt_state
+                snap_lora = unreplicate(lora) if use_pmap else lora
+                snap_opt = unreplicate(opt_state) if use_pmap else opt_state
                 _snapshot(ckpt_dir, step_i, snap_lora, snap_opt, order_full,
                           order, epoch, start + batch, total_steps, seed, rng)
                 last_save = time.monotonic()
                 emit(f"  {'save':<9} checkpoint at step {step_i}")
-        score_lora = first(lora) if use_pmap else lora
+        snap_lora = unreplicate(lora) if use_pmap else lora
+        snap_opt = unreplicate(opt_state) if use_pmap else opt_state
+        _snapshot(ckpt_dir, step_i, snap_lora, snap_opt, order_full,
+                  order, epoch, count, total_steps, seed, rng)
+        last_save = time.monotonic()
+        emit(f"  {'save':<9} checkpoint at end of epoch {epoch + 1}")
+        score_lora = snap_lora
         if n_val > 0:
             val = np.mean([float(eval_step(score_lora, jnp.asarray(val_seqs[i:i + batch]),
                                            jnp.asarray(val_masks[i:i + batch])))
@@ -558,7 +564,7 @@ def train(args) -> int:
     out = args.out
     os.makedirs(os.path.dirname(out) or ".", exist_ok=True)
     if use_pmap:
-        lora = first(lora)
+        lora = unreplicate(lora)
     write_adapter(out, {
         "lora": {"/".join(p): {"A": np.asarray(v["A"]), "B": np.asarray(v["B"])}
                  for p, v in lora.items()},

@@ -1,2 +1,0 @@
-{"id": "probe-explicit-e01", "lang": "en", "category": "explicit", "query": "Kindly run probe call.", "answers": [{"name": "probe_call", "arguments": {}}], "reasoning": "'run probe call' -> handoff"}
-{"id": "probe-negative-e01", "lang": "en", "category": "negative", "query": "Goodbye.", "answers": [], "reasoning": "farewell -> []"}

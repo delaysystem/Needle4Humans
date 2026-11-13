@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
+import time
+from datetime import datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -13,6 +15,14 @@ import _common
 
 # Origin: the `kaggle datasets init` template default.
 DATASET_LICENSE = "CC0-1.0"
+
+# Origin: task choices. Uploads return before server-side processing
+# finishes; pushing a kernel in that window mounts the previous dataset
+# version (observed: stale task.toml → KeyError seconds into the run).
+LIST_TIMEOUT_S = 60
+READY_POLL_INTERVAL_S = 15
+READY_TIMEOUT_S = 900
+READY_GRACE_S = 90
 
 
 def dataset_ref(config: dict, slug_key: str) -> str:
@@ -72,3 +82,67 @@ def run_or_print(argv: list[str], dry_run: bool) -> int:
         return 0
     completed = subprocess.run(argv, check=False)
     return completed.returncode
+
+
+def _fetch_dataset_rows(kaggle: str) -> list:
+    """My datasets as parsed rows, or [] when the call fails."""
+    try:
+        completed = subprocess.run(
+            [
+                kaggle, "datasets", "list", "-m", "--format", "json",
+                "--page-size", "200",
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=LIST_TIMEOUT_S,
+        )
+    except subprocess.TimeoutExpired:
+        return []
+    if completed.returncode != 0:
+        return []
+    try:
+        rows = json.loads(completed.stdout)
+    except json.JSONDecodeError:
+        return []
+    if isinstance(rows, dict):
+        rows = rows.get("datasets", [])
+    return rows if isinstance(rows, list) else []
+
+
+def dataset_last_updated(kaggle: str, ref: str):
+    """lastUpdated of ``ref`` as naive UTC datetime, else None."""
+    for row in _fetch_dataset_rows(kaggle):
+        if not isinstance(row, dict) or row.get("ref") != ref:
+            continue
+        try:
+            return datetime.strptime(
+                row["lastUpdated"][:19], "%Y-%m-%d %H:%M:%S"
+            )
+        except (KeyError, ValueError, TypeError):
+            return None
+    return None
+
+
+def wait_for_dataset_updated(
+    kaggle: str,
+    ref: str,
+    before,
+    timeout: float = READY_TIMEOUT_S,
+    sleep_fn=time.sleep,
+) -> None:
+    """Block until ``ref`` shows a newer lastUpdated than ``before``.
+
+    ``before`` is None for brand-new datasets. A grace sleep follows the
+    advance because lastUpdated may move at accept time while processing
+    still runs. Dies on timeout instead of pushing against a stale mount.
+    """
+    deadline = time.monotonic() + timeout
+    while True:
+        current = dataset_last_updated(kaggle, ref)
+        if current is not None and current != before:
+            sleep_fn(READY_GRACE_S)
+            return
+        if time.monotonic() >= deadline:
+            _common.die(f"dataset {ref} not ready after {timeout}s")
+        sleep_fn(READY_POLL_INTERVAL_S)

@@ -104,6 +104,22 @@ def stage_prior_checkpoints(input_root: str, dest_dir: Path) -> bool:
     return True
 
 
+REQUIRED_TRAIN_KEYS = (
+    "epochs", "batch_size", "lr", "lora_rank", "lora_alpha",
+    "max_len", "val_split", "seed", "adapter_file", "save_every_min",
+)
+
+
+def check_train_config(train_config: dict) -> None:
+    """Die naming missing keys (usually a stale mounted dataset)."""
+    missing = [key for key in REQUIRED_TRAIN_KEYS if key not in train_config]
+    if missing:
+        raise SystemExit(
+            f"task.toml lacks {missing}; the mounted input dataset is "
+            "probably stale — wait for processing and re-push"
+        )
+
+
 def build_loop_argv(
     loop_path: Path, task: dict, out_dir: Path, batch_size: str
 ) -> list[str]:
@@ -236,6 +252,7 @@ def main(argv: list[str] | None = None) -> int:
 
     with open(task_file, "rb") as handle:
         train_config = tomllib.load(handle)["train"]
+    check_train_config(train_config)
     loop_env = {"CUDA_VISIBLE_DEVICES": ""} if args.backend == "cpu" else None
     for stage in STAGES:
         if stage == "finetune":

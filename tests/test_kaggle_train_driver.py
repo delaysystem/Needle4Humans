@@ -88,6 +88,16 @@ def test_run_stage_success_records_no_timeout(tmp_path):
     assert status[0]["timeout"] is False
 
 
+def test_check_train_config():
+    full = {key: 1 for key in kaggle_train_driver.REQUIRED_TRAIN_KEYS}
+    kaggle_train_driver.check_train_config(full)
+    thin = dict(full)
+    del thin["save_every_min"]
+    with pytest.raises(SystemExit) as excinfo:
+        kaggle_train_driver.check_train_config(thin)
+    assert "save_every_min" in str(excinfo.value)
+
+
 def test_build_stage_argv(tmp_path):
     argv = kaggle_train_driver.build_stage_argv(
         tmp_path / "finetune.py", tmp_path / "task.toml",

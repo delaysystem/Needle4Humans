@@ -71,6 +71,53 @@ def test_title_from_slug():
     assert _kaggle.title_from_slug("a-b-c") == "a b c"
 
 
+def test_dataset_last_updated_parses(monkeypatch):
+    import datetime
+
+    rows = [
+        {"ref": "o/other", "lastUpdated": "2026-11-13 00:00:00.000000"},
+        {"ref": "o/s", "lastUpdated": "2026-11-13 02:23:26.810000"},
+        {"ref": "o/bad", "lastUpdated": "not-a-date"},
+    ]
+    monkeypatch.setattr(_kaggle, "_fetch_dataset_rows", lambda k: rows)
+    assert _kaggle.dataset_last_updated("kaggle", "o/s") == datetime.datetime(
+        2026, 11, 13, 2, 23, 26
+    )
+    assert _kaggle.dataset_last_updated("kaggle", "o/missing") is None
+    assert _kaggle.dataset_last_updated("kaggle", "o/bad") is None
+
+
+def test_wait_for_dataset_updated_advance(monkeypatch):
+    import datetime
+
+    before = datetime.datetime(2026, 11, 13, 2, 0, 0)
+    after = datetime.datetime(2026, 11, 13, 2, 23, 26)
+    calls = iter([before, before, after])
+    monkeypatch.setattr(
+        _kaggle, "dataset_last_updated", lambda k, r: next(calls)
+    )
+    sleeps = []
+    _kaggle.wait_for_dataset_updated(
+        "kaggle", "o/s", before, timeout=60, sleep_fn=sleeps.append
+    )
+    assert sleeps[-1] == _kaggle.READY_GRACE_S
+    assert len(sleeps) == 3
+
+
+def test_wait_for_dataset_updated_timeout(monkeypatch):
+    import datetime
+
+    before = datetime.datetime(2026, 11, 13, 2, 0, 0)
+    monkeypatch.setattr(
+        _kaggle, "dataset_last_updated", lambda k, r: before
+    )
+    with pytest.raises(SystemExit):
+        _kaggle.wait_for_dataset_updated(
+            "kaggle", "o/s", before, timeout=0.05,
+            sleep_fn=lambda s: None,
+        )
+
+
 def test_push_dataset_argv_create_and_version(tmp_path):
     create = _kaggle.push_dataset_argv("kaggle", False, tmp_path, "msg")
     assert create == ["kaggle", "datasets", "create", "-p", str(tmp_path)]

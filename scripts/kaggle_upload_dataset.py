@@ -71,7 +71,15 @@ def main(argv: list[str] | None = None) -> int:
     message = args.message or f"Update {config['task']['name']} inputs"
     argv = _kaggle.push_dataset_argv(kaggle, exists, staging, message)
     print(f"dataset {ref} ({'version' if exists else 'create'})")
-    return _kaggle.run_or_print(argv, args.dry_run)
+    if args.dry_run:
+        return _kaggle.run_or_print(argv, True)
+    before = _kaggle.dataset_last_updated(kaggle, ref)
+    code = _kaggle.run_or_print(argv, False)
+    if code != 0:
+        return code
+    _kaggle.wait_for_dataset_updated(kaggle, ref, before)
+    print(f"dataset {ref} ready")
+    return 0
 
 
 if __name__ == "__main__":

@@ -1,5 +1,16 @@
 # Migration state — Needle 3 human-handoff finetune
 
+## Status addendum 2026-11-13 09:30 UTC (supersedes the 11-10 move notes below)
+
+Training moved to Kaggle GPU (account `blonded2`). Round 5 finished on
+kernel v17: 238/252 exact (target 250), loss converged flat — data-limited.
+Round 6 is fully staged and committed: 553 train seeds / 3257 rows targeting
+v17's 14 misses, input dataset uploaded and mount-verified. GPU quota is 0
+until the 2026-11-14T00:00:00Z refresh; a fresh GPU push is rejected until
+then. To run round 6: `python scripts/kaggle_push.py --task
+tasks/human_handoff/task.toml`, then poll, download, `evaluate.py`, publish
+if improved. Progress tracker: `tasks/human_handoff/rounds.json`.
+
 Written 2026-11-10 on the old box (i5-4570S, 15 GB RAM, GTX 1650 SUPER 4 GB)
 for a move to a new PC. Code and dataset move; environments, caches, and
 build artifacts do not.

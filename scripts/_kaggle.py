@@ -21,8 +21,11 @@ DATASET_LICENSE = "CC0-1.0"
 # version (observed: stale task.toml → KeyError seconds into the run).
 LIST_TIMEOUT_S = 60
 READY_POLL_INTERVAL_S = 15
-READY_TIMEOUT_S = 900
-READY_GRACE_S = 90
+READY_TIMEOUT_S = 1200
+# Processing lag observed: a kernel pushed 7 min after upload still
+# mounted the previous version. lastUpdated moves at accept time, so the
+# grace must cover the processing tail itself.
+READY_GRACE_S = 300
 
 
 def dataset_ref(config: dict, slug_key: str) -> str:

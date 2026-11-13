@@ -175,6 +175,7 @@ def test_build_loop_argv_init_adapter(tmp_path):
         "epochs": 14, "lr": 0.0001, "lora_rank": 32, "lora_alpha": 32,
         "max_len": 1024, "val_split": 0.1, "seed": 0,
         "adapter_file": "a.safetensors", "save_every_min": 30,
+        "val_every": 1,
     }
     plain = kaggle_train_driver.build_loop_argv(
         tmp_path / "kaggle_train_loop.py", task, tmp_path / "out", "16"
@@ -245,6 +246,7 @@ def test_build_loop_argv(tmp_path):
         "epochs": 14, "lr": 0.0001, "lora_rank": 32, "lora_alpha": 32,
         "max_len": 1024, "val_split": 0.1, "seed": 0,
         "adapter_file": "a.safetensors", "save_every_min": 30,
+        "val_every": 1,
     }
     argv = kaggle_train_driver.build_loop_argv(
         tmp_path / "kaggle_train_loop.py", task, tmp_path / "out", "16"
@@ -253,5 +255,6 @@ def test_build_loop_argv(tmp_path):
     assert argv[2] == str(tmp_path / "out" / "train.jsonl")
     assert "--batch-size" in argv and "16" in argv
     assert "--save-every-min" in argv and "30" in argv
+    assert "--val-every" in argv and "1" in argv
     assert "--checkpoint-dir" in argv
     assert str(tmp_path / "out" / "checkpoints") in argv

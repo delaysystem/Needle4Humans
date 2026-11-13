@@ -470,6 +470,9 @@ def train(args) -> int:
         emit(f"  {'devices':<9} {n_devices} x {backend}  data-parallel")
     else:
         emit(f"  {'devices':<9} 1 x {backend}")
+    if n_val > 0 and args.val_every <= 0:
+        emit(f"  {'val':<9} in-loop scoring off "
+             f"(evaluate.py scores the {n_val}-row holdout)")
 
     def unreplicate(tree):
         """Device-0 replica back on host (checkpoints stay unreplicated)."""
@@ -553,7 +556,11 @@ def train(args) -> int:
         last_save = time.monotonic()
         emit(f"  {'save':<9} checkpoint at end of epoch {epoch + 1}")
         score_lora = snap_lora
-        if n_val > 0:
+        do_val = (
+            n_val > 0 and args.val_every > 0
+            and (epoch + 1) % args.val_every == 0
+        )
+        if do_val:
             val = np.mean([float(eval_step(score_lora, jnp.asarray(val_seqs[i:i + batch]),
                                            jnp.asarray(val_masks[i:i + batch])))
                            for i in range(0, n_val, batch)])
@@ -578,7 +585,8 @@ def train(args) -> int:
     return 0
 
 
-def main(argv=None) -> int:
+def build_parser() -> argparse.ArgumentParser:
+    """CLI parser, factored out so the defaults are unit-testable."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("jsonl_path", help="Path to JSONL training data")
     parser.add_argument("--checkpoint", default=None,
@@ -602,7 +610,14 @@ def main(argv=None) -> int:
     parser.add_argument("--init-adapter", default=None,
                         help="Warm-start LoRA weights from a prior "
                         ".safetensors adapter (fresh runs only)")
-    args = parser.parse_args(argv)
+    parser.add_argument("--val-every", type=int, default=1,
+                        help="Score the holdout every N epochs (0 skips "
+                        "in-loop scoring; evaluate.py scores held-out)")
+    return parser
+
+
+def main(argv=None) -> int:
+    args = build_parser().parse_args(argv)
     if args.save_every_min == 0:
         args.save_every_min = float("inf")
     return train(args)

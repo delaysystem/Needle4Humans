@@ -16,6 +16,22 @@ def test_resolve_devices():
         kaggle_train_loop.resolve_devices("2", 2)
 
 
+def test_build_parser_defaults():
+    base = [
+        "data.jsonl", "--epochs", "1", "--batch-size", "2", "--lr", "0.1",
+        "--lora-rank", "4", "--lora-alpha", "4", "--max-len", "128",
+        "--val-split", "0.1", "--seed", "0", "--out", "a.safetensors",
+        "--checkpoint-dir", "ckpts", "--save-every-min", "30",
+    ]
+    args = kaggle_train_loop.build_parser().parse_args(base)
+    assert (args.devices, args.init_adapter, args.val_every) == (
+        "auto", None, 1)
+    args = kaggle_train_loop.build_parser().parse_args(
+        base + ["--devices", "1", "--val-every", "0"]
+    )
+    assert (args.devices, args.val_every) == ("1", 0)
+
+
 def test_apply_backend_tuning():
     from types import SimpleNamespace
 

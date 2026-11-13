@@ -64,6 +64,10 @@ lora_alpha = 32
 max_len = 1024
 val_split = 0.1
 seed = 0
+# 0 skips in-loop holdout scoring: on 2xT4 the eval executable OOMs next
+# to the pmap train state (v16, first eval call). Diagnostic-only loss —
+# evaluate.py scores the holdout for real. Restore 1 on a bigger GPU.
+val_every = 0
 adapter_file = "adapter.safetensors"
 log_file = "train.log"
 # Minutes between training checkpoints (kaggle_train_loop.py). A killed

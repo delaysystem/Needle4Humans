@@ -107,6 +107,7 @@ def stage_prior_checkpoints(input_root: str, dest_dir: Path) -> bool:
 REQUIRED_TRAIN_KEYS = (
     "epochs", "batch_size", "lr", "lora_rank", "lora_alpha",
     "max_len", "val_split", "seed", "adapter_file", "save_every_min",
+    "val_every",
 )
 
 
@@ -180,6 +181,7 @@ def build_loop_argv(
         "--out", str(out_dir / task["adapter_file"]),
         "--checkpoint-dir", str(out_dir / CHECKPOINTS_DIRNAME),
         "--save-every-min", str(task["save_every_min"]),
+        "--val-every", str(task["val_every"]),
     ]
     if init_adapter:
         argv += ["--init-adapter", init_adapter]

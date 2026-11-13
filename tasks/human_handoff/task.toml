@@ -66,6 +66,12 @@ val_split = 0.1
 seed = 0
 adapter_file = "adapter.safetensors"
 log_file = "train.log"
+# Minutes between training checkpoints (kaggle_train_loop.py). A killed
+# run loses at most this much work; a re-push with --resume continues.
+# Lives in [train]: the driver reads it from there alongside the other
+# loop argv keys (it was briefly misplaced under [kaggle], which failed
+# the driver's config guard on Kaggle despite a fresh dataset).
+save_every_min = 30
 
 [build]
 # Full model. Origin: owner decision; CLI default is 20 (cactus build --help).
@@ -94,9 +100,6 @@ timeout = 21600
 # slow runs (3h mid-train, 5h during final scoring). The 6h kernel timeout
 # stays the outer backstop, and 30-min checkpoints bound any kill's cost.
 stage_timeout = 0
-# Minutes between training checkpoints (kaggle_train_loop.py). A killed
-# run loses at most this much work; a re-push with --resume continues.
-save_every_min = 30
 poll_interval = 60
 poll_timeout = 25200
 # Train settings used on Kaggle (override the weak-box [train] values).

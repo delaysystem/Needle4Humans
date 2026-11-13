@@ -1,0 +1,4 @@
+{"id": "probe-explicit-01", "lang": "en", "category": "explicit", "query": "Please run the probe call now.", "answers": [{"name": "probe_call", "arguments": {}}], "reasoning": "'run the probe call' -> handoff"}
+{"id": "probe-explicit-02", "lang": "en", "category": "explicit", "query": "Execute probe call immediately.", "answers": [{"name": "probe_call", "arguments": {}}], "reasoning": "'Execute probe call' -> handoff"}
+{"id": "probe-negative-01", "lang": "en", "category": "negative", "query": "What time is it?", "answers": [], "reasoning": "routine question -> []"}
+{"id": "probe-negative-02", "lang": "en", "category": "negative", "query": "Thanks for the help.", "answers": [], "reasoning": "thanks -> []"}

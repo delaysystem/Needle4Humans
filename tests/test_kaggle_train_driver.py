@@ -1,10 +1,14 @@
 """Tests for scripts/kaggle_train_driver.py pure helpers."""
 
 import sys
+import tomllib
+from pathlib import Path
 
 import pytest
 
 import kaggle_train_driver
+
+TASKS_DIR = Path(__file__).resolve().parent.parent / "tasks"
 
 
 def test_find_task_single(tmp_path):
@@ -96,6 +100,20 @@ def test_check_train_config():
     with pytest.raises(SystemExit) as excinfo:
         kaggle_train_driver.check_train_config(thin)
     assert "save_every_min" in str(excinfo.value)
+
+
+def test_shipped_task_train_sections_pass_guard():
+    # Regression: save_every_min lived under [kaggle] while the driver
+    # reads it from [train]; v12 failed on Kaggle on a fresh dataset.
+    # Every shipped task's [train] must satisfy the driver's guard.
+    task_files = sorted(TASKS_DIR.glob("*/task.toml"))
+    assert task_files, f"no task.toml under {TASKS_DIR}"
+    for task_file in task_files:
+        if task_file.parent.name.startswith("_"):
+            continue
+        with open(task_file, "rb") as handle:
+            config = tomllib.load(handle)
+        kaggle_train_driver.check_train_config(config["train"])
 
 
 def test_build_stage_argv(tmp_path):

@@ -1,0 +1,42 @@
+{
+  "task": "resume_probe",
+  "train_seed": 7,
+  "rows": {
+    "tr-00000": {
+      "seed": "probe-negative-02",
+      "lang": "en",
+      "category": "negative",
+      "variant": 0
+    },
+    "tr-00001": {
+      "seed": "probe-explicit-02",
+      "lang": "en",
+      "category": "explicit",
+      "variant": 0
+    },
+    "tr-00002": {
+      "seed": "probe-explicit-01",
+      "lang": "en",
+      "category": "explicit",
+      "variant": 0
+    },
+    "tr-00003": {
+      "seed": "probe-negative-01",
+      "lang": "en",
+      "category": "negative",
+      "variant": 0
+    },
+    "ev-00000": {
+      "seed": "probe-explicit-e01",
+      "lang": "en",
+      "category": "explicit",
+      "variant": 0
+    },
+    "ev-00001": {
+      "seed": "probe-negative-e01",
+      "lang": "en",
+      "category": "negative",
+      "variant": 0
+    }
+  }
+}

@@ -1,0 +1,2 @@
+{"query": "Kindly run probe call.", "tools": [{"name": "probe_call", "description": "Probe tool for resume testing.", "parameters": {"type": "object", "properties": {}, "required": []}}], "answers": [{"name": "probe_call", "arguments": {}}], "reasoning": "'run probe call' -> handoff", "id": "ev-00000"}
+{"query": "Goodbye.", "tools": [{"name": "probe_call", "description": "Probe tool for resume testing.", "parameters": {"type": "object", "properties": {}, "required": []}}], "answers": [], "reasoning": "farewell -> []", "id": "ev-00001"}

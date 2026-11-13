@@ -1,12 +1,12 @@
 cactus-compute collects anonymous usage counts (function name, version, OS) to guide development; no prompts or outputs. Disable with CACTUS_TELEMETRY=0.
   fetch     checkpoints/needle3.safetensors  downloading from Hugging Face
 Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
-Jax plugin configuration error: Exception when calling jax_plugins.xla_cuda13.initialize()
+Jax plugin configuration error: Exception when calling jax_plugins.xla_cuda12.initialize()
 Traceback (most recent call last):
   File "/usr/local/lib/python3.13/dist-packages/jax/_src/xla_bridge.py", line 495, in discover_pjrt_plugins
     plugin_module.initialize()
     ~~~~~~~~~~~~~~~~~~~~~~~~^^
-  File "/usr/local/lib/python3.13/dist-packages/jax_plugins/xla_cuda13/__init__.py", line 373, in initialize
+  File "/usr/local/lib/python3.13/dist-packages/jax_plugins/xla_cuda12/__init__.py", line 373, in initialize
     c_api = xb.register_plugin(
         'cuda', priority=500, library_path=str(path), options=options
     )
@@ -19,82 +19,76 @@ jax.errors.JaxRuntimeError: ALREADY_EXISTS: PJRT_Api already exists for device t
   backend   gpu  float32
   depth     20 layers
   fetch     tokenizer tokenizer  downloading from Hugging Face
-  data      1862 examples  seq_len 512  cap 1024
+  data      2814 examples  seq_len 1024  cap 1024
   numerics  CQ W4 STE + A8 (matches export)
   lora      rank 32  alpha 32  5 weight groups
-  holdout   186 examples for validation
-  schedule  2100 steps  warmup 105  cosine decay  clip 1.0  (compiling...)
-  step      42/2100  loss 1.0862
-  step      84/2100  loss 0.8938
-  epoch     1/20  loss 0.9897  val 0.8097
-  step      126/2100  loss 0.5934
-  step      168/2100  loss 0.5792
-  step      210/2100  loss 0.3653
-  epoch     2/20  loss 0.3653  val 0.4328
-  step      252/2100  loss 0.4351
-  step      294/2100  loss 0.2782
-  epoch     3/20  loss 0.2644  val 0.2309
-  step      336/2100  loss 0.1508
-  step      378/2100  loss 0.1404
-  step      420/2100  loss 0.0841
-  epoch     4/20  loss 0.0841  val 0.1002
-  step      462/2100  loss 0.0385
-  step      504/2100  loss 0.0453
-  epoch     5/20  loss 0.0350  val 0.0437
-  step      546/2100  loss 0.0499
-  step      588/2100  loss 0.0456
-  step      630/2100  loss 0.0159
-  epoch     6/20  loss 0.0159  val 0.0307
-  step      672/2100  loss 0.0121
-  step      714/2100  loss 0.0388
-  epoch     7/20  loss 0.0178  val 0.0252
-  step      756/2100  loss 0.0080
-  step      798/2100  loss 0.0166
-  step      840/2100  loss 0.0375
-  epoch     8/20  loss 0.0375  val 0.0224
-  step      882/2100  loss 0.0098
-  step      924/2100  loss 0.0059
-  epoch     9/20  loss 0.0106  val 0.0211
-  step      966/2100  loss 0.0074
-  step      1008/2100  loss 0.0086
-  step      1050/2100  loss 0.0033
-  epoch     10/20  loss 0.0033  val 0.0190
-  step      1092/2100  loss 0.0037
-  step      1134/2100  loss 0.0093
-  epoch     11/20  loss 0.0118  val 0.0182
-  step      1176/2100  loss 0.0046
-  step      1218/2100  loss 0.0061
-  step      1260/2100  loss 0.0031
-  epoch     12/20  loss 0.0031  val 0.0188
-  step      1302/2100  loss 0.0112
-  step      1344/2100  loss 0.0060
-  epoch     13/20  loss 0.0049  val 0.0172
-  step      1386/2100  loss 0.0065
-  step      1428/2100  loss 0.0119
-  step      1470/2100  loss 0.0046
-  epoch     14/20  loss 0.0046  val 0.0162
-  step      1512/2100  loss 0.0057
-  step      1554/2100  loss 0.0068
-  epoch     15/20  loss 0.0041  val 0.0177
-  step      1596/2100  loss 0.0056
-  step      1638/2100  loss 0.0180
-  step      1680/2100  loss 0.0099
-  epoch     16/20  loss 0.0099  val 0.0164
-  step      1722/2100  loss 0.0041
-  step      1764/2100  loss 0.0071
-  epoch     17/20  loss 0.0026  val 0.0165
-  step      1806/2100  loss 0.0034
-  step      1848/2100  loss 0.0062
-  step      1890/2100  loss 0.0040
-  epoch     18/20  loss 0.0040  val 0.0160
-  step      1932/2100  loss 0.0056
-  step      1974/2100  loss 0.0019
-  epoch     19/20  loss 0.0049  val 0.0169
-  step      2016/2100  loss 0.0048
-  step      2058/2100  loss 0.0011
-  step      2100/2100  loss 0.0026
-  epoch     20/20  loss 0.0026  val 0.0162
-  accuracy  168/186 held-out calls exact, scored on the W4 weights the archive ships
+  holdout   281 examples for validation
+  schedule  2226 steps  warmup 111  cosine decay  clip 1.0  (compiling...)
+  step      44/2226  loss 1.2468
+  step      88/2226  loss 0.8185
+  step      132/2226  loss 0.7313
+  epoch     1/14  loss 0.6144  val 0.6347
+  step      176/2226  loss 0.6345
+  step      220/2226  loss 0.4759
+  step      264/2226  loss 0.4293
+  step      308/2226  loss 0.2631
+  epoch     2/14  loss 0.2725  val 0.3107
+  step      352/2226  loss 0.2801
+  step      396/2226  loss 0.2288
+  step      440/2226  loss 0.1244
+  epoch     3/14  loss 0.1313  val 0.1307
+  step      484/2226  loss 0.1007
+  step      528/2226  loss 0.0887
+  step      572/2226  loss 0.0569
+  step      616/2226  loss 0.0630
+  epoch     4/14  loss 0.0566  val 0.0596
+  step      660/2226  loss 0.0460
+  step      704/2226  loss 0.0478
+  step      748/2226  loss 0.0429
+  step      792/2226  loss 0.0429
+  epoch     5/14  loss 0.0263  val 0.0426
+  step      836/2226  loss 0.0268
+  step      880/2226  loss 0.0213
+  step      924/2226  loss 0.0186
+  epoch     6/14  loss 0.0255  val 0.0318
+  step      968/2226  loss 0.0235
+  step      1012/2226  loss 0.0283
+  step      1056/2226  loss 0.0261
+  step      1100/2226  loss 0.0211
+  epoch     7/14  loss 0.0072  val 0.0291
+  step      1144/2226  loss 0.0090
+  step      1188/2226  loss 0.0093
+  step      1232/2226  loss 0.0089
+  epoch     8/14  loss 0.0390  val 0.0244
+  step      1276/2226  loss 0.0091
+  step      1320/2226  loss 0.0193
+  step      1364/2226  loss 0.0151
+  step      1408/2226  loss 0.0208
+  epoch     9/14  loss 0.0091  val 0.0250
+  step      1452/2226  loss 0.0127
+  step      1496/2226  loss 0.0176
+  step      1540/2226  loss 0.0126
+  step      1584/2226  loss 0.0189
+  epoch     10/14  loss 0.0082  val 0.0229
+  step      1628/2226  loss 0.0082
+  step      1672/2226  loss 0.0093
+  step      1716/2226  loss 0.0083
+  epoch     11/14  loss 0.0089  val 0.0222
+  step      1760/2226  loss 0.0127
+  step      1804/2226  loss 0.0066
+  step      1848/2226  loss 0.0071
+  step      1892/2226  loss 0.0030
+  epoch     12/14  loss 0.0103  val 0.0222
+  step      1936/2226  loss 0.0168
+  step      1980/2226  loss 0.0031
+  step      2024/2226  loss 0.0078
+  epoch     13/14  loss 0.0047  val 0.0227
+  step      2068/2226  loss 0.0234
+  step      2112/2226  loss 0.0059
+  step      2156/2226  loss 0.0100
+  step      2200/2226  loss 0.0071
+  epoch     14/14  loss 0.0169  val 0.0223
+  accuracy  238/281 held-out calls exact, scored on the W4 weights the archive ships
   adapter   /kaggle/working/task/out/adapter.safetensors
   next      cactus build checkpoints/needle3.safetensors --lora /kaggle/working/task/out/adapter.safetensors
   note      local tuning leaves the confidence head untrained; cactus build drops it and confidence reports None

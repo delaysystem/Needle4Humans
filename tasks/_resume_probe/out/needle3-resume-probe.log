@@ -1,0 +1,597 @@
+[{"stream_name":"stdout","time":3.284988487,"data":"staged prior checkpoints from /kaggle/input/needle3-resume-probe-checkpoints\n"}
+,{"stream_name":"stdout","time":3.301834935,"data":"=== stage pip-install ===\n"}
+,{"stream_name":"stdout","time":130.453123348,"data":"=== stage generate_data ===\n"}
+,{"stream_name":"stdout","time":130.555533002,"data":"wrote 4 train rows to /kaggle/working/task/out/train.jsonl\n"}
+,{"stream_name":"stdout","time":130.555569293,"data":"wrote 2 eval rows to /kaggle/working/task/out/eval.jsonl\n"}
+,{"stream_name":"stdout","time":130.555576653,"data":"wrote manifest to /kaggle/working/task/out/manifest.json\n"}
+,{"stream_name":"stdout","time":130.618714073,"data":"=== stage validate_data ===\n"}
+,{"stream_name":"stdout","time":130.715668322,"data":"checked 4 train + 2 eval rows: 0 errors, 0 warnings\n"}
+,{"stream_name":"stdout","time":130.734279965,"data":"=== stage finetune ===\n"}
+,{"stream_name":"stdout","time":138.929349172,"data":"  versions  cactus-compute 4.2.0  jax 0.11.1\n"}
+,{"stream_name":"stdout","time":138.974981916,"data":"  resume    step 184 of 600\n"}
+,{"stream_name":"stdout","time":138.975020064,"data":"  fetch     checkpoints/needle3.safetensors  downloading from Hugging Face\n"}
+,{"stream_name":"stderr","time":139.748946917,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stderr","time":144.697857198,"data":"Jax plugin configuration error: Exception when calling jax_plugins.xla_cuda12.initialize()\n"}
+,{"stream_name":"stderr","time":144.697896078,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":144.697901254,"data":"  File \"/usr/local/lib/python3.13/dist-packages/jax/_src/xla_bridge.py\", line 495, in discover_pjrt_plugins\n"}
+,{"stream_name":"stderr","time":144.697905677,"data":"    plugin_module.initialize()\n"}
+,{"stream_name":"stderr","time":144.69790967,"data":"    ~~~~~~~~~~~~~~~~~~~~~~~~^^\n"}
+,{"stream_name":"stderr","time":144.697914158,"data":"  File \"/usr/local/lib/python3.13/dist-packages/jax_plugins/xla_cuda12/__init__.py\", line 370, in initialize\n"}
+,{"stream_name":"stderr","time":144.697920242,"data":"    _check_cuda_versions(raise_on_first_error = True)\n"}
+,{"stream_name":"stderr","time":144.697926254,"data":"    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":144.697931902,"data":"  File \"/usr/local/lib/python3.13/dist-packages/jax_plugins/xla_cuda12/__init__.py\", line 274, in _check_cuda_versions\n"}
+,{"stream_name":"stderr","time":144.697937934,"data":"    for d in range(cuda_versions.cuda_device_count())\n"}
+,{"stream_name":"stderr","time":144.697943521,"data":"                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^\n"}
+,{"stream_name":"stderr","time":144.697949133,"data":"RuntimeError: jaxlib/cuda/versions_helpers.cc:135: operation cuInit(0) failed: Unknown CUDA error 303; cuGetErrorName failed. This probably means that JAX was unable to load the CUDA libraries.\n"}
+,{"stream_name":"stdout","time":144.752284824,"data":"  backend   cpu  float32\n"}
+,{"stream_name":"stdout","time":144.752341628,"data":"  depth     20 layers\n"}
+,{"stream_name":"stdout","time":145.147045335,"data":"  fetch     tokenizer tokenizer  downloading from Hugging Face\n"}
+,{"stream_name":"stdout","time":145.147084295,"data":"  data      4 examples  seq_len 128  cap 1024\n"}
+,{"stream_name":"stdout","time":145.147999674,"data":"  numerics  CQ W4 STE + A8 (matches export)\n"}
+,{"stream_name":"stdout","time":146.374988439,"data":"  lora      restored 5 adapters at step 184\n"}
+,{"stream_name":"stdout","time":146.735587005,"data":"  schedule  600 steps  warmup 30  cosine decay  clip 1.0  (compiling...)\n"}
+,{"stream_name":"stderr","time":192.654489904,"data":"E1112 22:47:03.992654      65 slow_operation_alarm.cc:73] Constant folding an instruction is taking \u003e 1s:\n"}
+,{"stream_name":"stderr","time":192.654570183,"data":"\n"}
+,{"stream_name":"stderr","time":192.654577877,"data":"  %multiply.105 = f32[6,18432,1,128]{3,2,1,0} multiply(%constant.2709, %broadcast.813), metadata={op_name=\"jit(train_step)/jvp()/div\" stack_frame_id=671}\n"}
+,{"stream_name":"stderr","time":192.654585102,"data":"\n"}
+,{"stream_name":"stderr","time":192.65459168,"data":"This isn't necessarily a bug; constant-folding is inherently a trade-off between compilation time and speed at runtime. XLA has some guards that attempt to keep constant folding from taking too long, but fundamentally you'll always be able to come up with an input program that takes a long time.\n"}
+,{"stream_name":"stderr","time":192.654599921,"data":"\n"}
+,{"stream_name":"stderr","time":192.654605132,"data":"If you'd like to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.\n"}
+,{"stream_name":"stderr","time":192.671048124,"data":"E1112 22:47:04.009171      28 slow_operation_alarm.cc:140] The operation took 1.016749062s\n"}
+,{"stream_name":"stderr","time":192.671088218,"data":"Constant folding an instruction is taking \u003e 1s:\n"}
+,{"stream_name":"stderr","time":192.671093768,"data":"\n"}
+,{"stream_name":"stderr","time":192.671098174,"data":"  %multiply.105 = f32[6,18432,1,128]{3,2,1,0} multiply(%constant.2709, %broadcast.813), metadata={op_name=\"jit(train_step)/jvp()/div\" stack_frame_id=671}\n"}
+,{"stream_name":"stderr","time":192.67110259,"data":"\n"}
+,{"stream_name":"stderr","time":192.671106599,"data":"This isn't necessarily a bug; constant-folding is inherently a trade-off between compilation time and speed at runtime. XLA has some guards that attempt to keep constant folding from taking too long, but fundamentally you'll always be able to come up with an input program that takes a long time.\n"}
+,{"stream_name":"stderr","time":192.671111991,"data":"\n"}
+,{"stream_name":"stderr","time":192.671117231,"data":"If you'd like to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.\n"}
+,{"stream_name":"stdout","time":231.3045229,"data":"  save      checkpoint at step 185\n"}
+,{"stream_name":"stdout","time":306.083464883,"data":"  epoch     185/600  loss 0.0211  val 0.0521\n"}
+,{"stream_name":"stdout","time":312.93477577,"data":"  save      checkpoint at step 186\n"}
+,{"stream_name":"stdout","time":316.42831148,"data":"  epoch     186/600  loss 0.0197  val 0.0524\n"}
+,{"stream_name":"stdout","time":326.414215242,"data":"  epoch     187/600  loss 0.0187  val 0.0504\n"}
+,{"stream_name":"stdout","time":336.402661895,"data":"  epoch     188/600  loss 0.0178  val 0.0513\n"}
+,{"stream_name":"stdout","time":346.343414174,"data":"  epoch     189/600  loss 0.0178  val 0.0489\n"}
+,{"stream_name":"stdout","time":356.343403758,"data":"  epoch     190/600  loss 0.0166  val 0.0499\n"}
+,{"stream_name":"stdout","time":366.331474098,"data":"  epoch     191/600  loss 0.0162  val 0.0478\n"}
+,{"stream_name":"stdout","time":373.009228852,"data":"  step      192/600  loss 0.0154\n"}
+,{"stream_name":"stdout","time":373.054560611,"data":"  save      checkpoint at step 192\n"}
+,{"stream_name":"stdout","time":376.535103466,"data":"  epoch     192/600  loss 0.0154  val 0.0493\n"}
+,{"stream_name":"stdout","time":386.663969348,"data":"  epoch     193/600  loss 0.0146  val 0.0482\n"}
+,{"stream_name":"stdout","time":396.582962316,"data":"  epoch     194/600  loss 0.0145  val 0.0471\n"}
+,{"stream_name":"stdout","time":406.335406792,"data":"  epoch     195/600  loss 0.0136  val 0.0469\n"}
+,{"stream_name":"stdout","time":416.214935126,"data":"  epoch     196/600  loss 0.0134  val 0.0469\n"}
+,{"stream_name":"stdout","time":426.032411505,"data":"  epoch     197/600  loss 0.0128  val 0.0452\n"}
+,{"stream_name":"stdout","time":435.907368768,"data":"  epoch     198/600  loss 0.0124  val 0.0444\n"}
+,{"stream_name":"stdout","time":442.323238862,"data":"  save      checkpoint at step 199\n"}
+,{"stream_name":"stdout","time":445.741327792,"data":"  epoch     199/600  loss 0.0119  val 0.0444\n"}
+,{"stream_name":"stdout","time":455.622758786,"data":"  epoch     200/600  loss 0.0117  val 0.0431\n"}
+,{"stream_name":"stdout","time":465.521948839,"data":"  epoch     201/600  loss 0.0112  val 0.0429\n"}
+,{"stream_name":"stdout","time":475.492436466,"data":"  epoch     202/600  loss 0.0107  val 0.0440\n"}
+,{"stream_name":"stdout","time":485.195920253,"data":"  epoch     203/600  loss 0.0106  val 0.0423\n"}
+,{"stream_name":"stdout","time":491.56638664,"data":"  step      204/600  loss 0.0103\n"}
+,{"stream_name":"stdout","time":495.02726741,"data":"  epoch     204/600  loss 0.0103  val 0.0422\n"}
+,{"stream_name":"stdout","time":504.902222106,"data":"  epoch     205/600  loss 0.0101  val 0.0414\n"}
+,{"stream_name":"stdout","time":511.307243625,"data":"  save      checkpoint at step 206\n"}
+,{"stream_name":"stdout","time":514.792732398,"data":"  epoch     206/600  loss 0.0099  val 0.0415\n"}
+,{"stream_name":"stdout","time":524.755634059,"data":"  epoch     207/600  loss 0.0096  val 0.0391\n"}
+,{"stream_name":"stdout","time":534.631072977,"data":"  epoch     208/600  loss 0.0094  val 0.0397\n"}
+,{"stream_name":"stdout","time":544.453545223,"data":"  epoch     209/600  loss 0.0092  val 0.0391\n"}
+,{"stream_name":"stdout","time":554.36936205,"data":"  epoch     210/600  loss 0.0091  val 0.0374\n"}
+,{"stream_name":"stdout","time":564.325640264,"data":"  epoch     211/600  loss 0.0088  val 0.0369\n"}
+,{"stream_name":"stdout","time":574.294251605,"data":"  epoch     212/600  loss 0.0086  val 0.0386\n"}
+,{"stream_name":"stdout","time":580.708954579,"data":"  save      checkpoint at step 213\n"}
+,{"stream_name":"stdout","time":584.220829733,"data":"  epoch     213/600  loss 0.0084  val 0.0367\n"}
+,{"stream_name":"stdout","time":594.198874498,"data":"  epoch     214/600  loss 0.0082  val 0.0371\n"}
+,{"stream_name":"stdout","time":604.166920729,"data":"  epoch     215/600  loss 0.0080  val 0.0358\n"}
+,{"stream_name":"stdout","time":610.649951026,"data":"  step      216/600  loss 0.0076\n"}
+,{"stream_name":"stdout","time":614.413325237,"data":"  epoch     216/600  loss 0.0076  val 0.0376\n"}
+,{"stream_name":"stdout","time":624.575571574,"data":"  epoch     217/600  loss 0.0078  val 0.0354\n"}
+,{"stream_name":"stdout","time":634.424351152,"data":"  epoch     218/600  loss 0.0076  val 0.0362\n"}
+,{"stream_name":"stdout","time":640.755457789,"data":"  save      checkpoint at step 219\n"}
+,{"stream_name":"stdout","time":644.237674529,"data":"  epoch     219/600  loss 0.0073  val 0.0350\n"}
+,{"stream_name":"stdout","time":654.156337425,"data":"  epoch     220/600  loss 0.0071  val 0.0343\n"}
+,{"stream_name":"stdout","time":664.299162838,"data":"  epoch     221/600  loss 0.0069  val 0.0336\n"}
+,{"stream_name":"stdout","time":674.69184493,"data":"  epoch     222/600  loss 0.0070  val 0.0328\n"}
+,{"stream_name":"stdout","time":685.69356863,"data":"  epoch     223/600  loss 0.0068  val 0.0319\n"}
+,{"stream_name":"stdout","time":697.344490231,"data":"  epoch     224/600  loss 0.0069  val 0.0338\n"}
+,{"stream_name":"stdout","time":704.45088302,"data":"  save      checkpoint at step 225\n"}
+,{"stream_name":"stdout","time":708.037311476,"data":"  epoch     225/600  loss 0.0065  val 0.0313\n"}
+,{"stream_name":"stdout","time":718.721672277,"data":"  epoch     226/600  loss 0.0064  val 0.0321\n"}
+,{"stream_name":"stdout","time":728.800338266,"data":"  epoch     227/600  loss 0.0063  val 0.0314\n"}
+,{"stream_name":"stdout","time":735.411483581,"data":"  step      228/600  loss 0.0062\n"}
+,{"stream_name":"stdout","time":738.907885991,"data":"  epoch     228/600  loss 0.0062  val 0.0307\n"}
+,{"stream_name":"stdout","time":748.910530923,"data":"  epoch     229/600  loss 0.0062  val 0.0302\n"}
+,{"stream_name":"stdout","time":758.806573734,"data":"  epoch     230/600  loss 0.0059  val 0.0309\n"}
+,{"stream_name":"stdout","time":765.28296678,"data":"  save      checkpoint at step 231\n"}
+,{"stream_name":"stdout","time":768.802285894,"data":"  epoch     231/600  loss 0.0059  val 0.0298\n"}
+,{"stream_name":"stdout","time":779.705067871,"data":"  epoch     232/600  loss 0.0058  val 0.0286\n"}
+,{"stream_name":"stdout","time":790.467325332,"data":"  epoch     233/600  loss 0.0058  val 0.0304\n"}
+,{"stream_name":"stdout","time":800.963012994,"data":"  epoch     234/600  loss 0.0056  val 0.0291\n"}
+,{"stream_name":"stdout","time":811.450397895,"data":"  epoch     235/600  loss 0.0056  val 0.0294\n"}
+,{"stream_name":"stdout","time":822.212935931,"data":"  epoch     236/600  loss 0.0055  val 0.0295\n"}
+,{"stream_name":"stdout","time":829.11451698,"data":"  save      checkpoint at step 237\n"}
+,{"stream_name":"stdout","time":832.778371746,"data":"  epoch     237/600  loss 0.0054  val 0.0298\n"}
+,{"stream_name":"stdout","time":843.015715915,"data":"  epoch     238/600  loss 0.0052  val 0.0292\n"}
+,{"stream_name":"stdout","time":854.3524489,"data":"  epoch     239/600  loss 0.0052  val 0.0283\n"}
+,{"stream_name":"stdout","time":861.628832422,"data":"  step      240/600  loss 0.0052\n"}
+,{"stream_name":"stdout","time":865.159275752,"data":"  epoch     240/600  loss 0.0052  val 0.0283\n"}
+,{"stream_name":"stdout","time":875.123062576,"data":"  epoch     241/600  loss 0.0052  val 0.0276\n"}
+,{"stream_name":"stdout","time":886.116210123,"data":"  epoch     242/600  loss 0.0051  val 0.0273\n"}
+,{"stream_name":"stdout","time":894.480579651,"data":"  save      checkpoint at step 243\n"}
+,{"stream_name":"stdout","time":899.22136123,"data":"  epoch     243/600  loss 0.0051  val 0.0269\n"}
+,{"stream_name":"stdout","time":912.267408536,"data":"  epoch     244/600  loss 0.0048  val 0.0270\n"}
+,{"stream_name":"stdout","time":922.894320618,"data":"  epoch     245/600  loss 0.0048  val 0.0275\n"}
+,{"stream_name":"stdout","time":932.954313797,"data":"  epoch     246/600  loss 0.0048  val 0.0265\n"}
+,{"stream_name":"stdout","time":943.058275974,"data":"  epoch     247/600  loss 0.0048  val 0.0264\n"}
+,{"stream_name":"stdout","time":953.315825479,"data":"  epoch     248/600  loss 0.0047  val 0.0269\n"}
+,{"stream_name":"stdout","time":959.980753462,"data":"  save      checkpoint at step 249\n"}
+,{"stream_name":"stdout","time":963.521142328,"data":"  epoch     249/600  loss 0.0045  val 0.0254\n"}
+,{"stream_name":"stdout","time":974.377303533,"data":"  epoch     250/600  loss 0.0046  val 0.0272\n"}
+,{"stream_name":"stdout","time":984.578459013,"data":"  epoch     251/600  loss 0.0046  val 0.0264\n"}
+,{"stream_name":"stdout","time":991.194379876,"data":"  step      252/600  loss 0.0045\n"}
+,{"stream_name":"stdout","time":994.859855863,"data":"  epoch     252/600  loss 0.0045  val 0.0263\n"}
+,{"stream_name":"stdout","time":1004.972165919,"data":"  epoch     253/600  loss 0.0043  val 0.0263\n"}
+,{"stream_name":"stdout","time":1015.282909196,"data":"  epoch     254/600  loss 0.0044  val 0.0265\n"}
+,{"stream_name":"stdout","time":1022.108170329,"data":"  save      checkpoint at step 255\n"}
+,{"stream_name":"stdout","time":1025.63395824,"data":"  epoch     255/600  loss 0.0043  val 0.0263\n"}
+,{"stream_name":"stdout","time":1036.035396275,"data":"  epoch     256/600  loss 0.0042  val 0.0257\n"}
+,{"stream_name":"stdout","time":1046.429098908,"data":"  epoch     257/600  loss 0.0042  val 0.0251\n"}
+,{"stream_name":"stdout","time":1056.941347479,"data":"  epoch     258/600  loss 0.0042  val 0.0249\n"}
+,{"stream_name":"stdout","time":1067.317331781,"data":"  epoch     259/600  loss 0.0040  val 0.0245\n"}
+,{"stream_name":"stdout","time":1077.923149985,"data":"  epoch     260/600  loss 0.0041  val 0.0246\n"}
+,{"stream_name":"stdout","time":1084.73990396,"data":"  save      checkpoint at step 261\n"}
+,{"stream_name":"stdout","time":1088.206918608,"data":"  epoch     261/600  loss 0.0039  val 0.0239\n"}
+,{"stream_name":"stdout","time":1098.530201653,"data":"  epoch     262/600  loss 0.0040  val 0.0246\n"}
+,{"stream_name":"stdout","time":1108.641393883,"data":"  epoch     263/600  loss 0.0039  val 0.0248\n"}
+,{"stream_name":"stdout","time":1115.233350884,"data":"  step      264/600  loss 0.0039\n"}
+,{"stream_name":"stdout","time":1118.799424112,"data":"  epoch     264/600  loss 0.0039  val 0.0240\n"}
+,{"stream_name":"stdout","time":1129.097482949,"data":"  epoch     265/600  loss 0.0037  val 0.0252\n"}
+,{"stream_name":"stdout","time":1139.400503119,"data":"  epoch     266/600  loss 0.0037  val 0.0247\n"}
+,{"stream_name":"stdout","time":1146.153077639,"data":"  save      checkpoint at step 267\n"}
+,{"stream_name":"stdout","time":1149.634391699,"data":"  epoch     267/600  loss 0.0036  val 0.0229\n"}
+,{"stream_name":"stdout","time":1159.826199036,"data":"  epoch     268/600  loss 0.0037  val 0.0235\n"}
+,{"stream_name":"stdout","time":1169.970731521,"data":"  epoch     269/600  loss 0.0037  val 0.0238\n"}
+,{"stream_name":"stdout","time":1180.330793882,"data":"  epoch     270/600  loss 0.0036  val 0.0251\n"}
+,{"stream_name":"stdout","time":1190.738503679,"data":"  epoch     271/600  loss 0.0035  val 0.0234\n"}
+,{"stream_name":"stdout","time":1200.952305646,"data":"  epoch     272/600  loss 0.0035  val 0.0233\n"}
+,{"stream_name":"stdout","time":1207.599092458,"data":"  save      checkpoint at step 273\n"}
+,{"stream_name":"stdout","time":1211.146413649,"data":"  epoch     273/600  loss 0.0036  val 0.0233\n"}
+,{"stream_name":"stdout","time":1221.535162537,"data":"  epoch     274/600  loss 0.0034  val 0.0233\n"}
+,{"stream_name":"stdout","time":1231.990502058,"data":"  epoch     275/600  loss 0.0034  val 0.0220\n"}
+,{"stream_name":"stdout","time":1238.534343016,"data":"  step      276/600  loss 0.0034\n"}
+,{"stream_name":"stdout","time":1242.125833497,"data":"  epoch     276/600  loss 0.0034  val 0.0227\n"}
+,{"stream_name":"stdout","time":1252.316688759,"data":"  epoch     277/600  loss 0.0034  val 0.0238\n"}
+,{"stream_name":"stdout","time":1262.493509286,"data":"  epoch     278/600  loss 0.0034  val 0.0210\n"}
+,{"stream_name":"stdout","time":1269.099469515,"data":"  save      checkpoint at step 279\n"}
+,{"stream_name":"stdout","time":1272.931365829,"data":"  epoch     279/600  loss 0.0032  val 0.0227\n"}
+,{"stream_name":"stdout","time":1283.01391833,"data":"  epoch     280/600  loss 0.0033  val 0.0218\n"}
+,{"stream_name":"stdout","time":1293.152049842,"data":"  epoch     281/600  loss 0.0033  val 0.0210\n"}
+,{"stream_name":"stdout","time":1303.215411301,"data":"  epoch     282/600  loss 0.0033  val 0.0210\n"}
+,{"stream_name":"stdout","time":1313.279404112,"data":"  epoch     283/600  loss 0.0033  val 0.0222\n"}
+,{"stream_name":"stdout","time":1323.440803146,"data":"  epoch     284/600  loss 0.0031  val 0.0212\n"}
+,{"stream_name":"stdout","time":1330.059760633,"data":"  save      checkpoint at step 285\n"}
+,{"stream_name":"stdout","time":1333.782410867,"data":"  epoch     285/600  loss 0.0031  val 0.0226\n"}
+,{"stream_name":"stdout","time":1344.090041087,"data":"  epoch     286/600  loss 0.0032  val 0.0214\n"}
+,{"stream_name":"stdout","time":1354.183967132,"data":"  epoch     287/600  loss 0.0031  val 0.0211\n"}
+,{"stream_name":"stdout","time":1360.524860082,"data":"  step      288/600  loss 0.0031\n"}
+,{"stream_name":"stdout","time":1364.104924347,"data":"  epoch     288/600  loss 0.0031  val 0.0213\n"}
+,{"stream_name":"stdout","time":1374.265786096,"data":"  epoch     289/600  loss 0.0030  val 0.0209\n"}
+,{"stream_name":"stdout","time":1384.455955527,"data":"  epoch     290/600  loss 0.0030  val 0.0211\n"}
+,{"stream_name":"stdout","time":1391.04303307,"data":"  save      checkpoint at step 291\n"}
+,{"stream_name":"stdout","time":1394.770835263,"data":"  epoch     291/600  loss 0.0031  val 0.0204\n"}
+,{"stream_name":"stdout","time":1405.023452712,"data":"  epoch     292/600  loss 0.0030  val 0.0208\n"}
+,{"stream_name":"stdout","time":1415.388969508,"data":"  epoch     293/600  loss 0.0029  val 0.0204\n"}
+,{"stream_name":"stdout","time":1425.760326466,"data":"  epoch     294/600  loss 0.0028  val 0.0215\n"}
+,{"stream_name":"stdout","time":1436.117541006,"data":"  epoch     295/600  loss 0.0028  val 0.0204\n"}
+,{"stream_name":"stdout","time":1446.531115951,"data":"  epoch     296/600  loss 0.0028  val 0.0198\n"}
+,{"stream_name":"stdout","time":1453.237899366,"data":"  save      checkpoint at step 297\n"}
+,{"stream_name":"stdout","time":1456.922734591,"data":"  epoch     297/600  loss 0.0028  val 0.0204\n"}
+,{"stream_name":"stdout","time":1467.280249454,"data":"  epoch     298/600  loss 0.0028  val 0.0206\n"}
+,{"stream_name":"stdout","time":1477.413103603,"data":"  epoch     299/600  loss 0.0027  val 0.0199\n"}
+,{"stream_name":"stdout","time":1483.906313162,"data":"  step      300/600  loss 0.0028\n"}
+,{"stream_name":"stdout","time":1487.401295654,"data":"  epoch     300/600  loss 0.0028  val 0.0201\n"}
+,{"stream_name":"stdout","time":1497.355998345,"data":"  epoch     301/600  loss 0.0027  val 0.0187\n"}
+,{"stream_name":"stdout","time":1507.483380617,"data":"  epoch     302/600  loss 0.0027  val 0.0193\n"}
+,{"stream_name":"stdout","time":1515.419762632,"data":"  save      checkpoint at step 303\n"}
+,{"stream_name":"stdout","time":1520.101453419,"data":"  epoch     303/600  loss 0.0027  val 0.0200\n"}
+,{"stream_name":"stdout","time":1533.663932179,"data":"  epoch     304/600  loss 0.0027  val 0.0198\n"}
+,{"stream_name":"stdout","time":1546.934588309,"data":"  epoch     305/600  loss 0.0027  val 0.0199\n"}
+,{"stream_name":"stdout","time":1557.334773972,"data":"  epoch     306/600  loss 0.0026  val 0.0195\n"}
+,{"stream_name":"stdout","time":1567.554933494,"data":"  epoch     307/600  loss 0.0026  val 0.0193\n"}
+,{"stream_name":"stdout","time":1577.866337406,"data":"  epoch     308/600  loss 0.0026  val 0.0197\n"}
+,{"stream_name":"stdout","time":1584.539112787,"data":"  save      checkpoint at step 309\n"}
+,{"stream_name":"stdout","time":1588.12877373,"data":"  epoch     309/600  loss 0.0025  val 0.0197\n"}
+,{"stream_name":"stdout","time":1599.635021235,"data":"  epoch     310/600  loss 0.0026  val 0.0199\n"}
+,{"stream_name":"stdout","time":1610.843535281,"data":"  epoch     311/600  loss 0.0026  val 0.0193\n"}
+,{"stream_name":"stdout","time":1618.468358127,"data":"  step      312/600  loss 0.0025\n"}
+,{"stream_name":"stdout","time":1622.403196738,"data":"  epoch     312/600  loss 0.0025  val 0.0193\n"}
+,{"stream_name":"stdout","time":1633.545275614,"data":"  epoch     313/600  loss 0.0025  val 0.0202\n"}
+,{"stream_name":"stdout","time":1644.628034897,"data":"  epoch     314/600  loss 0.0024  val 0.0191\n"}
+,{"stream_name":"stdout","time":1651.628325841,"data":"  save      checkpoint at step 315\n"}
+,{"stream_name":"stdout","time":1655.562436126,"data":"  epoch     315/600  loss 0.0025  val 0.0189\n"}
+,{"stream_name":"stdout","time":1666.628710941,"data":"  epoch     316/600  loss 0.0024  val 0.0193\n"}
+,{"stream_name":"stdout","time":1677.018372563,"data":"  epoch     317/600  loss 0.0025  val 0.0177\n"}
+,{"stream_name":"stdout","time":1687.402623351,"data":"  epoch     318/600  loss 0.0024  val 0.0190\n"}
+,{"stream_name":"stdout","time":1697.768541449,"data":"  epoch     319/600  loss 0.0024  val 0.0185\n"}
+,{"stream_name":"stdout","time":1707.986600433,"data":"  epoch     320/600  loss 0.0023  val 0.0190\n"}
+,{"stream_name":"stdout","time":1714.572699586,"data":"  save      checkpoint at step 321\n"}
+,{"stream_name":"stdout","time":1718.036220176,"data":"  epoch     321/600  loss 0.0024  val 0.0182\n"}
+,{"stream_name":"stdout","time":1728.107369008,"data":"  epoch     322/600  loss 0.0023  val 0.0193\n"}
+,{"stream_name":"stdout","time":1738.132415593,"data":"  epoch     323/600  loss 0.0024  val 0.0186\n"}
+,{"stream_name":"stdout","time":1744.679284066,"data":"  step      324/600  loss 0.0024\n"}
+,{"stream_name":"stdout","time":1748.126845906,"data":"  epoch     324/600  loss 0.0024  val 0.0183\n"}
+,{"stream_name":"stdout","time":1758.119978615,"data":"  epoch     325/600  loss 0.0023  val 0.0184\n"}
+,{"stream_name":"stdout","time":1768.056292498,"data":"  epoch     326/600  loss 0.0023  val 0.0185\n"}
+,{"stream_name":"stdout","time":1777.921300137,"data":"  epoch     327/600  loss 0.0022  val 0.0191\n"}
+,{"stream_name":"stdout","time":1784.436283539,"data":"  save      checkpoint at step 328\n"}
+,{"stream_name":"stdout","time":1787.90296336,"data":"  epoch     328/600  loss 0.0022  val 0.0193\n"}
+,{"stream_name":"stdout","time":1797.975263436,"data":"  epoch     329/600  loss 0.0023  val 0.0184\n"}
+,{"stream_name":"stdout","time":1807.936058523,"data":"  epoch     330/600  loss 0.0023  val 0.0182\n"}
+,{"stream_name":"stdout","time":1817.897993561,"data":"  epoch     331/600  loss 0.0023  val 0.0185\n"}
+,{"stream_name":"stdout","time":1828.09730402,"data":"  epoch     332/600  loss 0.0022  val 0.0175\n"}
+,{"stream_name":"stdout","time":1838.08722735,"data":"  epoch     333/600  loss 0.0022  val 0.0170\n"}
+,{"stream_name":"stdout","time":1844.67830017,"data":"  save      checkpoint at step 334\n"}
+,{"stream_name":"stdout","time":1848.107555942,"data":"  epoch     334/600  loss 0.0022  val 0.0179\n"}
+,{"stream_name":"stdout","time":1858.171020537,"data":"  epoch     335/600  loss 0.0021  val 0.0178\n"}
+,{"stream_name":"stdout","time":1864.707374815,"data":"  step      336/600  loss 0.0021\n"}
+,{"stream_name":"stdout","time":1868.227251717,"data":"  epoch     336/600  loss 0.0021  val 0.0180\n"}
+,{"stream_name":"stdout","time":1878.576853788,"data":"  epoch     337/600  loss 0.0022  val 0.0186\n"}
+,{"stream_name":"stdout","time":1888.586494154,"data":"  epoch     338/600  loss 0.0021  val 0.0174\n"}
+,{"stream_name":"stdout","time":1898.453232158,"data":"  epoch     339/600  loss 0.0021  val 0.0188\n"}
+,{"stream_name":"stdout","time":1905.030869669,"data":"  save      checkpoint at step 340\n"}
+,{"stream_name":"stdout","time":1908.462223891,"data":"  epoch     340/600  loss 0.0021  val 0.0174\n"}
+,{"stream_name":"stdout","time":1918.540993049,"data":"  epoch     341/600  loss 0.0021  val 0.0180\n"}
+,{"stream_name":"stdout","time":1928.658688828,"data":"  epoch     342/600  loss 0.0021  val 0.0173\n"}
+,{"stream_name":"stdout","time":1938.877763178,"data":"  epoch     343/600  loss 0.0021  val 0.0172\n"}
+,{"stream_name":"stdout","time":1948.991893952,"data":"  epoch     344/600  loss 0.0020  val 0.0171\n"}
+,{"stream_name":"stdout","time":1959.076120335,"data":"  epoch     345/600  loss 0.0020  val 0.0182\n"}
+,{"stream_name":"stdout","time":1965.86864589,"data":"  save      checkpoint at step 346\n"}
+,{"stream_name":"stdout","time":1969.357889428,"data":"  epoch     346/600  loss 0.0021  val 0.0174\n"}
+,{"stream_name":"stdout","time":1979.841479043,"data":"  epoch     347/600  loss 0.0020  val 0.0173\n"}
+,{"stream_name":"stdout","time":1986.590217587,"data":"  step      348/600  loss 0.0020\n"}
+,{"stream_name":"stdout","time":1990.117529241,"data":"  epoch     348/600  loss 0.0020  val 0.0179\n"}
+,{"stream_name":"stdout","time":2000.40579863,"data":"  epoch     349/600  loss 0.0020  val 0.0172\n"}
+,{"stream_name":"stdout","time":2010.716655379,"data":"  epoch     350/600  loss 0.0020  val 0.0177\n"}
+,{"stream_name":"stdout","time":2020.754977562,"data":"  epoch     351/600  loss 0.0020  val 0.0176\n"}
+,{"stream_name":"stdout","time":2027.330954771,"data":"  save      checkpoint at step 352\n"}
+,{"stream_name":"stdout","time":2030.772862021,"data":"  epoch     352/600  loss 0.0020  val 0.0163\n"}
+,{"stream_name":"stdout","time":2040.868488597,"data":"  epoch     353/600  loss 0.0020  val 0.0178\n"}
+,{"stream_name":"stdout","time":2050.903345633,"data":"  epoch     354/600  loss 0.0019  val 0.0178\n"}
+,{"stream_name":"stdout","time":2060.880620048,"data":"  epoch     355/600  loss 0.0019  val 0.0176\n"}
+,{"stream_name":"stdout","time":2070.971877166,"data":"  epoch     356/600  loss 0.0019  val 0.0170\n"}
+,{"stream_name":"stdout","time":2080.997578381,"data":"  epoch     357/600  loss 0.0019  val 0.0184\n"}
+,{"stream_name":"stdout","time":2087.751111542,"data":"  save      checkpoint at step 358\n"}
+,{"stream_name":"stdout","time":2091.384742224,"data":"  epoch     358/600  loss 0.0019  val 0.0176\n"}
+,{"stream_name":"stdout","time":2101.664820673,"data":"  epoch     359/600  loss 0.0020  val 0.0174\n"}
+,{"stream_name":"stdout","time":2108.067706667,"data":"  step      360/600  loss 0.0019\n"}
+,{"stream_name":"stdout","time":2111.690454708,"data":"  epoch     360/600  loss 0.0019  val 0.0169\n"}
+,{"stream_name":"stdout","time":2122.004633176,"data":"  epoch     361/600  loss 0.0019  val 0.0167\n"}
+,{"stream_name":"stdout","time":2132.328078182,"data":"  epoch     362/600  loss 0.0019  val 0.0170\n"}
+,{"stream_name":"stdout","time":2142.30767007,"data":"  epoch     363/600  loss 0.0019  val 0.0169\n"}
+,{"stream_name":"stdout","time":2148.80789054,"data":"  save      checkpoint at step 364\n"}
+,{"stream_name":"stdout","time":2152.310548383,"data":"  epoch     364/600  loss 0.0019  val 0.0177\n"}
+,{"stream_name":"stdout","time":2162.385919297,"data":"  epoch     365/600  loss 0.0019  val 0.0169\n"}
+,{"stream_name":"stdout","time":2172.476056854,"data":"  epoch     366/600  loss 0.0018  val 0.0160\n"}
+,{"stream_name":"stdout","time":2182.584040044,"data":"  epoch     367/600  loss 0.0018  val 0.0162\n"}
+,{"stream_name":"stdout","time":2192.612859164,"data":"  epoch     368/600  loss 0.0018  val 0.0164\n"}
+,{"stream_name":"stdout","time":2202.907736418,"data":"  epoch     369/600  loss 0.0019  val 0.0156\n"}
+,{"stream_name":"stdout","time":2209.463490497,"data":"  save      checkpoint at step 370\n"}
+,{"stream_name":"stdout","time":2213.089973583,"data":"  epoch     370/600  loss 0.0018  val 0.0165\n"}
+,{"stream_name":"stdout","time":2223.390149121,"data":"  epoch     371/600  loss 0.0019  val 0.0180\n"}
+,{"stream_name":"stdout","time":2230.084230767,"data":"  step      372/600  loss 0.0018\n"}
+,{"stream_name":"stdout","time":2234.269333402,"data":"  epoch     372/600  loss 0.0018  val 0.0171\n"}
+,{"stream_name":"stdout","time":2244.756313792,"data":"  epoch     373/600  loss 0.0018  val 0.0155\n"}
+,{"stream_name":"stdout","time":2254.864793907,"data":"  epoch     374/600  loss 0.0018  val 0.0162\n"}
+,{"stream_name":"stdout","time":2264.746852729,"data":"  epoch     375/600  loss 0.0018  val 0.0160\n"}
+,{"stream_name":"stdout","time":2271.152484681,"data":"  save      checkpoint at step 376\n"}
+,{"stream_name":"stdout","time":2274.665480035,"data":"  epoch     376/600  loss 0.0018  val 0.0160\n"}
+,{"stream_name":"stdout","time":2284.804303987,"data":"  epoch     377/600  loss 0.0018  val 0.0173\n"}
+,{"stream_name":"stdout","time":2294.966801433,"data":"  epoch     378/600  loss 0.0018  val 0.0159\n"}
+,{"stream_name":"stdout","time":2305.249024062,"data":"  epoch     379/600  loss 0.0017  val 0.0162\n"}
+,{"stream_name":"stdout","time":2315.21121866,"data":"  epoch     380/600  loss 0.0018  val 0.0162\n"}
+,{"stream_name":"stdout","time":2325.254328262,"data":"  epoch     381/600  loss 0.0018  val 0.0166\n"}
+,{"stream_name":"stdout","time":2331.776933763,"data":"  save      checkpoint at step 382\n"}
+,{"stream_name":"stdout","time":2335.209907809,"data":"  epoch     382/600  loss 0.0018  val 0.0161\n"}
+,{"stream_name":"stdout","time":2345.189138099,"data":"  epoch     383/600  loss 0.0017  val 0.0158\n"}
+,{"stream_name":"stdout","time":2351.612234823,"data":"  step      384/600  loss 0.0017\n"}
+,{"stream_name":"stdout","time":2355.12485897,"data":"  epoch     384/600  loss 0.0017  val 0.0150\n"}
+,{"stream_name":"stdout","time":2365.160060949,"data":"  epoch     385/600  loss 0.0017  val 0.0168\n"}
+,{"stream_name":"stdout","time":2375.166348277,"data":"  epoch     386/600  loss 0.0017  val 0.0166\n"}
+,{"stream_name":"stdout","time":2385.1419317,"data":"  epoch     387/600  loss 0.0018  val 0.0156\n"}
+,{"stream_name":"stdout","time":2395.141355384,"data":"  epoch     388/600  loss 0.0017  val 0.0163\n"}
+,{"stream_name":"stdout","time":2401.687630058,"data":"  save      checkpoint at step 389\n"}
+,{"stream_name":"stdout","time":2405.141274049,"data":"  epoch     389/600  loss 0.0017  val 0.0166\n"}
+,{"stream_name":"stdout","time":2415.124469458,"data":"  epoch     390/600  loss 0.0017  val 0.0155\n"}
+,{"stream_name":"stdout","time":2425.120405605,"data":"  epoch     391/600  loss 0.0016  val 0.0155\n"}
+,{"stream_name":"stdout","time":2434.996350102,"data":"  epoch     392/600  loss 0.0016  val 0.0160\n"}
+,{"stream_name":"stdout","time":2444.862326632,"data":"  epoch     393/600  loss 0.0017  val 0.0156\n"}
+,{"stream_name":"stdout","time":2454.941416442,"data":"  epoch     394/600  loss 0.0017  val 0.0147\n"}
+,{"stream_name":"stdout","time":2465.077726828,"data":"  epoch     395/600  loss 0.0017  val 0.0160\n"}
+,{"stream_name":"stdout","time":2471.699316738,"data":"  step      396/600  loss 0.0016\n"}
+,{"stream_name":"stdout","time":2471.738452526,"data":"  save      checkpoint at step 396\n"}
+,{"stream_name":"stdout","time":2475.593859295,"data":"  epoch     396/600  loss 0.0016  val 0.0153\n"}
+,{"stream_name":"stdout","time":2485.873135395,"data":"  epoch     397/600  loss 0.0016  val 0.0159\n"}
+,{"stream_name":"stdout","time":2495.980414848,"data":"  epoch     398/600  loss 0.0016  val 0.0155\n"}
+,{"stream_name":"stdout","time":2506.065600638,"data":"  epoch     399/600  loss 0.0016  val 0.0172\n"}
+,{"stream_name":"stdout","time":2516.279338378,"data":"  epoch     400/600  loss 0.0017  val 0.0155\n"}
+,{"stream_name":"stdout","time":2526.340236262,"data":"  epoch     401/600  loss 0.0016  val 0.0149\n"}
+,{"stream_name":"stdout","time":2532.823389967,"data":"  save      checkpoint at step 402\n"}
+,{"stream_name":"stdout","time":2536.337635488,"data":"  epoch     402/600  loss 0.0016  val 0.0154\n"}
+,{"stream_name":"stdout","time":2546.400731909,"data":"  epoch     403/600  loss 0.0015  val 0.0156\n"}
+,{"stream_name":"stdout","time":2556.347831111,"data":"  epoch     404/600  loss 0.0016  val 0.0153\n"}
+,{"stream_name":"stdout","time":2566.371307749,"data":"  epoch     405/600  loss 0.0016  val 0.0159\n"}
+,{"stream_name":"stdout","time":2576.399719496,"data":"  epoch     406/600  loss 0.0016  val 0.0160\n"}
+,{"stream_name":"stdout","time":2586.359484365,"data":"  epoch     407/600  loss 0.0016  val 0.0163\n"}
+,{"stream_name":"stdout","time":2592.850505645,"data":"  step      408/600  loss 0.0016\n"}
+,{"stream_name":"stdout","time":2592.886226302,"data":"  save      checkpoint at step 408\n"}
+,{"stream_name":"stdout","time":2596.33931521,"data":"  epoch     408/600  loss 0.0016  val 0.0153\n"}
+,{"stream_name":"stdout","time":2606.373313507,"data":"  epoch     409/600  loss 0.0016  val 0.0158\n"}
+,{"stream_name":"stdout","time":2616.282262361,"data":"  epoch     410/600  loss 0.0015  val 0.0158\n"}
+,{"stream_name":"stdout","time":2626.265066244,"data":"  epoch     411/600  loss 0.0015  val 0.0154\n"}
+,{"stream_name":"stdout","time":2636.342376488,"data":"  epoch     412/600  loss 0.0015  val 0.0156\n"}
+,{"stream_name":"stdout","time":2646.302374096,"data":"  epoch     413/600  loss 0.0015  val 0.0158\n"}
+,{"stream_name":"stdout","time":2656.245998192,"data":"  epoch     414/600  loss 0.0016  val 0.0159\n"}
+,{"stream_name":"stdout","time":2662.694962436,"data":"  save      checkpoint at step 415\n"}
+,{"stream_name":"stdout","time":2666.208844636,"data":"  epoch     415/600  loss 0.0015  val 0.0162\n"}
+,{"stream_name":"stdout","time":2676.212460702,"data":"  epoch     416/600  loss 0.0015  val 0.0156\n"}
+,{"stream_name":"stdout","time":2686.101898679,"data":"  epoch     417/600  loss 0.0015  val 0.0148\n"}
+,{"stream_name":"stdout","time":2696.083362347,"data":"  epoch     418/600  loss 0.0016  val 0.0153\n"}
+,{"stream_name":"stdout","time":2706.301890515,"data":"  epoch     419/600  loss 0.0015  val 0.0158\n"}
+,{"stream_name":"stdout","time":2712.86679644,"data":"  step      420/600  loss 0.0015\n"}
+,{"stream_name":"stdout","time":2716.431786599,"data":"  epoch     420/600  loss 0.0015  val 0.0151\n"}
+,{"stream_name":"stdout","time":2723.038306289,"data":"  save      checkpoint at step 421\n"}
+,{"stream_name":"stdout","time":2726.514920026,"data":"  epoch     421/600  loss 0.0015  val 0.0148\n"}
+,{"stream_name":"stdout","time":2736.548318339,"data":"  epoch     422/600  loss 0.0015  val 0.0151\n"}
+,{"stream_name":"stdout","time":2746.445948368,"data":"  epoch     423/600  loss 0.0015  val 0.0143\n"}
+,{"stream_name":"stdout","time":2756.353025596,"data":"  epoch     424/600  loss 0.0015  val 0.0154\n"}
+,{"stream_name":"stdout","time":2766.244108169,"data":"  epoch     425/600  loss 0.0015  val 0.0158\n"}
+,{"stream_name":"stdout","time":2776.378385842,"data":"  epoch     426/600  loss 0.0015  val 0.0159\n"}
+,{"stream_name":"stdout","time":2786.281227251,"data":"  epoch     427/600  loss 0.0015  val 0.0154\n"}
+,{"stream_name":"stdout","time":2792.738674246,"data":"  save      checkpoint at step 428\n"}
+,{"stream_name":"stdout","time":2796.171530199,"data":"  epoch     428/600  loss 0.0015  val 0.0155\n"}
+,{"stream_name":"stdout","time":2806.142068307,"data":"  epoch     429/600  loss 0.0015  val 0.0149\n"}
+,{"stream_name":"stdout","time":2816.015360863,"data":"  epoch     430/600  loss 0.0015  val 0.0146\n"}
+,{"stream_name":"stdout","time":2826.103288874,"data":"  epoch     431/600  loss 0.0015  val 0.0151\n"}
+,{"stream_name":"stdout","time":2832.605348242,"data":"  step      432/600  loss 0.0015\n"}
+,{"stream_name":"stdout","time":2836.20133821,"data":"  epoch     432/600  loss 0.0015  val 0.0153\n"}
+,{"stream_name":"stdout","time":2846.225884514,"data":"  epoch     433/600  loss 0.0015  val 0.0154\n"}
+,{"stream_name":"stdout","time":2856.18055133,"data":"  epoch     434/600  loss 0.0014  val 0.0147\n"}
+,{"stream_name":"stdout","time":2862.688428993,"data":"  save      checkpoint at step 435\n"}
+,{"stream_name":"stdout","time":2866.240156389,"data":"  epoch     435/600  loss 0.0015  val 0.0146\n"}
+,{"stream_name":"stdout","time":2876.218378099,"data":"  epoch     436/600  loss 0.0014  val 0.0149\n"}
+,{"stream_name":"stdout","time":2886.117951725,"data":"  epoch     437/600  loss 0.0014  val 0.0143\n"}
+,{"stream_name":"stdout","time":2896.183928205,"data":"  epoch     438/600  loss 0.0015  val 0.0150\n"}
+,{"stream_name":"stdout","time":2906.271959799,"data":"  epoch     439/600  loss 0.0015  val 0.0148\n"}
+,{"stream_name":"stdout","time":2916.253597253,"data":"  epoch     440/600  loss 0.0015  val 0.0148\n"}
+,{"stream_name":"stdout","time":2926.214771736,"data":"  epoch     441/600  loss 0.0014  val 0.0160\n"}
+,{"stream_name":"stdout","time":2932.78095051,"data":"  save      checkpoint at step 442\n"}
+,{"stream_name":"stdout","time":2936.446274831,"data":"  epoch     442/600  loss 0.0014  val 0.0153\n"}
+,{"stream_name":"stdout","time":2946.508263478,"data":"  epoch     443/600  loss 0.0014  val 0.0146\n"}
+,{"stream_name":"stdout","time":2953.007292828,"data":"  step      444/600  loss 0.0014\n"}
+,{"stream_name":"stdout","time":2956.543860436,"data":"  epoch     444/600  loss 0.0014  val 0.0160\n"}
+,{"stream_name":"stdout","time":2966.436152827,"data":"  epoch     445/600  loss 0.0014  val 0.0151\n"}
+,{"stream_name":"stdout","time":2976.424129171,"data":"  epoch     446/600  loss 0.0015  val 0.0149\n"}
+,{"stream_name":"stdout","time":2986.344209569,"data":"  epoch     447/600  loss 0.0014  val 0.0150\n"}
+,{"stream_name":"stdout","time":2996.315039431,"data":"  epoch     448/600  loss 0.0015  val 0.0145\n"}
+,{"stream_name":"stdout","time":3002.811886622,"data":"  save      checkpoint at step 449\n"}
+,{"stream_name":"stdout","time":3006.231207818,"data":"  epoch     449/600  loss 0.0015  val 0.0150\n"}
+,{"stream_name":"stdout","time":3016.285987115,"data":"  epoch     450/600  loss 0.0014  val 0.0155\n"}
+,{"stream_name":"stdout","time":3026.202040588,"data":"  epoch     451/600  loss 0.0015  val 0.0147\n"}
+,{"stream_name":"stdout","time":3036.100860461,"data":"  epoch     452/600  loss 0.0014  val 0.0152\n"}
+,{"stream_name":"stdout","time":3045.972762697,"data":"  epoch     453/600  loss 0.0014  val 0.0146\n"}
+,{"stream_name":"stdout","time":3055.901283307,"data":"  epoch     454/600  loss 0.0014  val 0.0156\n"}
+,{"stream_name":"stdout","time":3065.843433048,"data":"  epoch     455/600  loss 0.0014  val 0.0146\n"}
+,{"stream_name":"stdout","time":3072.298705002,"data":"  step      456/600  loss 0.0014\n"}
+,{"stream_name":"stdout","time":3072.332120465,"data":"  save      checkpoint at step 456\n"}
+,{"stream_name":"stdout","time":3075.860848439,"data":"  epoch     456/600  loss 0.0014  val 0.0155\n"}
+,{"stream_name":"stdout","time":3086.249332538,"data":"  epoch     457/600  loss 0.0014  val 0.0158\n"}
+,{"stream_name":"stdout","time":3097.37635449,"data":"  epoch     458/600  loss 0.0014  val 0.0148\n"}
+,{"stream_name":"stdout","time":3108.283193941,"data":"  epoch     459/600  loss 0.0014  val 0.0142\n"}
+,{"stream_name":"stdout","time":3120.042534031,"data":"  epoch     460/600  loss 0.0014  val 0.0142\n"}
+,{"stream_name":"stdout","time":3132.190351231,"data":"  epoch     461/600  loss 0.0014  val 0.0151\n"}
+,{"stream_name":"stdout","time":3141.028162511,"data":"  save      checkpoint at step 462\n"}
+,{"stream_name":"stdout","time":3145.907781633,"data":"  epoch     462/600  loss 0.0014  val 0.0147\n"}
+,{"stream_name":"stdout","time":3157.24957846,"data":"  epoch     463/600  loss 0.0014  val 0.0143\n"}
+,{"stream_name":"stdout","time":3167.671426016,"data":"  epoch     464/600  loss 0.0014  val 0.0147\n"}
+,{"stream_name":"stdout","time":3178.980878999,"data":"  epoch     465/600  loss 0.0014  val 0.0148\n"}
+,{"stream_name":"stdout","time":3190.684063491,"data":"  epoch     466/600  loss 0.0014  val 0.0154\n"}
+,{"stream_name":"stdout","time":3202.897430208,"data":"  epoch     467/600  loss 0.0014  val 0.0148\n"}
+,{"stream_name":"stdout","time":3210.731058703,"data":"  step      468/600  loss 0.0014\n"}
+,{"stream_name":"stdout","time":3210.77008865,"data":"  save      checkpoint at step 468\n"}
+,{"stream_name":"stdout","time":3214.813335862,"data":"  epoch     468/600  loss 0.0014  val 0.0151\n"}
+,{"stream_name":"stdout","time":3225.619438955,"data":"  epoch     469/600  loss 0.0014  val 0.0148\n"}
+,{"stream_name":"stdout","time":3236.066775697,"data":"  epoch     470/600  loss 0.0014  val 0.0150\n"}
+,{"stream_name":"stdout","time":3246.417403927,"data":"  epoch     471/600  loss 0.0014  val 0.0141\n"}
+,{"stream_name":"stdout","time":3257.649122011,"data":"  epoch     472/600  loss 0.0014  val 0.0143\n"}
+,{"stream_name":"stdout","time":3268.605054706,"data":"  epoch     473/600  loss 0.0014  val 0.0146\n"}
+,{"stream_name":"stdout","time":3275.484464375,"data":"  save      checkpoint at step 474\n"}
+,{"stream_name":"stdout","time":3279.049676353,"data":"  epoch     474/600  loss 0.0014  val 0.0159\n"}
+,{"stream_name":"stdout","time":3289.318393086,"data":"  epoch     475/600  loss 0.0014  val 0.0142\n"}
+,{"stream_name":"stdout","time":3299.980496421,"data":"  epoch     476/600  loss 0.0014  val 0.0140\n"}
+,{"stream_name":"stdout","time":3310.412836621,"data":"  epoch     477/600  loss 0.0014  val 0.0155\n"}
+,{"stream_name":"stdout","time":3321.323941622,"data":"  epoch     478/600  loss 0.0014  val 0.0148\n"}
+,{"stream_name":"stdout","time":3331.914158733,"data":"  epoch     479/600  loss 0.0014  val 0.0144\n"}
+,{"stream_name":"stdout","time":3338.66886561,"data":"  step      480/600  loss 0.0014\n"}
+,{"stream_name":"stdout","time":3338.707683325,"data":"  save      checkpoint at step 480\n"}
+,{"stream_name":"stdout","time":3342.229922036,"data":"  epoch     480/600  loss 0.0014  val 0.0145\n"}
+,{"stream_name":"stdout","time":3352.378739953,"data":"  epoch     481/600  loss 0.0014  val 0.0144\n"}
+,{"stream_name":"stdout","time":3362.493074163,"data":"  epoch     482/600  loss 0.0014  val 0.0146\n"}
+,{"stream_name":"stdout","time":3372.561054309,"data":"  epoch     483/600  loss 0.0014  val 0.0149\n"}
+,{"stream_name":"stdout","time":3382.779481204,"data":"  epoch     484/600  loss 0.0014  val 0.0148\n"}
+,{"stream_name":"stdout","time":3392.935850362,"data":"  epoch     485/600  loss 0.0014  val 0.0135\n"}
+,{"stream_name":"stdout","time":3399.706024635,"data":"  save      checkpoint at step 486\n"}
+,{"stream_name":"stdout","time":3403.283501062,"data":"  epoch     486/600  loss 0.0014  val 0.0147\n"}
+,{"stream_name":"stdout","time":3413.479162171,"data":"  epoch     487/600  loss 0.0014  val 0.0144\n"}
+,{"stream_name":"stdout","time":3423.685415479,"data":"  epoch     488/600  loss 0.0014  val 0.0138\n"}
+,{"stream_name":"stdout","time":3434.565503244,"data":"  epoch     489/600  loss 0.0014  val 0.0137\n"}
+,{"stream_name":"stdout","time":3444.963424888,"data":"  epoch     490/600  loss 0.0013  val 0.0150\n"}
+,{"stream_name":"stdout","time":3455.110469058,"data":"  epoch     491/600  loss 0.0013  val 0.0141\n"}
+,{"stream_name":"stdout","time":3461.59458992,"data":"  step      492/600  loss 0.0013\n"}
+,{"stream_name":"stdout","time":3461.633641622,"data":"  save      checkpoint at step 492\n"}
+,{"stream_name":"stdout","time":3465.136896,"data":"  epoch     492/600  loss 0.0013  val 0.0148\n"}
+,{"stream_name":"stdout","time":3475.195517917,"data":"  epoch     493/600  loss 0.0014  val 0.0144\n"}
+,{"stream_name":"stdout","time":3485.218546359,"data":"  epoch     494/600  loss 0.0014  val 0.0146\n"}
+,{"stream_name":"stdout","time":3495.123444411,"data":"  epoch     495/600  loss 0.0014  val 0.0147\n"}
+,{"stream_name":"stdout","time":3505.168700834,"data":"  epoch     496/600  loss 0.0013  val 0.0152\n"}
+,{"stream_name":"stdout","time":3515.318804855,"data":"  epoch     497/600  loss 0.0013  val 0.0148\n"}
+,{"stream_name":"stdout","time":3521.835236242,"data":"  save      checkpoint at step 498\n"}
+,{"stream_name":"stdout","time":3525.273667677,"data":"  epoch     498/600  loss 0.0013  val 0.0155\n"}
+,{"stream_name":"stdout","time":3535.301408247,"data":"  epoch     499/600  loss 0.0014  val 0.0153\n"}
+,{"stream_name":"stdout","time":3545.199283445,"data":"  epoch     500/600  loss 0.0013  val 0.0138\n"}
+,{"stream_name":"stdout","time":3555.236547721,"data":"  epoch     501/600  loss 0.0013  val 0.0138\n"}
+,{"stream_name":"stdout","time":3565.215415843,"data":"  epoch     502/600  loss 0.0013  val 0.0148\n"}
+,{"stream_name":"stdout","time":3575.329819989,"data":"  epoch     503/600  loss 0.0013  val 0.0148\n"}
+,{"stream_name":"stdout","time":3581.864422826,"data":"  step      504/600  loss 0.0013\n"}
+,{"stream_name":"stdout","time":3581.897630072,"data":"  save      checkpoint at step 504\n"}
+,{"stream_name":"stdout","time":3585.466815015,"data":"  epoch     504/600  loss 0.0013  val 0.0147\n"}
+,{"stream_name":"stdout","time":3595.56033312,"data":"  epoch     505/600  loss 0.0013  val 0.0152\n"}
+,{"stream_name":"stdout","time":3605.583547209,"data":"  epoch     506/600  loss 0.0014  val 0.0147\n"}
+,{"stream_name":"stdout","time":3615.639246863,"data":"  epoch     507/600  loss 0.0014  val 0.0142\n"}
+,{"stream_name":"stdout","time":3625.643458564,"data":"  epoch     508/600  loss 0.0013  val 0.0141\n"}
+,{"stream_name":"stdout","time":3635.618522354,"data":"  epoch     509/600  loss 0.0013  val 0.0135\n"}
+,{"stream_name":"stdout","time":3642.137257255,"data":"  save      checkpoint at step 510\n"}
+,{"stream_name":"stdout","time":3645.613439033,"data":"  epoch     510/600  loss 0.0013  val 0.0154\n"}
+,{"stream_name":"stdout","time":3655.533903195,"data":"  epoch     511/600  loss 0.0013  val 0.0141\n"}
+,{"stream_name":"stdout","time":3665.526406175,"data":"  epoch     512/600  loss 0.0013  val 0.0137\n"}
+,{"stream_name":"stdout","time":3675.59673085,"data":"  epoch     513/600  loss 0.0013  val 0.0147\n"}
+,{"stream_name":"stdout","time":3685.860363921,"data":"  epoch     514/600  loss 0.0013  val 0.0152\n"}
+,{"stream_name":"stdout","time":3695.810422462,"data":"  epoch     515/600  loss 0.0013  val 0.0142\n"}
+,{"stream_name":"stdout","time":3702.23348404,"data":"  step      516/600  loss 0.0014\n"}
+,{"stream_name":"stdout","time":3702.272735178,"data":"  save      checkpoint at step 516\n"}
+,{"stream_name":"stdout","time":3705.787823553,"data":"  epoch     516/600  loss 0.0014  val 0.0152\n"}
+,{"stream_name":"stdout","time":3715.736785708,"data":"  epoch     517/600  loss 0.0013  val 0.0147\n"}
+,{"stream_name":"stdout","time":3725.626368407,"data":"  epoch     518/600  loss 0.0013  val 0.0144\n"}
+,{"stream_name":"stdout","time":3735.611381072,"data":"  epoch     519/600  loss 0.0013  val 0.0142\n"}
+,{"stream_name":"stdout","time":3745.576760288,"data":"  epoch     520/600  loss 0.0013  val 0.0149\n"}
+,{"stream_name":"stdout","time":3755.541031715,"data":"  epoch     521/600  loss 0.0013  val 0.0145\n"}
+,{"stream_name":"stdout","time":3765.362935359,"data":"  epoch     522/600  loss 0.0013  val 0.0147\n"}
+,{"stream_name":"stdout","time":3771.884540901,"data":"  save      checkpoint at step 523\n"}
+,{"stream_name":"stdout","time":3775.334935547,"data":"  epoch     523/600  loss 0.0013  val 0.0140\n"}
+,{"stream_name":"stdout","time":3785.241323388,"data":"  epoch     524/600  loss 0.0013  val 0.0155\n"}
+,{"stream_name":"stdout","time":3795.250585652,"data":"  epoch     525/600  loss 0.0013  val 0.0154\n"}
+,{"stream_name":"stdout","time":3805.213920183,"data":"  epoch     526/600  loss 0.0013  val 0.0153\n"}
+,{"stream_name":"stdout","time":3815.135396643,"data":"  epoch     527/600  loss 0.0013  val 0.0150\n"}
+,{"stream_name":"stdout","time":3821.528419916,"data":"  step      528/600  loss 0.0013\n"}
+,{"stream_name":"stdout","time":3825.044723412,"data":"  epoch     528/600  loss 0.0013  val 0.0149\n"}
+,{"stream_name":"stdout","time":3835.000384564,"data":"  epoch     529/600  loss 0.0013  val 0.0154\n"}
+,{"stream_name":"stdout","time":3841.467479033,"data":"  save      checkpoint at step 530\n"}
+,{"stream_name":"stdout","time":3844.9152786,"data":"  epoch     530/600  loss 0.0013  val 0.0144\n"}
+,{"stream_name":"stdout","time":3854.908622504,"data":"  epoch     531/600  loss 0.0013  val 0.0149\n"}
+,{"stream_name":"stdout","time":3864.884429257,"data":"  epoch     532/600  loss 0.0013  val 0.0149\n"}
+,{"stream_name":"stdout","time":3874.811727482,"data":"  epoch     533/600  loss 0.0013  val 0.0145\n"}
+,{"stream_name":"stdout","time":3884.59057518,"data":"  epoch     534/600  loss 0.0013  val 0.0142\n"}
+,{"stream_name":"stdout","time":3894.418404802,"data":"  epoch     535/600  loss 0.0014  val 0.0150\n"}
+,{"stream_name":"stdout","time":3904.314029466,"data":"  epoch     536/600  loss 0.0013  val 0.0146\n"}
+,{"stream_name":"stdout","time":3910.632205081,"data":"  save      checkpoint at step 537\n"}
+,{"stream_name":"stdout","time":3914.293226604,"data":"  epoch     537/600  loss 0.0013  val 0.0144\n"}
+,{"stream_name":"stdout","time":3924.221303831,"data":"  epoch     538/600  loss 0.0013  val 0.0145\n"}
+,{"stream_name":"stdout","time":3934.305379913,"data":"  epoch     539/600  loss 0.0013  val 0.0142\n"}
+,{"stream_name":"stdout","time":3940.806008012,"data":"  step      540/600  loss 0.0013\n"}
+,{"stream_name":"stdout","time":3944.47269711,"data":"  epoch     540/600  loss 0.0013  val 0.0145\n"}
+,{"stream_name":"stdout","time":3954.812343665,"data":"  epoch     541/600  loss 0.0013  val 0.0138\n"}
+,{"stream_name":"stdout","time":3965.773044361,"data":"  epoch     542/600  loss 0.0013  val 0.0140\n"}
+,{"stream_name":"stdout","time":3974.081494921,"data":"  save      checkpoint at step 543\n"}
+,{"stream_name":"stdout","time":3979.276047518,"data":"  epoch     543/600  loss 0.0013  val 0.0144\n"}
+,{"stream_name":"stdout","time":3995.493615936,"data":"  epoch     544/600  loss 0.0013  val 0.0144\n"}
+,{"stream_name":"stdout","time":4009.810453511,"data":"  epoch     545/600  loss 0.0013  val 0.0143\n"}
+,{"stream_name":"stdout","time":4022.20620786,"data":"  epoch     546/600  loss 0.0013  val 0.0137\n"}
+,{"stream_name":"stdout","time":4034.176755098,"data":"  epoch     547/600  loss 0.0013  val 0.0148\n"}
+,{"stream_name":"stdout","time":4042.223472129,"data":"  save      checkpoint at step 548\n"}
+,{"stream_name":"stdout","time":4046.033900894,"data":"  epoch     548/600  loss 0.0013  val 0.0149\n"}
+,{"stream_name":"stdout","time":4056.736537627,"data":"  epoch     549/600  loss 0.0013  val 0.0155\n"}
+,{"stream_name":"stdout","time":4067.080520109,"data":"  epoch     550/600  loss 0.0013  val 0.0142\n"}
+,{"stream_name":"stdout","time":4077.819341207,"data":"  epoch     551/600  loss 0.0013  val 0.0143\n"}
+,{"stream_name":"stdout","time":4084.681828965,"data":"  step      552/600  loss 0.0013\n"}
+,{"stream_name":"stdout","time":4088.431059074,"data":"  epoch     552/600  loss 0.0013  val 0.0147\n"}
+,{"stream_name":"stdout","time":4099.145787155,"data":"  epoch     553/600  loss 0.0013  val 0.0143\n"}
+,{"stream_name":"stdout","time":4106.030718117,"data":"  save      checkpoint at step 554\n"}
+,{"stream_name":"stdout","time":4109.904903629,"data":"  epoch     554/600  loss 0.0013  val 0.0143\n"}
+,{"stream_name":"stdout","time":4121.046713696,"data":"  epoch     555/600  loss 0.0013  val 0.0135\n"}
+,{"stream_name":"stdout","time":4131.4557074,"data":"  epoch     556/600  loss 0.0013  val 0.0148\n"}
+,{"stream_name":"stdout","time":4141.447531527,"data":"  epoch     557/600  loss 0.0013  val 0.0145\n"}
+,{"stream_name":"stdout","time":4151.546411011,"data":"  epoch     558/600  loss 0.0013  val 0.0140\n"}
+,{"stream_name":"stdout","time":4161.710485099,"data":"  epoch     559/600  loss 0.0013  val 0.0147\n"}
+,{"stream_name":"stdout","time":4168.20324769,"data":"  save      checkpoint at step 560\n"}
+,{"stream_name":"stdout","time":4171.672800058,"data":"  epoch     560/600  loss 0.0013  val 0.0152\n"}
+,{"stream_name":"stdout","time":4181.727291348,"data":"  epoch     561/600  loss 0.0013  val 0.0144\n"}
+,{"stream_name":"stdout","time":4191.67721979,"data":"  epoch     562/600  loss 0.0013  val 0.0149\n"}
+,{"stream_name":"stdout","time":4201.881391263,"data":"  epoch     563/600  loss 0.0013  val 0.0146\n"}
+,{"stream_name":"stdout","time":4208.305754257,"data":"  step      564/600  loss 0.0013\n"}
+,{"stream_name":"stdout","time":4211.827652879,"data":"  epoch     564/600  loss 0.0013  val 0.0145\n"}
+,{"stream_name":"stdout","time":4221.921063548,"data":"  epoch     565/600  loss 0.0013  val 0.0147\n"}
+,{"stream_name":"stdout","time":4228.567765995,"data":"  save      checkpoint at step 566\n"}
+,{"stream_name":"stdout","time":4232.112754542,"data":"  epoch     566/600  loss 0.0013  val 0.0139\n"}
+,{"stream_name":"stdout","time":4242.147518762,"data":"  epoch     567/600  loss 0.0013  val 0.0146\n"}
+,{"stream_name":"stdout","time":4252.226120472,"data":"  epoch     568/600  loss 0.0013  val 0.0145\n"}
+,{"stream_name":"stdout","time":4262.143272084,"data":"  epoch     569/600  loss 0.0013  val 0.0147\n"}
+,{"stream_name":"stdout","time":4272.173148128,"data":"  epoch     570/600  loss 0.0013  val 0.0141\n"}
+,{"stream_name":"stdout","time":4282.000936526,"data":"  epoch     571/600  loss 0.0013  val 0.0140\n"}
+,{"stream_name":"stdout","time":4291.994605393,"data":"  epoch     572/600  loss 0.0013  val 0.0137\n"}
+,{"stream_name":"stdout","time":4298.405338733,"data":"  save      checkpoint at step 573\n"}
+,{"stream_name":"stdout","time":4301.846297287,"data":"  epoch     573/600  loss 0.0013  val 0.0151\n"}
+,{"stream_name":"stdout","time":4311.814422031,"data":"  epoch     574/600  loss 0.0013  val 0.0150\n"}
+,{"stream_name":"stdout","time":4321.79531157,"data":"  epoch     575/600  loss 0.0013  val 0.0151\n"}
+,{"stream_name":"stdout","time":4328.261044581,"data":"  step      576/600  loss 0.0013\n"}
+,{"stream_name":"stdout","time":4331.781867921,"data":"  epoch     576/600  loss 0.0013  val 0.0143\n"}
+,{"stream_name":"stdout","time":4341.632165667,"data":"  epoch     577/600  loss 0.0013  val 0.0145\n"}
+,{"stream_name":"stdout","time":4351.493289263,"data":"  epoch     578/600  loss 0.0013  val 0.0143\n"}
+,{"stream_name":"stdout","time":4361.374813705,"data":"  epoch     579/600  loss 0.0013  val 0.0151\n"}
+,{"stream_name":"stdout","time":4367.753205154,"data":"  save      checkpoint at step 580\n"}
+,{"stream_name":"stdout","time":4371.155673456,"data":"  epoch     580/600  loss 0.0013  val 0.0138\n"}
+,{"stream_name":"stdout","time":4381.073170419,"data":"  epoch     581/600  loss 0.0013  val 0.0145\n"}
+,{"stream_name":"stdout","time":4391.038108655,"data":"  epoch     582/600  loss 0.0013  val 0.0148\n"}
+,{"stream_name":"stdout","time":4401.06079874,"data":"  epoch     583/600  loss 0.0013  val 0.0155\n"}
+,{"stream_name":"stdout","time":4410.962343228,"data":"  epoch     584/600  loss 0.0013  val 0.0139\n"}
+,{"stream_name":"stdout","time":4420.809430005,"data":"  epoch     585/600  loss 0.0013  val 0.0148\n"}
+,{"stream_name":"stdout","time":4430.769414866,"data":"  epoch     586/600  loss 0.0013  val 0.0136\n"}
+,{"stream_name":"stdout","time":4437.299669182,"data":"  save      checkpoint at step 587\n"}
+,{"stream_name":"stdout","time":4440.685741549,"data":"  epoch     587/600  loss 0.0013  val 0.0141\n"}
+,{"stream_name":"stdout","time":4447.080984571,"data":"  step      588/600  loss 0.0013\n"}
+,{"stream_name":"stdout","time":4450.569103974,"data":"  epoch     588/600  loss 0.0013  val 0.0143\n"}
+,{"stream_name":"stdout","time":4460.55290491,"data":"  epoch     589/600  loss 0.0013  val 0.0142\n"}
+,{"stream_name":"stdout","time":4470.431948529,"data":"  epoch     590/600  loss 0.0013  val 0.0147\n"}
+,{"stream_name":"stdout","time":4480.290402649,"data":"  epoch     591/600  loss 0.0013  val 0.0144\n"}
+,{"stream_name":"stdout","time":4490.109754667,"data":"  epoch     592/600  loss 0.0013  val 0.0137\n"}
+,{"stream_name":"stdout","time":4499.863089006,"data":"  epoch     593/600  loss 0.0012  val 0.0147\n"}
+,{"stream_name":"stdout","time":4506.375879632,"data":"  save      checkpoint at step 594\n"}
+,{"stream_name":"stdout","time":4509.789714254,"data":"  epoch     594/600  loss 0.0013  val 0.0142\n"}
+,{"stream_name":"stdout","time":4519.835349623,"data":"  epoch     595/600  loss 0.0013  val 0.0140\n"}
+,{"stream_name":"stdout","time":4529.760924219,"data":"  epoch     596/600  loss 0.0013  val 0.0138\n"}
+,{"stream_name":"stdout","time":4540.079671199,"data":"  epoch     597/600  loss 0.0013  val 0.0144\n"}
+,{"stream_name":"stdout","time":4550.719480732,"data":"  epoch     598/600  loss 0.0013  val 0.0140\n"}
+,{"stream_name":"stdout","time":4560.650493235,"data":"  epoch     599/600  loss 0.0013  val 0.0138\n"}
+,{"stream_name":"stdout","time":4567.08871371,"data":"  step      600/600  loss 0.0013\n"}
+,{"stream_name":"stdout","time":4567.122249989,"data":"  save      checkpoint at step 600\n"}
+,{"stream_name":"stdout","time":4570.713440708,"data":"  epoch     600/600  loss 0.0013  val 0.0143\n"}
+,{"stream_name":"stdout","time":4570.725817362,"data":"  adapter   /kaggle/working/task/out/adapter.safetensors\n"}
+,{"stream_name":"stdout","time":4570.725853304,"data":"  note      held-out scoring left to evaluate.py\n"}
+,{"stream_name":"stdout","time":4575.086059894,"data":"=== stage build ===\n"}
+,{"stream_name":"stderr","time":4575.5557799,"data":"cactus-compute collects anonymous usage counts (function name, version, OS) to guide development; no prompts or outputs. Disable with CACTUS_TELEMETRY=0.\n"}
+,{"stream_name":"stderr","time":4577.58832103,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stderr","time":4580.334830627,"data":"Jax plugin configuration error: Exception when calling jax_plugins.xla_cuda12.initialize()\n"}
+,{"stream_name":"stderr","time":4580.33487728,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":4580.334883561,"data":"  File \"/usr/local/lib/python3.13/dist-packages/jax/_src/xla_bridge.py\", line 495, in discover_pjrt_plugins\n"}
+,{"stream_name":"stderr","time":4580.33488896,"data":"    plugin_module.initialize()\n"}
+,{"stream_name":"stderr","time":4580.334893712,"data":"    ~~~~~~~~~~~~~~~~~~~~~~~~^^\n"}
+,{"stream_name":"stderr","time":4580.334898278,"data":"  File \"/usr/local/lib/python3.13/dist-packages/jax_plugins/xla_cuda12/__init__.py\", line 370, in initialize\n"}
+,{"stream_name":"stderr","time":4580.334903729,"data":"    _check_cuda_versions(raise_on_first_error = True)\n"}
+,{"stream_name":"stderr","time":4580.334907165,"data":"    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":4580.334910272,"data":"  File \"/usr/local/lib/python3.13/dist-packages/jax_plugins/xla_cuda12/__init__.py\", line 274, in _check_cuda_versions\n"}
+,{"stream_name":"stderr","time":4580.334913672,"data":"    for d in range(cuda_versions.cuda_device_count())\n"}
+,{"stream_name":"stderr","time":4580.334916584,"data":"                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^\n"}
+,{"stream_name":"stderr","time":4580.334919758,"data":"RuntimeError: jaxlib/cuda/versions_helpers.cc:135: operation cuInit(0) failed: Unknown CUDA error 303; cuGetErrorName failed. This probably means that JAX was unable to load the CUDA libraries.\n"}
+,{"stream_name":"stdout","time":4611.004832836,"data":"  base      /root/.cache/cactus/models/needle3/d6c7d6a2e9655505e0f8e23339356dd1705900eb/needle3.cact  35.34 MB\n"}
+,{"stream_name":"stdout","time":4611.004878507,"data":"  merged    5 weight groups  /kaggle/working/task/out/adapter.safetensors\n"}
+,{"stream_name":"stdout","time":4611.004885432,"data":"  dropped   the confidence head; it is not trained locally, so confidence reports None\n"}
+,{"stream_name":"stdout","time":4611.004890974,"data":"  depth     20 layers\n"}
+,{"stream_name":"stdout","time":4611.004896784,"data":"  wrote     /kaggle/working/task/out/probe_20l.cact  63.44 MB  574 tensors  W4A8\n"}
+,{"stream_name":"stdout","time":4611.004902997,"data":"  next      cactus.Needle(weights='/kaggle/working/task/out/probe_20l.cact', tools=[...])\n"}
+,{"stream_name":"stdout","time":4611.546876607,"data":"=== driver done ===\n"}
+,{"stream_name":"stderr","time":4614.963349113,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":4614.963391276,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":4615.385351982,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":4615.385389667,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":4616.493303365,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":4618.124774021,"data":"[NbConvertApp] Writing 312941 bytes to __results__.html\n"}
+]

@@ -175,7 +175,12 @@
           "arguments": {}
         }
       ],
-      "base": [],
+      "base": [
+        {
+          "name": "request_human_handoff",
+          "arguments": {}
+        }
+      ],
       "tuned": [
         {
           "name": "request_human_handoff",
@@ -184,7 +189,7 @@
       ],
       "base_timeout": false,
       "tuned_timeout": false,
-      "base_hit": false,
+      "base_hit": true,
       "tuned_hit": true
     },
     {
@@ -291,11 +296,16 @@
         }
       ],
       "base": [],
-      "tuned": [],
+      "tuned": [
+        {
+          "name": "request_human_handoff",
+          "arguments": {}
+        }
+      ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00015",
@@ -346,11 +356,16 @@
         }
       ],
       "base": [],
-      "tuned": [],
+      "tuned": [
+        {
+          "name": "request_human_handoff",
+          "arguments": {}
+        }
+      ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00018",
@@ -367,14 +382,14 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "details": "The confirmation never came"
+            "details": "The confirmation never came and my card was charged."
           }
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00019",
@@ -416,14 +431,15 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "details": "My bills still go to the old address despite three updates."
+            "details": "My bills still go to the old address despite three updates.",
+            "reason": "billing"
           }
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00021",
@@ -479,7 +495,7 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "details": "I paid for premium support."
+            "details": "Every reply still comes from a bot."
           }
         }
       ],
@@ -488,7 +504,7 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "details": "I paid for premium support."
+            "details": "Every reply still comes from a bot."
           }
         }
       ],
@@ -650,27 +666,27 @@
     {
       "id": "ev-00033",
       "expected": [],
-      "base": [
-        {
-          "name": "request_human_handoff",
-          "arguments": {}
-        }
-      ],
-      "tuned": [],
-      "base_timeout": false,
-      "tuned_timeout": false,
-      "base_hit": false,
-      "tuned_hit": true
-    },
-    {
-      "id": "ev-00034",
-      "expected": [],
       "base": [],
       "tuned": [],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": true,
       "tuned_hit": true
+    },
+    {
+      "id": "ev-00034",
+      "expected": [],
+      "base": [],
+      "tuned": [
+        {
+          "name": "request_human_handoff",
+          "arguments": {}
+        }
+      ],
+      "base_timeout": false,
+      "tuned_timeout": false,
+      "base_hit": true,
+      "tuned_hit": false
     },
     {
       "id": "ev-00035",
@@ -1106,14 +1122,15 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "details": "Meine Rechnungen gehen trotz dreier Meldungen noch an die alte Adresse."
+            "details": "Meine Rechnungen gehen trotz dreier Meldungen noch an die alte Adresse.",
+            "reason": "billing"
           }
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00057",
@@ -1169,7 +1186,7 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "details": "Ich habe für Premium-Support bezahlt."
+            "details": "Jede Antwort kommt trotzdem von einem Bot."
           }
         }
       ],
@@ -1178,7 +1195,8 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "details": "Jede Antwort kommt trotzdem von einem Bot."
+            "details": "Jede Antwort kommt trotzdem von einem Bot.",
+            "reason": "billing"
           }
         }
       ],
@@ -1320,22 +1338,32 @@
     {
       "id": "ev-00067",
       "expected": [],
-      "base": [],
+      "base": [
+        {
+          "name": "request_human_handoff",
+          "arguments": {}
+        }
+      ],
       "tuned": [],
       "base_timeout": false,
       "tuned_timeout": false,
-      "base_hit": true,
+      "base_hit": false,
       "tuned_hit": true
     },
     {
       "id": "ev-00068",
       "expected": [],
       "base": [],
-      "tuned": [],
+      "tuned": [
+        {
+          "name": "request_human_handoff",
+          "arguments": {}
+        }
+      ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": true,
-      "tuned_hit": true
+      "tuned_hit": false
     },
     {
       "id": "ev-00069",
@@ -1741,9 +1769,7 @@
       "tuned": [
         {
           "name": "request_human_handoff",
-          "arguments": {
-            "details": "La confirmation n'est jamais venue et ma carte a été."
-          }
+          "arguments": {}
         }
       ],
       "base_timeout": false,
@@ -1791,14 +1817,15 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "details": "Mes factures partent toujours à l'ancienne adresse malgré trois signalements."
+            "details": "Mes factures partent toujours à l'ancienne adresse malgré trois signalements.",
+            "reason": "billing"
           }
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00093",
@@ -1854,7 +1881,7 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "details": "J'ai payé pour un support premium."
+            "details": "Chaque réponse vient pourtant d'un robot."
           }
         }
       ],
@@ -1870,7 +1897,7 @@
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00096",
@@ -2265,7 +2292,12 @@
           "arguments": {}
         }
       ],
-      "base": [],
+      "base": [
+        {
+          "name": "request_human_handoff",
+          "arguments": {}
+        }
+      ],
       "tuned": [
         {
           "name": "request_human_handoff",
@@ -2274,7 +2306,7 @@
       ],
       "base_timeout": false,
       "tuned_timeout": false,
-      "base_hit": false,
+      "base_hit": true,
       "tuned_hit": true
     },
     {
@@ -2341,11 +2373,16 @@
         }
       ],
       "base": [],
-      "tuned": [],
+      "tuned": [
+        {
+          "name": "request_human_handoff",
+          "arguments": {}
+        }
+      ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00123",
@@ -2401,15 +2438,13 @@
       "tuned": [
         {
           "name": "request_human_handoff",
-          "arguments": {
-            "reason": "billing"
-          }
+          "arguments": {}
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00126",
@@ -2474,13 +2509,16 @@
       "tuned": [
         {
           "name": "request_human_handoff",
-          "arguments": {}
+          "arguments": {
+            "details": "Mis facturas siguen yendo a la dirección vieja pese a tres avisos.",
+            "reason": "billing"
+          }
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00129",
@@ -2497,14 +2535,14 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "details": "La farmacia dice que la receta está bien."
+            "details": "El medicamento que pedí va tarde."
           }
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00130",
@@ -2536,7 +2574,7 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "details": "Pagué por soporte premium."
+            "details": "Cada respuesta sigue viniendo de un robot."
           }
         }
       ],
@@ -2544,13 +2582,15 @@
       "tuned": [
         {
           "name": "request_human_handoff",
-          "arguments": {}
+          "arguments": {
+            "details": "Cada respuesta sigue viniendo de un robot."
+          }
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00132",
@@ -2768,11 +2808,16 @@
         }
       ],
       "base": [],
-      "tuned": [],
+      "tuned": [
+        {
+          "name": "request_human_handoff",
+          "arguments": {}
+        }
+      ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00146",
@@ -3018,11 +3063,16 @@
         }
       ],
       "base": [],
-      "tuned": [],
+      "tuned": [
+        {
+          "name": "request_human_handoff",
+          "arguments": {}
+        }
+      ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00159",
@@ -3056,15 +3106,13 @@
       "tuned": [
         {
           "name": "request_human_handoff",
-          "arguments": {
-            "reason": "account"
-          }
+          "arguments": {}
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00161",
@@ -3078,15 +3126,13 @@
       "tuned": [
         {
           "name": "request_human_handoff",
-          "arguments": {
-            "reason": "technical"
-          }
+          "arguments": {}
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00162",
@@ -3152,14 +3198,15 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "details": "Le bollette vanno ancora al vecchio indirizzo nonostante tre segnalazioni."
+            "details": "Le bollette vanno ancora al vecchio indirizzo nonostante tre segnalazioni.",
+            "reason": "billing"
           }
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00165",
@@ -3176,14 +3223,15 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "details": "Il farmaco ordinato è in ritardo."
+            "details": "La farmacia dice che la ricetta è a posto.",
+            "reason": "billing"
           }
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": true
+      "tuned_hit": false
     },
     {
       "id": "ev-00166",
@@ -3215,7 +3263,7 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "details": "Ho pagato per il supporto premium."
+            "details": "Ogni risposta arriva ancora da un bot."
           }
         }
       ],
@@ -3231,7 +3279,7 @@
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00168",
@@ -3366,16 +3414,11 @@
     {
       "id": "ev-00175",
       "expected": [],
-      "base": [
-        {
-          "name": "request_human_handoff",
-          "arguments": {}
-        }
-      ],
+      "base": [],
       "tuned": [],
       "base_timeout": false,
       "tuned_timeout": false,
-      "base_hit": false,
+      "base_hit": true,
       "tuned_hit": true
     },
     {
@@ -3532,11 +3575,16 @@
         }
       ],
       "base": [],
-      "tuned": [],
+      "tuned": [
+        {
+          "name": "request_human_handoff",
+          "arguments": {}
+        }
+      ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00186",
@@ -3730,15 +3778,13 @@
       "tuned": [
         {
           "name": "request_human_handoff",
-          "arguments": {
-            "reason": "technical"
-          }
+          "arguments": {}
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00196",
@@ -3795,14 +3841,15 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "details": "De bevestiging kwam nooit en mijn kaart is belast."
+            "details": "De bevestiging kwam nooit en mijn kaart is belast.",
+            "reason": "billing"
           }
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": true
+      "tuned_hit": false
     },
     {
       "id": "ev-00199",
@@ -3844,14 +3891,15 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "details": "Ik ben vorige maand verhuisd."
+            "details": "Mijn rekeningen gaan ondanks drie meldingen nog naar het oude adres.",
+            "reason": "billing"
           }
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00201",
@@ -3892,7 +3940,7 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "reason": "complaint"
+            "reason": "billing"
           }
         }
       ],
@@ -3907,7 +3955,7 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "details": "Ik heb voor premium support betaald."
+            "details": "Toch komt elk antwoord van een bot."
           }
         }
       ],
@@ -3923,7 +3971,7 @@
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00204",
@@ -4254,11 +4302,16 @@
         }
       ],
       "base": [],
-      "tuned": [],
+      "tuned": [
+        {
+          "name": "request_human_handoff",
+          "arguments": {}
+        }
+      ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00224",
@@ -4474,13 +4527,15 @@
       "tuned": [
         {
           "name": "request_human_handoff",
-          "arguments": {}
+          "arguments": {
+            "details": "Potwierdzenie nigdy nie przyszło, a z karty pobrano pieniądze."
+          }
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00235",
@@ -4496,13 +4551,15 @@
       "tuned": [
         {
           "name": "request_human_handoff",
-          "arguments": {}
+          "arguments": {
+            "details": "Nasza biurowa drukarka padła dziś rano."
+          }
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00236",
@@ -4581,7 +4638,7 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "details": "Zapłaciłem za wsparcie premium."
+            "details": "Każda odpowiedź wciąż przychodzi od bota."
           }
         }
       ],
@@ -4597,7 +4654,7 @@
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00240",
@@ -4742,11 +4799,18 @@
     {
       "id": "ev-00248",
       "expected": [],
-      "base": [],
+      "base": [
+        {
+          "name": "request_human_handoff",
+          "arguments": {
+            "reason": "account"
+          }
+        }
+      ],
       "tuned": [],
       "base_timeout": false,
       "tuned_timeout": false,
-      "base_hit": true,
+      "base_hit": false,
       "tuned_hit": true
     },
     {
@@ -4787,15 +4851,15 @@
   ],
   "base": {
     "total": 252,
-    "hits": 36,
+    "hits": 38,
     "by_language": {
       "en": {
         "total": 36,
-        "hits": 5
+        "hits": 7
       },
       "de": {
         "total": 36,
-        "hits": 6
+        "hits": 5
       },
       "fr": {
         "total": 36,
@@ -4803,11 +4867,11 @@
       },
       "es": {
         "total": 36,
-        "hits": 5
+        "hits": 6
       },
       "it": {
         "total": 36,
-        "hits": 4
+        "hits": 5
       },
       "nl": {
         "total": 36,
@@ -4815,7 +4879,7 @@
       },
       "pl": {
         "total": 36,
-        "hits": 5
+        "hits": 4
       }
     },
     "by_category": {
@@ -4825,7 +4889,7 @@
       },
       "implicit": {
         "total": 42,
-        "hits": 0
+        "hits": 2
       },
       "sarcastic": {
         "total": 42,
@@ -4849,11 +4913,11 @@
   },
   "tuned": {
     "total": 252,
-    "hits": 217,
+    "hits": 239,
     "by_language": {
       "en": {
         "total": 36,
-        "hits": 31
+        "hits": 34
       },
       "de": {
         "total": 36,
@@ -4861,41 +4925,41 @@
       },
       "fr": {
         "total": 36,
-        "hits": 33
+        "hits": 35
       },
       "es": {
         "total": 36,
-        "hits": 29
+        "hits": 34
       },
       "it": {
         "total": 36,
-        "hits": 29
+        "hits": 34
       },
       "nl": {
         "total": 36,
-        "hits": 31
+        "hits": 34
       },
       "pl": {
         "total": 36,
-        "hits": 30
+        "hits": 34
       }
     },
     "by_category": {
       "explicit": {
         "total": 42,
-        "hits": 39
+        "hits": 41
       },
       "implicit": {
         "total": 42,
-        "hits": 41
+        "hits": 42
       },
       "sarcastic": {
         "total": 42,
-        "hits": 31
+        "hits": 39
       },
       "multisentence": {
         "total": 42,
-        "hits": 22
+        "hits": 35
       },
       "edge": {
         "total": 42,
@@ -4903,10 +4967,10 @@
       },
       "negative": {
         "total": 42,
-        "hits": 42
+        "hits": 40
       }
     },
     "negatives": 42,
-    "negative_hits": 42
+    "negative_hits": 40
   }
 }

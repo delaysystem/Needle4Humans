@@ -115,8 +115,9 @@ def check_train_config(train_config: dict) -> None:
     missing = [key for key in REQUIRED_TRAIN_KEYS if key not in train_config]
     if missing:
         raise SystemExit(
-            f"task.toml lacks {missing}; the mounted input dataset is "
-            "probably stale — wait for processing and re-push"
+            f"[train] lacks {missing}; either the mounted input dataset "
+            "is stale (wait for processing and re-push) or the keys are "
+            "misplaced under another task.toml section"
         )
 
 

@@ -40,15 +40,26 @@ def render_kernel_metadata(config: dict, resume: bool = False) -> dict:
     (populated from a failed run by kaggle_save_checkpoints.py) so the
     driver finds prior checkpoints and continues instead of restarting.
     A kernel cannot source its own failed outputs, so checkpoints travel
-    through a dataset, whose mounts are proven.
+    through a dataset, whose mounts are proven. With ``[kaggle]
+    warm_start`` true, the kernel instead mounts the outputs dataset so
+    the driver can warm-start the LoRA weights from the prior run's
+    published adapter; resume and warm-start together would set the
+    weights twice, so that combination dies.
     """
     kaggle = config["kaggle"]
     gpu = bool(kaggle.get("gpu", True))
+    warm_start = bool(kaggle.get("warm_start", False))
+    if resume and warm_start:
+        _common.die("--resume with [kaggle] warm_start=true: pick one")
     sources = [_kaggle.dataset_ref(config, "input_dataset")]
     if resume:
         if "checkpoints_dataset" not in kaggle:
             _common.die("[kaggle] checkpoints_dataset is required for --resume")
         sources.append(_kaggle.dataset_ref(config, "checkpoints_dataset"))
+    if warm_start:
+        if "output_dataset" not in kaggle:
+            _common.die("[kaggle] output_dataset is required for warm_start=true")
+        sources.append(_kaggle.dataset_ref(config, "output_dataset"))
     return {
         "id": kernel_ref(config),
         "title": _kaggle.title_from_slug(kaggle["kernel"]),

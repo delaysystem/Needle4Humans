@@ -121,12 +121,51 @@ def check_train_config(train_config: dict) -> None:
         )
 
 
+def resolve_kaggle_defaults(
+    task_file: Path, backend_arg: str | None, batch_arg: str | None
+) -> tuple[str, str, bool]:
+    """Backend, batch size, and warm-start flag for the Kaggle run.
+
+    Kaggle executes the driver with no argv, so task.toml ``[kaggle]``
+    carries the per-task values; explicit CLI args (local/test use)
+    still win; code defaults cover old task files without the keys.
+    """
+    import tomllib
+
+    with open(task_file, "rb") as handle:
+        kaggle_config = tomllib.load(handle).get("kaggle", {})
+    backend = backend_arg or kaggle_config.get("backend", "gpu")
+    batch_size = batch_arg or str(kaggle_config.get("batch_size", 16))
+    warm_start = bool(kaggle_config.get("warm_start", False))
+    if backend not in ("cpu", "gpu", "auto"):
+        raise SystemExit(
+            f"unknown backend: {backend!r} (want cpu/gpu/auto)"
+        )
+    return backend, batch_size, warm_start
+
+
+def find_warm_start_adapter(input_root: str, task_src: Path) -> Path | None:
+    """Prior adapter under the mounts but outside the task dir, else None.
+
+    Dies on several: warm-starting from the wrong run's weights would
+    silently mistrain. None means no adapter mounted (fresh init).
+    """
+    candidates = sorted(
+        path for path in Path(input_root).rglob("*.safetensors")
+        if task_src not in path.parents
+    )
+    if len(candidates) > 1:
+        raise SystemExit(f"ambiguous warm-start adapters: {candidates}")
+    return candidates[0] if candidates else None
+
+
 def build_loop_argv(
-    loop_path: Path, task: dict, out_dir: Path, batch_size: str
+    loop_path: Path, task: dict, out_dir: Path, batch_size: str,
+    init_adapter: str | None = None,
 ) -> list[str]:
     """Argv for the resumable training loop from the task config."""
     train_file = out_dir / "train.jsonl"
-    return [
+    argv = [
         sys.executable,
         str(loop_path),
         str(train_file),
@@ -142,6 +181,9 @@ def build_loop_argv(
         "--checkpoint-dir", str(out_dir / CHECKPOINTS_DIRNAME),
         "--save-every-min", str(task["save_every_min"]),
     ]
+    if init_adapter:
+        argv += ["--init-adapter", init_adapter]
+    return argv
 
 
 def get_stage_timeout(task_file: Path) -> float | None:
@@ -204,27 +246,43 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--backend",
-        default="gpu",
-        help="Backend override passed to finetune.py.",
+        default=None,
+        help="Backend override (default: task.toml [kaggle] backend).",
     )
     parser.add_argument(
         "--batch-size",
-        default="16",
-        help="Batch-size override passed to finetune.py.",
+        default=None,
+        help="Batch-size override (default: task.toml [kaggle] batch_size).",
     )
     args = parser.parse_args(argv)
-    if args.backend not in ("cpu", "gpu", "auto"):
-        raise SystemExit(
-            f"unknown --backend: {args.backend!r} (want cpu/gpu/auto)"
-        )
     task_src = find_task(INPUT_ROOT)
     task_dir = Path(WORKSPACE) / "task"
     if task_dir.exists():
         shutil.rmtree(task_dir)
     shutil.copytree(task_src, task_dir)
     task_file = task_dir / "task.toml"
+    backend, batch_size, warm_start = resolve_kaggle_defaults(
+        task_file, args.backend, args.batch_size
+    )
     out_dir = task_dir / "out"
-    stage_prior_checkpoints(INPUT_ROOT, out_dir / CHECKPOINTS_DIRNAME)
+    staged = stage_prior_checkpoints(INPUT_ROOT, out_dir / CHECKPOINTS_DIRNAME)
+    init_adapter = None
+    if warm_start:
+        if staged:
+            raise SystemExit(
+                "warm_start=true with staged checkpoints: resume and "
+                "warm-start both set the weights, use one or the other"
+            )
+        found = find_warm_start_adapter(INPUT_ROOT, task_src)
+        if found is None:
+            raise SystemExit(
+                "warm_start=true but no adapter mounted; publish the "
+                "prior run's outputs and push with the outputs attached"
+            )
+        dest = task_dir / "warm_start.safetensors"
+        shutil.copy2(found, dest)
+        init_adapter = str(dest)
+        print(f"warm-starting from {found}", flush=True)
     # Scripts sit flat beside task.toml: `datasets create` skips
     # subdirectories by default, so the input dataset has no scripts/ dir.
     scripts_dir = task_dir
@@ -254,14 +312,15 @@ def main(argv: list[str] | None = None) -> int:
     with open(task_file, "rb") as handle:
         train_config = tomllib.load(handle)["train"]
     check_train_config(train_config)
-    loop_env = {"CUDA_VISIBLE_DEVICES": ""} if args.backend == "cpu" else None
+    loop_env = {"CUDA_VISIBLE_DEVICES": ""} if backend == "cpu" else None
     for stage in STAGES:
         if stage == "finetune":
             argv = build_loop_argv(
                 scripts_dir / "kaggle_train_loop.py",
                 train_config,
                 out_dir,
-                args.batch_size,
+                batch_size,
+                init_adapter,
             )
             run_stage(argv, status, stage_timeout, name="finetune", env=loop_env)
         else:

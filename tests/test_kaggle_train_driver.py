@@ -116,6 +116,77 @@ def test_shipped_task_train_sections_pass_guard():
         kaggle_train_driver.check_train_config(config["train"])
 
 
+def test_resolve_kaggle_defaults_prefers_cli_then_toml(tmp_path):
+    task_file = tmp_path / "task.toml"
+    task_file.write_text(
+        "[kaggle]\nbackend = \"cpu\"\nbatch_size = 32\n", encoding="utf-8"
+    )
+    assert kaggle_train_driver.resolve_kaggle_defaults(
+        task_file, None, None
+    ) == ("cpu", "32", False)
+    assert kaggle_train_driver.resolve_kaggle_defaults(
+        task_file, "gpu", "8"
+    ) == ("gpu", "8", False)
+
+
+def test_resolve_kaggle_defaults_code_fallbacks_and_warm(tmp_path):
+    bare = tmp_path / "bare.toml"
+    bare.write_text("[task]\nname = \"x\"\n", encoding="utf-8")
+    assert kaggle_train_driver.resolve_kaggle_defaults(
+        bare, None, None
+    ) == ("gpu", "16", False)
+    warm = tmp_path / "warm.toml"
+    warm.write_text("[kaggle]\nwarm_start = true\n", encoding="utf-8")
+    assert kaggle_train_driver.resolve_kaggle_defaults(
+        warm, None, None
+    ) == ("gpu", "16", True)
+    bad = tmp_path / "bad.toml"
+    bad.write_text("[kaggle]\nbackend = \"tpu\"\n", encoding="utf-8")
+    with pytest.raises(SystemExit):
+        kaggle_train_driver.resolve_kaggle_defaults(bad, None, None)
+
+
+def test_find_warm_start_adapter(tmp_path):
+    task_src = tmp_path / "datasets" / "o" / "input"
+    task_src.mkdir(parents=True)
+    (task_src / "task.toml").write_text("x", encoding="utf-8")
+    assert kaggle_train_driver.find_warm_start_adapter(
+        str(tmp_path), task_src
+    ) is None
+    # An adapter inside the task dir itself does not count.
+    (task_src / "adapter.safetensors").write_text("x", encoding="utf-8")
+    assert kaggle_train_driver.find_warm_start_adapter(
+        str(tmp_path), task_src
+    ) is None
+    out_mount = tmp_path / "datasets" / "o" / "outputs"
+    out_mount.mkdir(parents=True)
+    adapter = out_mount / "adapter.safetensors"
+    adapter.write_text("x", encoding="utf-8")
+    assert kaggle_train_driver.find_warm_start_adapter(
+        str(tmp_path), task_src
+    ) == adapter
+    (out_mount / "other.safetensors").write_text("x", encoding="utf-8")
+    with pytest.raises(SystemExit):
+        kaggle_train_driver.find_warm_start_adapter(str(tmp_path), task_src)
+
+
+def test_build_loop_argv_init_adapter(tmp_path):
+    task = {
+        "epochs": 14, "lr": 0.0001, "lora_rank": 32, "lora_alpha": 32,
+        "max_len": 1024, "val_split": 0.1, "seed": 0,
+        "adapter_file": "a.safetensors", "save_every_min": 30,
+    }
+    plain = kaggle_train_driver.build_loop_argv(
+        tmp_path / "kaggle_train_loop.py", task, tmp_path / "out", "16"
+    )
+    assert "--init-adapter" not in plain
+    warm = kaggle_train_driver.build_loop_argv(
+        tmp_path / "kaggle_train_loop.py", task, tmp_path / "out", "16",
+        str(tmp_path / "warm.safetensors"),
+    )
+    assert warm[-2:] == ["--init-adapter", str(tmp_path / "warm.safetensors")]
+
+
 def test_build_stage_argv(tmp_path):
     argv = kaggle_train_driver.build_stage_argv(
         tmp_path / "finetune.py", tmp_path / "task.toml",

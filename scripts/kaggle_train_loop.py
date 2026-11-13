@@ -10,6 +10,12 @@ optimizer state, RNG state, and loop position are saved every
 latest two kept), and a rerun automatically resumes from the latest
 complete checkpoint instead of restarting from step 0.
 
+Two speedups keep single-device math exactly: ``--devices auto`` (the
+default) shards each batch across every local device with ``pmap``
+(the per-shard loss normalizes by the cross-device mask sum, combined
+with psum, so updates match the 1-device path), and ``--init-adapter``
+warm-starts the LoRA weights from a prior run's adapter.
+
 Checkpoint layout under ``--checkpoint-dir``::
 
     ckpt-<step:06d>.npz    lora A/B, optimizer leaves, order arrays
@@ -207,6 +213,86 @@ def _snapshot(ckpt_dir, step_i, lora, opt_state, order_full, order, epoch,
     save_checkpoint(ckpt_dir, step_i, arrays, meta)
 
 
+def resolve_devices(requested: str, available: int) -> int:
+    """Data-parallel device count for training.
+
+    ``auto`` uses every local device; ``1`` forces the single-device
+    path (identical math, easier debugging). Anything else dies:
+    silently ignoring a device request would fake a promised speedup.
+    """
+    if requested == "1":
+        return 1
+    if requested == "auto":
+        return max(1, available)
+    raise SystemExit(f"unknown --devices: {requested!r} (want auto or 1)")
+
+
+def shard_batch(ids, masks, n_devices):
+    """Pad one batch to a device multiple and split its leading axis.
+
+    ``ids``/``masks`` are host numpy row batches; padding rows carry
+    mask 0 so they contribute nothing to the masked loss. Returns
+    ``(D, per, L)`` arrays. The pmap loss normalizes by the cross-device
+    mask sum, so training math matches the single-device path exactly.
+    """
+    import numpy as np
+
+    count = len(ids)
+    per = max(1, -(-count // n_devices))
+    pad = per * n_devices - count
+    if pad:
+        ids = np.concatenate(
+            [ids, np.zeros((pad, ids.shape[1]), ids.dtype)]
+        )
+        masks = np.concatenate(
+            [masks, np.zeros((pad, masks.shape[1]), masks.dtype)]
+        )
+    width = ids.shape[1]
+    return (
+        np.asarray(ids).reshape(n_devices, per, width),
+        np.asarray(masks).reshape(n_devices, per, width),
+    )
+
+
+def warm_lora_from_adapter(adapter: dict, fresh_shapes: dict) -> dict:
+    """Warm-start LoRA weights from a ``read_adapter()`` dict.
+
+    ``fresh_shapes`` maps path-tuple to ``{"A": shape, "B": shape}``
+    from a fresh ``init_lora``. Every adapter entry must match its
+    target shape exactly, and the adapter must cover every target: a
+    partial warm start would mix trained and random weights silently.
+    Returns ``{path-tuple: {"A", "B"}}`` host-numpy arrays.
+    """
+    import numpy as np
+
+    lora = {}
+    for name, mats in adapter["lora"].items():
+        path = tuple(name.split("/"))
+        if path not in fresh_shapes:
+            raise SystemExit(
+                f"warm-start adapter has unexpected target {name!r}"
+            )
+        entry = {}
+        for key in ("A", "B"):
+            want = tuple(fresh_shapes[path][key])
+            got = tuple(np.shape(mats[key]))
+            if got != want:
+                raise SystemExit(
+                    f"warm-start adapter {name}/{key} shape {got} "
+                    f"does not match fresh init {want}"
+                )
+            entry[key] = np.asarray(mats[key])
+        lora[path] = entry
+    missing = [path for path in fresh_shapes if path not in lora]
+    if missing:
+        names = sorted("/".join(path) for path in missing)
+        raise SystemExit(
+            f"warm-start adapter lacks targets {names}; refusing a "
+            "partial warm start"
+        )
+    return lora
+
+
 def advance_past_completed_epoch(start_epoch, start_pos, count):
     """Resume position, skipping an epoch that already completed.
 
@@ -259,6 +345,11 @@ def train(args) -> int:
     if resumed is not None:
         _, saved_arrays, saved_meta = resumed
         emit(f"  resume    step {saved_meta['step']} of {saved_meta['total_steps']}")
+    if resumed is not None and args.init_adapter:
+        raise SystemExit(
+            "resume restores weights from the checkpoint; --init-adapter "
+            "is only for fresh runs"
+        )
 
     params, config = load_checkpoint(base_path)
     config.dtype = "float32"
@@ -293,6 +384,18 @@ def train(args) -> int:
         lora = init_lora(params, paths, args.lora_rank, jax.random.PRNGKey(seed))
         emit(f"  {'lora':<9} rank {args.lora_rank}  alpha {args.lora_alpha:g}  "
              f"{len(paths)} weight groups")
+        if args.init_adapter:
+            from cactus.model.checkpoints import read_adapter
+
+            fresh_shapes = {
+                path: {"A": value["A"].shape, "B": value["B"].shape}
+                for path, value in lora.items()
+            }
+            warm = warm_lora_from_adapter(
+                read_adapter(args.init_adapter), fresh_shapes
+            )
+            lora = jax.tree.map(jnp.asarray, warm)
+            emit(f"  {'warm':<9} start from {args.init_adapter}")
         if n_val > 0:
             order_full = rng.permutation(len(seqs))
             seqs, masks = seqs[order_full], masks[order_full]
@@ -344,6 +447,18 @@ def train(args) -> int:
         opt_state = _opt_leaves_from_numpy(optimizer, lora, saved_leaves)
     emit(f"  {'schedule':<9} {total_steps} steps  warmup {warmup}  cosine decay  "
          f"clip 1.0  (compiling...)")
+    n_devices = resolve_devices(args.devices, jax.device_count())
+    use_pmap = n_devices > 1
+    if use_pmap:
+        lora = jax.tree.map(lambda x: jnp.stack([x] * n_devices), lora)
+        opt_state = jax.tree.map(lambda x: jnp.stack([x] * n_devices), opt_state)
+        emit(f"  {'devices':<9} {n_devices} x {backend}  data-parallel")
+    else:
+        emit(f"  {'devices':<9} 1 x {backend}")
+
+    def first(tree):
+        """Device-0 replica back on host (checkpoints stay unreplicated)."""
+        return jax.tree.map(lambda x: np.asarray(x)[0], tree)
 
     def loss_fn(lora, ids, mask):
         merged = cq_ste_params(merge_lora(params, lora, scale), WEIGHT_BITS)
@@ -352,12 +467,38 @@ def train(args) -> int:
         ce = optax.softmax_cross_entropy_with_integer_labels(logits, targets)
         return (ce * mask).sum() / jnp.maximum(mask.sum(), 1.0)
 
+    def ploss_fn(lora, ids, mask):
+        """Per-shard loss normalized by the cross-device mask sum.
+
+        Each device holds sum(shard)/M with M the whole-batch mask
+        total, so a psum over devices reproduces the single-device
+        loss and grads EXACTLY (a pmean would shrink both by 1/D).
+        """
+        merged = cq_ste_params(merge_lora(params, lora, scale), WEIGHT_BITS)
+        logits = model.apply({"params": merged}, ids, quant=True)
+        logits, targets, mask = logits[:, :-1], ids[:, 1:], mask[:, 1:]
+        ce = optax.softmax_cross_entropy_with_integer_labels(logits, targets)
+        total = jax.lax.psum(mask.sum(), "shard")
+        return (ce * mask).sum() / jnp.maximum(total, 1.0)
+
     @jax.jit
     def train_step(lora, opt_state, ids, mask):
         loss, grads = jax.value_and_grad(loss_fn)(lora, ids, mask)
         updates, opt_state = optimizer.update(grads, opt_state, lora)
         return optax.apply_updates(lora, updates), opt_state, loss
 
+    def _ptrain_step(lora, opt_state, ids, mask):
+        # psum, not pmean: per-shard grads are already divided by the
+        # whole-batch total, so the sum (not the mean) matches the
+        # single-device update. Identical grads on every device keep
+        # the clip norm and the replicas in sync.
+        loss, grads = jax.value_and_grad(ploss_fn)(lora, ids, mask)
+        grads = jax.lax.psum(grads, "shard")
+        updates, opt_state = optimizer.update(grads, opt_state, lora)
+        updated = optax.apply_updates(lora, updates)
+        return updated, opt_state, jax.lax.psum(loss, "shard")
+
+    ptrain_step = jax.pmap(_ptrain_step, axis_name="shard")
     eval_step = jax.jit(loss_fn)
     every = max(1, total_steps // 50)
     save_every_s = args.save_every_min * 60
@@ -371,19 +512,28 @@ def train(args) -> int:
         last = 0.0
         for start in range(first, count, batch):
             idx = order[start:start + batch]
-            lora, opt_state, loss = train_step(lora, opt_state,
-                                               jnp.asarray(seqs[idx]), jnp.asarray(masks[idx]))
-            last = float(loss)
+            if use_pmap:
+                sh_ids, sh_masks = shard_batch(seqs[idx], masks[idx], n_devices)
+                lora, opt_state, loss = ptrain_step(
+                    lora, opt_state, jnp.asarray(sh_ids), jnp.asarray(sh_masks))
+            else:
+                lora, opt_state, loss = train_step(lora, opt_state,
+                                                   jnp.asarray(seqs[idx]),
+                                                   jnp.asarray(masks[idx]))
+            last = float(np.asarray(loss).reshape(-1)[0])
             step_i += 1
             if step_i % every == 0:
                 emit(f"  {'step':<9} {step_i}/{total_steps}  loss {last:.4f}")
             if time.monotonic() - last_save >= save_every_s:
-                _snapshot(ckpt_dir, step_i, lora, opt_state, order_full,
+                snap_lora = first(lora) if use_pmap else lora
+                snap_opt = first(opt_state) if use_pmap else opt_state
+                _snapshot(ckpt_dir, step_i, snap_lora, snap_opt, order_full,
                           order, epoch, start + batch, total_steps, seed, rng)
                 last_save = time.monotonic()
                 emit(f"  {'save':<9} checkpoint at step {step_i}")
+        score_lora = first(lora) if use_pmap else lora
         if n_val > 0:
-            val = np.mean([float(eval_step(lora, jnp.asarray(val_seqs[i:i + batch]),
+            val = np.mean([float(eval_step(score_lora, jnp.asarray(val_seqs[i:i + batch]),
                                            jnp.asarray(val_masks[i:i + batch])))
                            for i in range(0, n_val, batch)])
             emit(f"  {'epoch':<9} {epoch + 1}/{epochs}  loss {last:.4f}  val {val:.4f}")
@@ -392,6 +542,8 @@ def train(args) -> int:
 
     out = args.out
     os.makedirs(os.path.dirname(out) or ".", exist_ok=True)
+    if use_pmap:
+        lora = first(lora)
     write_adapter(out, {
         "lora": {"/".join(p): {"A": np.asarray(v["A"]), "B": np.asarray(v["B"])}
                  for p, v in lora.items()},
@@ -423,6 +575,12 @@ def main(argv=None) -> int:
                         help="Periodic checkpoint directory")
     parser.add_argument("--save-every-min", type=float, required=True,
                         help="Minutes between checkpoints (0 disables)")
+    parser.add_argument("--devices", default="auto",
+                        help="auto uses every local device (pmap "
+                        "data-parallel); 1 forces single-device")
+    parser.add_argument("--init-adapter", default=None,
+                        help="Warm-start LoRA weights from a prior "
+                        ".safetensors adapter (fresh runs only)")
     args = parser.parse_args(argv)
     if args.save_every_min == 0:
         args.save_every_min = float("inf")

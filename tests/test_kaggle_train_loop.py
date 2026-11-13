@@ -8,6 +8,97 @@ import pytest
 import kaggle_train_loop
 
 
+def test_resolve_devices():
+    assert kaggle_train_loop.resolve_devices("auto", 2) == 2
+    assert kaggle_train_loop.resolve_devices("auto", 1) == 1
+    assert kaggle_train_loop.resolve_devices("1", 8) == 1
+    with pytest.raises(SystemExit):
+        kaggle_train_loop.resolve_devices("2", 2)
+
+
+def test_shard_batch_even_split():
+    ids = np.arange(32 * 8, dtype=np.int32).reshape(32, 8)
+    masks = np.ones((32, 8), dtype=np.float32)
+    sh_ids, sh_masks = kaggle_train_loop.shard_batch(ids, masks, 2)
+    assert sh_ids.shape == (2, 16, 8)
+    assert sh_masks.shape == (2, 16, 8)
+    assert sh_ids.dtype == np.int32
+    # Row order preserved across the split.
+    assert (sh_ids.reshape(32, 8) == ids).all()
+
+
+def test_shard_batch_tail_pads_with_zero_mask():
+    ids = np.arange(31 * 8, dtype=np.int32).reshape(31, 8) + 1
+    masks = np.ones((31, 8), dtype=np.float32)
+    sh_ids, sh_masks = kaggle_train_loop.shard_batch(ids, masks, 2)
+    assert sh_ids.shape == (2, 16, 8)
+    # First 31 rows intact, last row padded with mask 0 (loss-neutral).
+    flat_ids = sh_ids.reshape(32, 8)
+    flat_masks = sh_masks.reshape(32, 8)
+    assert (flat_ids[:31] == ids).all()
+    assert (flat_ids[31:] == 0).all()
+    assert (flat_masks[:31] == 1).all()
+    assert (flat_masks[31:] == 0).all()
+
+
+def test_shard_batch_single_row_single_device():
+    ids = np.ones((5, 4), dtype=np.int32)
+    masks = np.ones((5, 4), dtype=np.float32)
+    sh_ids, sh_masks = kaggle_train_loop.shard_batch(ids, masks, 1)
+    assert sh_ids.shape == (1, 5, 4)
+    assert (sh_masks == 1).all()
+
+
+def make_warm_shapes():
+    return {
+        ("a", "b"): {"A": (4, 2), "B": (2, 4)},
+        ("c",): {"A": (3, 2), "B": (2, 3)},
+    }
+
+
+def make_warm_adapter():
+    return {
+        "lora": {
+            "a/b": {
+                "A": np.ones((4, 2), dtype=np.float32),
+                "B": np.zeros((2, 4), dtype=np.float32),
+            },
+            "c": {
+                "A": np.ones((3, 2), dtype=np.float32),
+                "B": np.zeros((2, 3), dtype=np.float32),
+            },
+        }
+    }
+
+
+def test_warm_lora_from_adapter_ok():
+    warm = kaggle_train_loop.warm_lora_from_adapter(
+        make_warm_adapter(), make_warm_shapes()
+    )
+    assert set(warm) == {("a", "b"), ("c",)}
+    assert warm[("a", "b")]["A"].shape == (4, 2)
+    assert (warm[("c",)]["B"] == 0).all()
+
+
+def test_warm_lora_from_adapter_refuses_mismatch():
+    shapes = make_warm_shapes()
+    bad_shape = make_warm_adapter()
+    bad_shape["lora"]["c"]["B"] = np.zeros((2, 5), dtype=np.float32)
+    with pytest.raises(SystemExit):
+        kaggle_train_loop.warm_lora_from_adapter(bad_shape, shapes)
+    extra = make_warm_adapter()
+    extra["lora"]["zzz"] = {
+        "A": np.ones((1, 1), dtype=np.float32),
+        "B": np.ones((1, 1), dtype=np.float32),
+    }
+    with pytest.raises(SystemExit):
+        kaggle_train_loop.warm_lora_from_adapter(extra, shapes)
+    missing = make_warm_adapter()
+    del missing["lora"]["c"]
+    with pytest.raises(SystemExit):
+        kaggle_train_loop.warm_lora_from_adapter(missing, shapes)
+
+
 def make_payload():
     return (
         {

@@ -103,7 +103,17 @@ stage_timeout = 0
 poll_interval = 60
 poll_timeout = 25200
 # Train settings used on Kaggle (override the weak-box [train] values).
+# The driver reads these from the mounted task.toml (Kaggle runs it
+# with no argv); explicit driver CLI args still win for local/test use.
 backend = "gpu"
-batch_size = 16
+# 32, not the guide default 16: halves the step count (~1.3-1.5x faster
+# wall-clock). T4 fit unvalidated before round 6 — an OOM fails loud in
+# the finetune stage, and the fix is reverting to 16, not a code change.
+batch_size = 32
+# Warm-start the LoRA weights from the prior round's published adapter
+# (mounts the outputs dataset; the driver dies loud when no adapter is
+# mounted). False for from-scratch rounds; true only for a follow-up
+# round reusing the previous round's adapter. Never with --resume.
+warm_start = false
 # Output files published to the binaries dataset (relative to out/).
 publish_files = ["adapter.safetensors", "handoff_20l.cact", "eval_report.json", "train.log", "manifest.json", "train.jsonl", "eval.jsonl"]

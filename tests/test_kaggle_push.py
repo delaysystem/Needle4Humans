@@ -66,6 +66,27 @@ def test_render_kernel_metadata_resume_needs_slug():
         kaggle_push.render_kernel_metadata(make_config(), resume=True)
 
 
+def test_render_kernel_metadata_warm_start_mounts_outputs():
+    import pytest
+
+    config = make_config()
+    config["kaggle"]["output_dataset"] = "mini-outputs"
+    config["kaggle"]["warm_start"] = True
+    assert kaggle_push.render_kernel_metadata(
+        config
+    )["dataset_sources"] == ["someone/mini-input", "someone/mini-outputs"]
+    config["kaggle"]["warm_start"] = False
+    assert kaggle_push.render_kernel_metadata(
+        config
+    )["dataset_sources"] == ["someone/mini-input"]
+    config["kaggle"]["warm_start"] = True
+    with pytest.raises(SystemExit):
+        kaggle_push.render_kernel_metadata(config, resume=True)
+    del config["kaggle"]["output_dataset"]
+    with pytest.raises(SystemExit):
+        kaggle_push.render_kernel_metadata(config)
+
+
 def test_stage_kernel_copies_driver_and_metadata(tmp_path):
     root = tmp_path / "root"
     task_dir = root / "tasks" / "t"

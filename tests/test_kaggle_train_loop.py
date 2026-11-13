@@ -22,7 +22,9 @@ def test_apply_backend_tuning():
     cuda = SimpleNamespace(flash=True, remat=True, scan_unroll=1,
                            num_layers=20)
     kaggle_train_loop.apply_backend_tuning(cuda, "cuda")
-    assert (cuda.flash, cuda.remat, cuda.scan_unroll) == (True, False, 1)
+    # CUDA keeps vendor memory settings: no flash hardware on T4, so
+    # remat stays on (v14 OOMed with it off).
+    assert (cuda.flash, cuda.remat, cuda.scan_unroll) == (True, True, 1)
     metal = SimpleNamespace(flash=True, remat=True, scan_unroll=1,
                             num_layers=20)
     kaggle_train_loop.apply_backend_tuning(metal, "metal")

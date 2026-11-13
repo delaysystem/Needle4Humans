@@ -297,16 +297,16 @@ def apply_backend_tuning(config, backend: str) -> None:
     """Speed toggles per backend; training math stays identical.
 
     Metal keeps the stock finetune path (no flash, no remat, full
-    unroll). CUDA disables remat: activation recompute trades speed
-    for memory, and a ~150M-param LoRA run has gigabytes to spare on
-    a 16 GB T4 — same numerics, roughly a fifth faster per step.
+    unroll). CUDA keeps the vendor memory settings: the T4 has no
+    flash-attention hardware (Turing, sm_75 — needs Ampere+), so
+    attention materializes full seq^2 score matrices and remat is
+    the only thing keeping them out of memory (disabling it OOMs
+    at 84 GB on the first step; measured on v14 2026-11-13).
     """
     if backend == "metal":
         config.flash = False
         config.remat = False
         config.scan_unroll = config.num_layers
-    else:
-        config.remat = False
 
 
 def advance_past_completed_epoch(start_epoch, start_pos, count):

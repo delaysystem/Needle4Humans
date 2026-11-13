@@ -281,11 +281,16 @@
         }
       ],
       "base": [],
-      "tuned": [],
+      "tuned": [
+        {
+          "name": "request_human_handoff",
+          "arguments": {}
+        }
+      ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00014",
@@ -504,14 +509,14 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "details": "Every reply still comes from a bot."
+            "details": "I paid for premium support."
           }
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": true
+      "tuned_hit": false
     },
     {
       "id": "ev-00024",
@@ -1171,14 +1176,15 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "details": "Meine Mietwagenbuchung wurde ohne Ankündigung storniert."
+            "details": "Meine Mietwagenbuchung wurde ohne Ankündigung storniert.",
+            "reason": "billing"
           }
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": true
+      "tuned_hit": false
     },
     {
       "id": "ev-00059",
@@ -1338,16 +1344,11 @@
     {
       "id": "ev-00067",
       "expected": [],
-      "base": [
-        {
-          "name": "request_human_handoff",
-          "arguments": {}
-        }
-      ],
+      "base": [],
       "tuned": [],
       "base_timeout": false,
       "tuned_timeout": false,
-      "base_hit": false,
+      "base_hit": true,
       "tuned_hit": true
     },
     {
@@ -1444,16 +1445,11 @@
         }
       ],
       "base": [],
-      "tuned": [
-        {
-          "name": "request_human_handoff",
-          "arguments": {}
-        }
-      ],
+      "tuned": [],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": true
+      "tuned_hit": false
     },
     {
       "id": "ev-00075",
@@ -2023,11 +2019,16 @@
       "id": "ev-00102",
       "expected": [],
       "base": [],
-      "tuned": [],
+      "tuned": [
+        {
+          "name": "request_human_handoff",
+          "arguments": {}
+        }
+      ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": true,
-      "tuned_hit": true
+      "tuned_hit": false
     },
     {
       "id": "ev-00103",
@@ -2292,12 +2293,7 @@
           "arguments": {}
         }
       ],
-      "base": [
-        {
-          "name": "request_human_handoff",
-          "arguments": {}
-        }
-      ],
+      "base": [],
       "tuned": [
         {
           "name": "request_human_handoff",
@@ -2306,7 +2302,7 @@
       ],
       "base_timeout": false,
       "tuned_timeout": false,
-      "base_hit": true,
+      "base_hit": false,
       "tuned_hit": true
     },
     {
@@ -2358,11 +2354,16 @@
         }
       ],
       "base": [],
-      "tuned": [],
+      "tuned": [
+        {
+          "name": "request_human_handoff",
+          "arguments": {}
+        }
+      ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00122",
@@ -2416,15 +2417,13 @@
       "tuned": [
         {
           "name": "request_human_handoff",
-          "arguments": {
-            "reason": "complaint"
-          }
+          "arguments": {}
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00125",
@@ -3026,13 +3025,15 @@
       "tuned": [
         {
           "name": "request_human_handoff",
-          "arguments": {}
+          "arguments": {
+            "details": "Un robot. Proprio ciò che serviva alla mia caldaia rotta."
+          }
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": true
+      "tuned_hit": false
     },
     {
       "id": "ev-00157",
@@ -3841,15 +3842,14 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "details": "De bevestiging kwam nooit en mijn kaart is belast.",
-            "reason": "billing"
+            "details": "De bevestiging kwam nooit en mijn kaart is belast."
           }
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00199",
@@ -4577,14 +4577,15 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "details": "Rachunki mimo trzech zgłoszeń wciąż idą na stary adres."
+            "details": "Rachunki mimo trzech zgłoszeń wciąż idą na stary adres.",
+            "reason": "billing"
           }
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00237",
@@ -4799,19 +4800,17 @@
     {
       "id": "ev-00248",
       "expected": [],
-      "base": [
+      "base": [],
+      "tuned": [
         {
           "name": "request_human_handoff",
-          "arguments": {
-            "reason": "account"
-          }
+          "arguments": {}
         }
       ],
-      "tuned": [],
       "base_timeout": false,
       "tuned_timeout": false,
-      "base_hit": false,
-      "tuned_hit": true
+      "base_hit": true,
+      "tuned_hit": false
     },
     {
       "id": "ev-00249",
@@ -4851,7 +4850,7 @@
   ],
   "base": {
     "total": 252,
-    "hits": 38,
+    "hits": 39,
     "by_language": {
       "en": {
         "total": 36,
@@ -4859,7 +4858,7 @@
       },
       "de": {
         "total": 36,
-        "hits": 5
+        "hits": 6
       },
       "fr": {
         "total": 36,
@@ -4867,7 +4866,7 @@
       },
       "es": {
         "total": 36,
-        "hits": 6
+        "hits": 5
       },
       "it": {
         "total": 36,
@@ -4879,7 +4878,7 @@
       },
       "pl": {
         "total": 36,
-        "hits": 4
+        "hits": 5
       }
     },
     "by_category": {
@@ -4889,7 +4888,7 @@
       },
       "implicit": {
         "total": 42,
-        "hits": 2
+        "hits": 1
       },
       "sarcastic": {
         "total": 42,
@@ -4905,15 +4904,15 @@
       },
       "negative": {
         "total": 42,
-        "hits": 36
+        "hits": 38
       }
     },
     "negatives": 42,
-    "negative_hits": 36
+    "negative_hits": 38
   },
   "tuned": {
     "total": 252,
-    "hits": 239,
+    "hits": 238,
     "by_language": {
       "en": {
         "total": 36,
@@ -4921,23 +4920,23 @@
       },
       "de": {
         "total": 36,
-        "hits": 34
+        "hits": 33
       },
       "fr": {
         "total": 36,
-        "hits": 35
+        "hits": 33
       },
       "es": {
         "total": 36,
-        "hits": 34
+        "hits": 36
       },
       "it": {
         "total": 36,
-        "hits": 34
+        "hits": 33
       },
       "nl": {
         "total": 36,
-        "hits": 34
+        "hits": 35
       },
       "pl": {
         "total": 36,
@@ -4947,7 +4946,7 @@
     "by_category": {
       "explicit": {
         "total": 42,
-        "hits": 41
+        "hits": 40
       },
       "implicit": {
         "total": 42,
@@ -4955,7 +4954,7 @@
       },
       "sarcastic": {
         "total": 42,
-        "hits": 39
+        "hits": 41
       },
       "multisentence": {
         "total": 42,
@@ -4967,10 +4966,10 @@
       },
       "negative": {
         "total": 42,
-        "hits": 40
+        "hits": 38
       }
     },
     "negatives": 42,
-    "negative_hits": 40
+    "negative_hits": 38
   }
 }

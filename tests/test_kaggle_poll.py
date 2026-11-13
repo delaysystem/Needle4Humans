@@ -19,6 +19,12 @@ def test_parse_status_running():
 def test_parse_status_error():
     assert kaggle_poll.parse_status("ERROR") == "error"
     assert kaggle_poll.parse_status("run FAILED") == "error"
+    assert (
+        kaggle_poll.parse_status(
+            'o/s has status "KernelWorkerStatus.CANCEL_ACKNOWLEDGED"'
+        )
+        == "error"
+    )
 
 
 def test_parse_status_unknown():
@@ -73,6 +79,7 @@ def test_main_backs_off_429_without_budget(tmp_path, monkeypatch, capsys):
     script = [
         subprocess.CompletedProcess([], 1, "", "429 Too Many Requests"),
         subprocess.CompletedProcess([], 1, "", "429 Too Many Requests"),
+        subprocess.CompletedProcess([], 0, "RUNNING", ""),
         subprocess.CompletedProcess([], 0, "COMPLETE", ""),
         subprocess.CompletedProcess([], 0, "", ""),
     ]
@@ -88,9 +95,33 @@ def test_main_backs_off_429_without_budget(tmp_path, monkeypatch, capsys):
     )
     assert kaggle_poll.main(["--task", str(write_poll_task(tmp_path))]) == 0
     # Two 429 backoffs (300s), no failure budget consumed, then download.
-    assert sleeps == [300, 300]
+    assert sleeps == [300, 300, 60]
     assert calls[-1][1:3] == ["kernels", "output"]
     assert "backing off" in capsys.readouterr().out
+
+
+def test_main_ignores_terminal_before_live(tmp_path, monkeypatch, capsys):
+    import subprocess
+
+    script = [
+        subprocess.CompletedProcess([], 0, "ERROR", ""),
+        subprocess.CompletedProcess([], 0, "RUNNING", ""),
+        subprocess.CompletedProcess([], 0, "ERROR", ""),
+        subprocess.CompletedProcess([], 0, "logtext", ""),
+    ]
+
+    def fake_run(argv, timeout=None):
+        return script.pop(0)
+
+    monkeypatch.setattr(kaggle_poll, "run_capture", fake_run)
+    monkeypatch.setattr(kaggle_poll.time, "sleep", lambda s: None)
+    monkeypatch.setattr(
+        kaggle_poll._common, "kaggle_bin", lambda: "kaggle"
+    )
+    assert kaggle_poll.main(["--task", str(write_poll_task(tmp_path))]) == 1
+    out = capsys.readouterr().out
+    assert "ignoring terminal state" in out
+    assert "logtext" in out
 
 
 def test_main_failure_budget_still_applies(tmp_path, monkeypatch):

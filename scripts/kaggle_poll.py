@@ -31,9 +31,13 @@ RATE_LIMIT_BACKOFF_S = 300
 
 
 def parse_status(text: str) -> str:
-    """Map ``kernels status`` output to complete/running/error/unknown."""
+    """Map ``kernels status`` output to complete/running/error/unknown.
+
+    Cancellation is terminal like error: polling a CANCEL_ACKNOWLEDGED
+    run would otherwise burn the whole poll timeout on a dead kernel.
+    """
     folded = text.casefold()
-    if "error" in folded or "fail" in folded:
+    if "error" in folded or "fail" in folded or "cancel" in folded:
         return "error"
     if "complet" in folded:
         return "complete"
@@ -69,6 +73,16 @@ def run_capture(
     )
 
 
+def log_line(message: str) -> None:
+    """Print with a UTC timestamp (debugging async API races)."""
+    import datetime
+
+    stamp = datetime.datetime.now(datetime.timezone.utc).isoformat(
+        timespec="seconds"
+    )
+    print(f"{stamp} {message}", flush=True)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = _common.add_task_argument(
         argparse.ArgumentParser(description=__doc__)
@@ -97,6 +111,12 @@ def main(argv: list[str] | None = None) -> int:
         print(" ".join(build_status_argv(kaggle, ref)))
         return 0
     failures = 0
+    # Terminal states are only honored after a live state was observed:
+    # status/logs/files have no version dimension, so a fresh poller can
+    # read the previous version's terminal state (observed: instant
+    # "error" seconds after pushing). A run always passes through a
+    # non-terminal state first (startup alone takes minutes).
+    seen_active = False
     deadline = time.monotonic() + timeout
     while True:
         try:
@@ -109,17 +129,15 @@ def main(argv: list[str] | None = None) -> int:
         if completed is None or completed.returncode != 0:
             stderr = "" if completed is None else completed.stderr
             if is_rate_limited(stderr):
-                print(
+                log_line(
                     "status call rate-limited; backing off "
-                    f"{RATE_LIMIT_BACKOFF_S}s (failures not counted)",
-                    flush=True,
+                    f"{RATE_LIMIT_BACKOFF_S}s (failures not counted)"
                 )
                 time.sleep(RATE_LIMIT_BACKOFF_S)
             else:
                 failures += 1
-                print(
-                    f"status call failed ({failures}/{MAX_CLI_FAILURES})",
-                    flush=True,
+                log_line(
+                    f"status call failed ({failures}/{MAX_CLI_FAILURES})"
                 )
                 if failures >= MAX_CLI_FAILURES:
                     print(stderr.strip(), flush=True)
@@ -128,10 +146,16 @@ def main(argv: list[str] | None = None) -> int:
         else:
             failures = 0
             state = parse_status(completed.stdout)
-            print(f"status: {state}", flush=True)
+            log_line(f"status: {state}")
             if args.once:
                 return 0
-            if state == "complete":
+            if state in ("complete", "error") and not seen_active:
+                log_line(
+                    "ignoring terminal state before any live state "
+                    "(probably the previous version); keep waiting"
+                )
+                time.sleep(interval)
+            elif state == "complete":
                 print(
                     " ".join(build_output_argv(kaggle, ref, out_dir)),
                     flush=True,
@@ -142,42 +166,42 @@ def main(argv: list[str] | None = None) -> int:
                         timeout=DOWNLOAD_TIMEOUT_S,
                     )
                 except subprocess.TimeoutExpired:
-                    print(
+                    log_line(
                         "output download timed out after "
-                        f"{DOWNLOAD_TIMEOUT_S}s",
-                        flush=True,
+                        f"{DOWNLOAD_TIMEOUT_S}s"
                     )
                     return 1
                 if downloaded.returncode != 0:
                     print(downloaded.stderr.strip(), flush=True)
                     return 1
-                print(f"outputs downloaded to {out_dir}", flush=True)
+                log_line(f"outputs downloaded to {out_dir}")
                 return 0
-            if state == "error":
+            elif state == "error":
                 try:
                     logs = run_capture(
                         build_logs_argv(kaggle, ref),
                         timeout=LOGS_TIMEOUT_S,
                     )
                 except subprocess.TimeoutExpired:
-                    print("log fetch timed out", flush=True)
+                    log_line("log fetch timed out")
                     return 1
                 print(logs.stdout, flush=True)
                 print(logs.stderr, file=sys.stderr)
-                print(
+                log_line(
                     "hint: rescue checkpoints with kaggle_save_checkpoints.py, "
-                    "then re-push with --resume to continue instead of restarting",
-                    flush=True,
+                    "then re-push with --resume to continue instead of restarting"
                 )
                 return 1
-            if state == "unknown":
-                print(
-                    f"warning: unparsed status: {completed.stdout!r}",
-                    flush=True,
-                )
-            time.sleep(interval)
+            else:
+                if state == "running":
+                    seen_active = True
+                elif state == "unknown":
+                    log_line(
+                        f"warning: unparsed status: {completed.stdout!r}"
+                    )
+                time.sleep(interval)
         if time.monotonic() >= deadline:
-            print(f"poll timed out after {timeout}s", flush=True)
+            log_line(f"poll timed out after {timeout}s")
             return 1
 
 

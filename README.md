@@ -9,6 +9,29 @@ How it works: every stage is one script, and every task-specific value
 lives in the task's `task.toml`. A new finetune needs a new task
 directory, not new code.
 
+The tuned model ships in the companion repo
+([Needle4Workers](https://github.com/delaysystem/Needle4Workers)): a
+production Cloudflare Worker with guardrails, metrics, and a
+release-gating eval harness.
+
+## Results (human handoff)
+
+Frozen 252-case eval, exact name+args+order, 7 languages × 6 categories:
+
+| Round | Train rows | Exact | Routing |
+|---|---|---|---|
+| v1 (base tuned) | 1281 | 69.0% (174) | 85.3% |
+| v2 | 1862 | 86.1% (217) | 96.0% |
+| v3 | 2282 | 91.3% (230) | 98.8% |
+| v4 | 2814 | 94.8% (239) | 98.8% |
+| v5 | 3124 | 94.4% (238) | 97.6% |
+
+Untuned base: 15.5% (39). v5 per-category: edge 100%, implicit 100%,
+sarcastic 97.6%, explicit 95.2%, negative 90.5%, multisentence 83.3%.
+Per-language parity: worst 33/36 (de/fr/it), best 36/36 (es).
+Target 250/252 (99.2%) is set in `tasks/human_handoff/rounds.json`,
+which also logs every round; round 6 (3257 rows, miss-targeted) is next.
+
 ## Layout
 
 - `scripts/check_env.py` — verify Python, the `cactus` package/CLI, the
@@ -32,10 +55,9 @@ directory, not new code.
 ## Setup
 
 ```sh
-uv venv
+uv venv --python 3.11
 . .venv/bin/activate
-uv pip install 'cactus-compute[train,gpu]' pytest   # NVIDIA
-# uv pip install 'cactus-compute[train]' pytest     # CPU / other
+uv pip install -r requirements.txt
 ```
 
 ## Run (human-handoff task)
@@ -105,3 +127,15 @@ python -m compileall -q scripts tests
   nice -n 10 .venv/bin/python scripts/finetune.py --task <task.toml>`.
 - Locally tuned archives report `confidence=None` (the confidence head
   is untouched by local LoRA); route on eval accuracy instead.
+- Forks: `[kaggle] username` in each `task.toml` is owner-specific
+  (`blonded2` here) — point it at your own account plus your
+  `~/.kaggle/` credentials before pushing.
+- `tasks/human_handoff/out/` deliberately tracks `train.jsonl`,
+  `eval.jsonl`, `manifest.json`, and the kernel log (byte-reproducible
+  inputs and run records); binaries (`.cact`, `.safetensors`, caches,
+  staging dirs) stay ignored.
+
+## License
+
+Business Source License 1.0, see [LICENSE](LICENSE). Converts to
+Apache-2.0 on 2030-01-01.

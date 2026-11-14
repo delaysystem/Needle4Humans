@@ -1,0 +1,9 @@
+# Local dev/test env. Python 3.11 (repo .venv).
+# Training-only deps (jax, jaxlib, flax, optax, safetensors,
+# sentencepiece) are NOT installed here; they install on Kaggle via
+# cactus-compute[train,gpu]==4.2.0 (pinned in
+# scripts/kaggle_train_driver.py TRAIN_PACKAGE).
+cactus-compute==4.1.0
+pytest==9.2.0
+numpy==2.4.6
+huggingface_hub==2.4.0

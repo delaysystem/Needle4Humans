@@ -58,6 +58,26 @@ def test_summarize_buckets():
     assert (summary["negative_hits"], summary["negatives"]) == (1, 1)
 
 
+def test_strip_required_keys():
+    tools = [
+        {
+            "name": "handoff",
+            "parameters": {
+                "type": "object",
+                "properties": {"reason": {"type": "string"}},
+                "required": ["reason"],
+            },
+        }
+    ]
+    stripped = evaluate.strip_required_keys(tools)
+    assert stripped[0]["parameters"] == {
+        "type": "object",
+        "properties": {"reason": {"type": "string"}},
+    }
+    # Original untouched (deep copy).
+    assert tools[0]["parameters"]["required"] == ["reason"]
+
+
 def test_rate_guards_empty():
     assert evaluate.rate(0, 0) == 0.0
     assert evaluate.rate(1, 2) == 0.5

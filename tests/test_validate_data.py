@@ -38,6 +38,59 @@ def test_valid_row():
     assert validate_data.validate_row(make_row(), TOOLS) == []
 
 
+def test_missing_required_argument():
+    tools = {
+        "request_human_handoff": {
+            "name": "request_human_handoff",
+            "parameters": {
+                "properties": {"reason": {"enum": ["billing", "general"]}},
+                "required": ["reason"],
+            },
+        }
+    }
+    row = make_row(answers=[{"name": "request_human_handoff", "arguments": {}}])
+    errors = validate_data.validate_row(row, tools)
+    assert len(errors) == 1 and "required" in errors[0]
+    row["answers"][0]["arguments"] = {"reason": "general"}
+    assert validate_data.validate_row(row, tools) == []
+
+
+def test_array_arguments():
+    tools = {
+        "handoff": {
+            "name": "handoff",
+            "parameters": {
+                "type": "array",
+                "items": {"type": "string", "enum": ["billing", "general"]},
+                "minItems": 1,
+                "maxItems": 1,
+            },
+        }
+    }
+    ok = make_row(
+        tools=[{"name": "handoff"}],
+        answers=[{"name": "handoff", "arguments": ["billing"]}],
+    )
+    assert validate_data.validate_row(ok, tools) == []
+    for bad_args in ([], ["billing", "general"], ["bogus"], [7]):
+        row = make_row(
+            tools=[{"name": "handoff"}],
+            answers=[{"name": "handoff", "arguments": bad_args}],
+        )
+        assert validate_data.validate_row(row, tools) != [], bad_args
+    obj_tools = {
+        "handoff": {
+            "name": "handoff",
+            "parameters": {"type": "object", "properties": {}},
+        }
+    }
+    row = make_row(
+        tools=[{"name": "handoff"}],
+        answers=[{"name": "handoff", "arguments": ["billing"]}],
+    )
+    assert validate_data.validate_row(row, obj_tools) != []
+
+
 def test_valid_negative_row():
     row = make_row(
         query="What are your hours?",

@@ -10,8 +10,10 @@ guide):
 
 - required keys ``query``/``tools``/``answers``/``reasoning`` present
 - every tool and answer name is declared in the task's tools file
+- schema-``required`` arguments are present on every answer
 - enum arguments are members of the schema enum
 - free-text arguments are evidenced by a span of the query
+- array arguments match the ``items`` schema and ``min/maxItems`` bounds
 - ``reasoning`` is non-empty
 
 Dataset checks:
@@ -35,11 +37,46 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import _common
 
 
+def check_item(tool_name: str, value, schema: dict, errors: list) -> None:
+    """Check one array item against the items schema (enum/type)."""
+    if not isinstance(schema, dict):
+        return
+    want = schema.get("type")
+    if want == "string" and not isinstance(value, str):
+        errors.append(f"{tool_name}: item {value!r} is not a string")
+        return
+    if "enum" in schema and value not in schema["enum"]:
+        errors.append(
+            f"{tool_name}: item {value!r} not in enum {schema['enum']}"
+        )
+
+
 def argument_errors(
-    tool_name: str, arguments: dict, properties: dict, query: str
+    tool_name: str,
+    arguments: dict | list,
+    properties: dict,
+    query: str,
+    required: list | None = None,
+    items_schema: dict | None = None,
+    min_items: int | None = None,
+    max_items: int | None = None,
 ) -> list[str]:
     """Check one answer's arguments against the tool schema and query."""
     errors = []
+    if isinstance(arguments, list):
+        if items_schema is None:
+            errors.append(f"{tool_name}: array arguments need an items schema")
+            return errors
+        if min_items is not None and len(arguments) < min_items:
+            errors.append(f"{tool_name}: want at least {min_items} items")
+        if max_items is not None and len(arguments) > max_items:
+            errors.append(f"{tool_name}: want at most {max_items} items")
+        for value in arguments:
+            check_item(tool_name, value, items_schema, errors)
+        return errors
+    for key in required or []:
+        if key not in arguments:
+            errors.append(f"{tool_name}: missing required argument '{key}'")
     folded_query = query.casefold()
     for key, value in arguments.items():
         if key not in properties:
@@ -86,17 +123,26 @@ def validate_row(row: dict, tools_by_name: dict) -> list[str]:
         if name not in tools_by_name:
             errors.append(f"row {row_id}: answer for undeclared tool {name!r}")
             continue
-        properties = tools_by_name[name].get("parameters", {}).get(
-            "properties", {}
-        )
+        parameters = tools_by_name[name].get("parameters", {})
+        properties = parameters.get("properties", {})
         arguments = answer.get("arguments", {})
-        if not isinstance(arguments, dict):
-            errors.append(f"row {row_id}: {name} arguments not an object")
+        if not isinstance(arguments, (dict, list)):
+            errors.append(f"row {row_id}: {name} arguments not an object or array")
+            continue
+        if isinstance(arguments, list) and parameters.get("type") != "array":
+            errors.append(f"row {row_id}: {name} takes object arguments")
             continue
         errors.extend(
             f"row {row_id}: {message}"
             for message in argument_errors(
-                name, arguments, properties, row["query"]
+                name,
+                arguments,
+                properties,
+                row["query"],
+                parameters.get("required", []),
+                parameters.get("items"),
+                parameters.get("minItems"),
+                parameters.get("maxItems"),
             )
         )
     return errors

@@ -1,5 +1,5 @@
 {
-  "current_round": 6,
+  "current_round": 9,
   "max_rounds": 7,
   "min_gain_to_continue": 1,
   "notes": [
@@ -8,7 +8,10 @@
     "v1 69.0% was scored on old multi golds ({}); v1-rescored 75.0% on corrected golds",
     "stop: exact >= 96%, or 5 rounds, or 2 consecutive rounds with gain < 1 case",
     "round-3 attempt 1: killed by own 3h stage timeout at step 1428/2580 (config error, no eval, does not count as a round)",
-    "round-4 attempt 1: killed by own 5h stage timeout during final scoring after epoch 15/15 (config error, no eval, does not count as a round)"
+    "round-4 attempt 1: killed by own 5h stage timeout during final scoring after epoch 15/15 (config error, no eval, does not count as a round)",
+    "round-7 contract: tiny schema, reason required from 5-way enum incl general, details dropped; seeds migrated (empty/D->general, R/RD keep), e01->billing e02->technical, +28 reason top-ups",
+    "round-7 contract v2: ultra-minimal array args [reason], 5-way enum incl general, 389-char tools (was 978); validator enforces items+min/maxItems; engine passes array args through (verified: no schema-type suppression)",
+    "round-7b contract v3: object args, reason required from 5-way enum, full descriptions kept (876 chars); arrays unlearnable (0/20 train-sample)"
   ],
   "rounds": [
     {
@@ -77,16 +80,77 @@
         "first fast-code run (batch32, pmap, val_every 0); converged flat ~0.02",
         "14 misses: 4 spurious billing, 5 span, 4 neg-FP, 2 expl-FN, 1 sarc-details"
       ]
+    },
+    {
+      "name": "v6",
+      "adapter": "rank32/3257-rows/14ep/batch32/pmap",
+      "exact": 0.9286,
+      "routing": 0.9603,
+      "explicit": 0.952,
+      "implicit": 1.0,
+      "sarcastic": 0.976,
+      "multisentence": 0.857,
+      "edge": 0.952,
+      "negative": 0.833,
+      "eval_artifact": "eval_report.json (v18 kernel)",
+      "notes": [
+        "133 miss-targeted seeds but regressed 238->234; first eval attempt 37 was harness skew (array tools.json leaked into object eval), rescored correctly"
+      ]
+    },
+    {
+      "name": "v7",
+      "adapter": "rank32/3285-rows/14ep/batch32/pmap",
+      "exact": 0.163,
+      "routing": 0.0,
+      "eval_artifact": "eval_report.json (v19 kernel)",
+      "notes": [
+        "array-args contract FAILED: 41/252, 0/20 on train rows - model cannot emit arrays, only objects; reverted to required-reason objects"
+      ]
+    },
+    {
+      "name": "v7b",
+      "adapter": "rank32/3285-rows/14ep/batch32/pmap",
+      "exact": 0.8889,
+      "routing": 0.9484,
+      "explicit": 0.929,
+      "implicit": 0.976,
+      "sarcastic": 0.976,
+      "multisentence": 0.762,
+      "edge": 0.929,
+      "negative": 0.762,
+      "eval_artifact": "eval_report.json (v20 kernel)",
+      "notes": [
+        "required-reason object contract; fixed reasoning; eval needed required-strip (engine suppresses)",
+        "misses: 10 FP, 8 general->billing, 4 account->general, 3 FN, 3 other reason swaps"
+      ]
+    },
+    {
+      "name": "v8",
+      "adapter": "rank32/3348-rows/14ep/batch32/pmap",
+      "exact": 0.881,
+      "routing": 0.9405,
+      "explicit": 0.952,
+      "implicit": 1.0,
+      "sarcastic": 0.976,
+      "multisentence": 0.69,
+      "edge": 0.929,
+      "negative": 0.738,
+      "eval_artifact": "eval_report.json (round-8 kernel)",
+      "notes": [
+        "regressed 224->222; fixed 8 broke 10, 20 persistent",
+        "persistent: 9 billing->general (flight x7 + moved x1 + ...), 8 FP general on negatives (sister-staff x5, balance x2, payment-info x1, thanks x1), 2 general->account, 1 technical->general",
+        "round-9 seeds: 28 billing-context-first multi, 10 tech/account multi, 32 negatives, 10 bare/shouty, 7 staff->general, 3 tecnico"
+      ]
     }
   ],
   "seed_baseline": {
     "seeds_eval.jsonl": {
       "lines": 252,
-      "sha256": "c714bc155052ca4df111c63e0e9a399b66d0e2412f864de512becebbb03c4bb7"
+      "sha256": "f7f80142567013bbde53c6d4614a7630814e16cf93be8e04dd6190166aef6296"
     },
     "seeds_train.jsonl": {
-      "lines": 553,
-      "sha256": "e0328d7cd8ba2f8c01fee5deee45a0420195fbf289db991deff6c24dae8a5212"
+      "lines": 581,
+      "sha256": "79cad507440375fb23b8d7f0adbbf7561a18dd7ee151d2705ba6913dcd422c6d"
     }
   },
   "target": {

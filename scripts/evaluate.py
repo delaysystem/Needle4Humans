@@ -100,6 +100,19 @@ CALL_TIMEOUT_S = 120
 PROGRESS_EVERY = 25
 
 
+def strip_required_keys(node):
+    """Deep-copy a tools payload minus every `required` key (engine quirk)."""
+    if isinstance(node, dict):
+        return {
+            key: strip_required_keys(value)
+            for key, value in node.items()
+            if key != "required"
+        }
+    if isinstance(node, list):
+        return [strip_required_keys(item) for item in node]
+    return node
+
+
 def complete_with_timeout(pool, agent, query: str):
     """One complete() call: (function_calls, timed_out)."""
     from concurrent.futures import TimeoutError
@@ -162,6 +175,12 @@ def main(argv: list[str] | None = None) -> int:
     tools = _common.read_json(
         _common.task_relative_path(task_dir, config["task"]["tools"])
     )
+    # The Needle engine's call validator chokes on a non-empty `required`
+    # key and suppresses every call using that tool (round 7b scored 64
+    # before this strip, all on `suppressed_calls`). The data contract
+    # still requires it (validate_data.py enforces); the runtime simply
+    # cannot see it.
+    tools = strip_required_keys(tools)
     eval_rows = _common.read_jsonl(out_dir / data["eval_file"])
     if args.limit is not None:
         eval_rows = eval_rows[: args.limit]

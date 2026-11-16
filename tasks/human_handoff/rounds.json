@@ -193,8 +193,10 @@
         "rank 64 validated: 222->227 exact, 234->238 routing; fixed 12 broke 7",
         "train flight rows 6/7 missed ON TRAIN: ~121 money-word rows labeled general crush 7 flight-billing rows",
         "train multi-17 are near-verbatim siblings of eval flight (it differs by one word) yet unlearned",
-        "round 12: split 56 mixed templates + relabel 12 plain refund seeds; labels only, row count unchanged"
-      ]
+        "round 12: split 56 mixed templates + relabel 12 plain refund seeds; labels only, row count unchanged",
+        "RERUN same weights+rows: exact 223 (-4), routing 236 (-2); 7 cases flipped -> eval has ~+-4 run noise; engine sampling suspected"
+      ],
+      "eval_rerun": "eval_report_v11_rerun.json"
     }
   ],
   "seed_baseline": {

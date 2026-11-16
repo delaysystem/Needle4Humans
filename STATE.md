@@ -14,10 +14,12 @@ neutral `[]` labels plus a tool-name-only routing diagnostic;
 the driver resolves its pip stack from `[kaggle] train_package`,
 supports `[kaggle] probe` hardware probes, and passes
 `--expect-backend` so the loop dies on a backend mismatch instead of
-mistraining. Moderation trains on Kaggle TPU: first push is a probe
-(`probe=true`), flip only after the log shows TPU devices; if TPU
-still gates to CPU (Nov-12 verdict) or the train stack won't install,
-the recorded fallback is the proven GPU path.
+mistraining. Moderation TPU attempt failed louder than Nov-12's
+silent-CPU: probe v1 (2026-11-16) starved QUEUED 7+ hours (poll
+timeout) while the handoff GPU kernel completed, so v1 trains on the
+recorded GPU fallback (batch 32, T4 fit validated by that same
+completed handoff run: 1358 steps, 2xT4, returncode 0). The queued
+TPU probe v1 was left in place; if it ever runs it is bonus data only.
 
 ## Status addendum 2026-11-14 03:55 UTC (supersedes the notes below)
 

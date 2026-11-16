@@ -44,9 +44,10 @@ Frozen 36-case eval, exact name+args+order, EN × 6 categories
 | v1 | 158 | pending TPU probe | pending |
 
 Target 34/36 (94.4%) is set in `tasks/moderation/rounds.json`.
-Training runs on Kaggle TPU; the first push is a hardware probe
-(`[kaggle] probe=true`), flipped to a full run only after the probe
-log shows TPU devices.
+Training runs on Kaggle GPU: TPU was tried first (probe v1 starved
+QUEUED 7+ hours on 2026-11-16 while GPU kernels completed), so v1
+follows the GPU fallback with the same driver and loop the handoff
+task proved over 11 rounds.
 
 ## Layout
 

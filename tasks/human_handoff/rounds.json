@@ -1,5 +1,5 @@
 {
-  "current_round": 12,
+  "current_round": 13,
   "max_rounds": 7,
   "min_gain_to_continue": 1,
   "notes": [
@@ -197,6 +197,25 @@
         "RERUN same weights+rows: exact 223 (-4), routing 236 (-2); 7 cases flipped -> eval has ~+-4 run noise; engine sampling suspected"
       ],
       "eval_rerun": "eval_report_v11_rerun.json"
+    },
+    {
+      "name": "v12",
+      "adapter": "rank64/3438-rows/14ep/batch32/pmap",
+      "exact": 0.8452,
+      "routing": 0.9365,
+      "explicit": 0.929,
+      "implicit": 0.976,
+      "sarcastic": 0.857,
+      "multisentence": 0.643,
+      "edge": 0.952,
+      "negative": 0.714,
+      "eval_artifact": "eval_report_v12.json (round-12 kernel)",
+      "notes": [
+        "contradiction cleanup BACKFIRED: 227->213; fixed 16 (5 flights!) broke 26",
+        "over-rotation: billing learned travel-words not money-words (car-rental x4 -> billing); technical absorbed anger (frustrated demands -> technical); account stole de plain asks",
+        "lesson: splits were label-right but topic-skewed; model learns instance clusters not word semantics",
+        "round 13: keep v12 base (flights learned!), add ~49 guard/balance seeds"
+      ]
     }
   ],
   "seed_baseline": {

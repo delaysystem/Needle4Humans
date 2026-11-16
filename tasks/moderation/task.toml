@@ -71,18 +71,21 @@ report_file = "eval_report.json"
 [kaggle]
 # Owner for dataset/kernel refs. Origin: `kaggle config view` on this box.
 username = "blonded2"
-# TPU run: gpu stays false (push dies when both are true).
-gpu = false
-tpu = true
-# TPU machine shape for kernel-metadata. Origin: Kaggle server remap
-# observed 2026-11-16 ("'Tpu1VmV38' is retired. Sessions run on the
-# default TPU (TpuV5E8) instead") on the probe push.
+# GPU run. TPU was tried first (probe kernel v1, 2026-11-16) but starved
+# QUEUED 7+ hours while GPU kernels completed, so training follows the
+# recorded GPU fallback (see STATE.md). Flip tpu back on only after a
+# probe shows TPU devices.
+gpu = true
+tpu = false
+# TPU machine shape for kernel-metadata, unused while tpu=false. Origin:
+# Kaggle server remap observed 2026-11-16 ("'Tpu1VmV38' is retired.
+# Sessions run on the default TPU (TpuV5E8) instead") on the probe push.
 tpu_shape = "TpuV5E8"
 input_dataset = "needle3-moderation-input"
 output_dataset = "needle3-moderation-outputs"
 checkpoints_dataset = "needle3-moderation-checkpoints"
 kernel = "needle3-moderation-train"
-# GPU type for a fallback kernel run (unused while tpu=true).
+# GPU type for the kernel run (metadata machine_shape).
 accelerator = "NvidiaTeslaT4"
 # Hard cap on the kernel run in seconds; the server bounds it further.
 timeout = 21600
@@ -93,17 +96,16 @@ stage_timeout = 0
 poll_interval = 60
 poll_timeout = 25200
 # Train settings used on Kaggle (override the weak-box [train] values).
-# auto inherits the environment so JAX sees the TPU; never "gpu" here
-# (that name means CUDA, and the loop guard expects the tpu backend).
-backend = "auto"
+backend = "gpu"
+# 32: T4 fit validated by the handoff run that completed 2026-11-16
+# (1358 steps, 2xT4 data-parallel, returncode 0 at batch 32).
 batch_size = 32
-# Training stack for pip on the kernel. Provisional: the GPU pin pulls
-# CUDA JAX, which is wrong for TPU; the base train extra is the first
-# candidate, confirmed or replaced when the probe/full push runs.
-train_package = "cactus-compute[train]==4.2.0"
-# True while the next push is a hardware probe (no install, no training).
-# Flip to false only after the probe log shows TPU devices.
-probe = true
+# No train_package override: GPU kernels use the driver's default pin,
+# same as human_handoff.
+# False: the GPU path is proven (11 handoff rounds), so training pushes
+# go straight to a full run; the loop's --expect-backend guard is the
+# backstop against a misplaced kernel.
+probe = false
 # Warm-start the LoRA weights from the prior round's published adapter
 # (mounts the outputs dataset; the driver dies loud when no adapter is
 # mounted). False for from-scratch rounds; true only for a follow-up

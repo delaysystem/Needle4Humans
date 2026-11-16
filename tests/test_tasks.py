@@ -49,14 +49,15 @@ def test_kaggle_slugs_distinct_across_tasks():
             seen[ref] = task_file
 
 
-def test_moderation_renders_tpu_metadata():
+def test_moderation_renders_gpu_metadata():
+    # TPU was tried first (probe v1 starved QUEUED 7+ hours 2026-11-16);
+    # training follows the GPU fallback. Synthetic TPU rendering stays
+    # covered in test_kaggle_push.py.
     config = load_toml(TASKS_DIR / "moderation" / "task.toml")
     metadata = kaggle_push.render_kernel_metadata(config)
-    assert metadata["enable_tpu"] == "true"
-    assert metadata["enable_gpu"] == "false"
-    assert "enable_tpu" not in kaggle_push.render_kernel_metadata(
-        load_toml(TASKS_DIR / "human_handoff" / "task.toml")
-    )
+    assert metadata["enable_gpu"] == "true"
+    assert metadata["machine_shape"] == "NvidiaTeslaT4"
+    assert "enable_tpu" not in metadata
 
 
 def test_seed_cells_declared_in_task_config():

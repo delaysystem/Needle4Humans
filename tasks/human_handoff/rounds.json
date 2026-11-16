@@ -1,5 +1,5 @@
 {
-  "current_round": 10,
+  "current_round": 11,
   "max_rounds": 7,
   "min_gain_to_continue": 1,
   "notes": [
@@ -158,6 +158,23 @@
         "regressed 222->219; fixed 10 broke 13, 20 persistent",
         "train probe: r9-train rows 46/94 (48.9%) vs old-train 27/30 (90%) - new seeds not absorbed",
         "root cause: 11 legacy billing complaints labeled general contradict r9 billing seeds; round 10 relabels them"
+      ]
+    },
+    {
+      "name": "v10",
+      "adapter": "rank32/3438-rows/14ep/batch32/pmap",
+      "exact": 0.881,
+      "routing": 0.9286,
+      "explicit": 0.929,
+      "implicit": 0.976,
+      "sarcastic": 0.952,
+      "multisentence": 0.786,
+      "edge": 0.929,
+      "negative": 0.714,
+      "eval_artifact": "eval_report.json (round-10 kernel)",
+      "notes": [
+        "relabel validated: 219->222; fixed 9 (moved-en, flight-it, 3 FP, 2 de-FN, STOP BOT, printer-pl) broke 6 (transfer seesaws x3, staff-it, konsultanta, Ansprechpartner)",
+        "family-word seeds balanced 15v13 yet sister 6/7 missed -> capacity, not data; round 11 = rank 64, no data change"
       ]
     }
   ],

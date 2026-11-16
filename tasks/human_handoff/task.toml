@@ -57,10 +57,11 @@ epochs = 14
 # 20-layer LoRA and the run moves to the platform path or a bigger machine.
 batch_size = 4
 lr = 0.0001
-# Rank 32, not the guide default 16: grounding-heavy task (reason/details
-# args), and the guide prescribes doubling adapter capacity for these.
-lora_rank = 32
-lora_alpha = 32
+# Rank 64 (round 11): rank 32 saturated - train probe showed new seeds
+# unabsorbed (r9-train 48.9%) and balanced mention-vs-ask negatives
+# (15 pos vs 13 neg family-word seeds) still unlearned. One variable.
+lora_rank = 64
+lora_alpha = 64
 max_len = 1024
 val_split = 0.1
 seed = 0

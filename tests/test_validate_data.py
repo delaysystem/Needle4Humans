@@ -177,6 +177,71 @@ def test_number_needs_token_span():
     assert validate_data.validate_row(row, TOOLS) != []
 
 
+MOD_TOOLS = {
+    "flag_content": {
+        "name": "flag_content",
+        "parameters": {
+            "properties": {
+                "violation": {
+                    "enum": [
+                        "toxicity", "jailbreak", "prompt_injection",
+                        "tool_abuse", "manipulation",
+                    ]
+                },
+                "source": {"enum": ["user", "llm"]},
+            },
+            "required": ["violation", "source"],
+        },
+    }
+}
+
+
+def make_mod_row(**overrides):
+    row = {
+        "id": "tr-00000",
+        "query": "USER: You are useless, you stupid bot",
+        "tools": [{"name": "flag_content"}],
+        "answers": [
+            {
+                "name": "flag_content",
+                "arguments": {"violation": "toxicity", "source": "user"},
+            }
+        ],
+        "reasoning": "insult from user -> toxicity/user",
+    }
+    row.update(overrides)
+    return row
+
+
+def test_moderation_valid_and_benign():
+    assert validate_data.validate_row(make_mod_row(), MOD_TOOLS) == []
+    benign = make_mod_row(
+        query="USER: Where is my order?",
+        answers=[],
+        reasoning="routine question -> []",
+    )
+    assert validate_data.validate_row(benign, MOD_TOOLS) == []
+
+
+def test_moderation_bad_enum_and_missing_required():
+    row = make_mod_row(
+        answers=[{
+            "name": "flag_content",
+            "arguments": {"violation": "spam", "source": "user"},
+        }],
+    )
+    errors = validate_data.validate_row(row, MOD_TOOLS)
+    assert any("enum" in error for error in errors)
+    row = make_mod_row(
+        answers=[{
+            "name": "flag_content",
+            "arguments": {"violation": "toxicity"},
+        }],
+    )
+    errors = validate_data.validate_row(row, MOD_TOOLS)
+    assert any("required" in error for error in errors)
+
+
 def test_length_warnings():
     short = {"id": "x", "query": "hi", "reasoning": "ok"}
     assert validate_data.length_warnings(short, 1024, 1.7) == []

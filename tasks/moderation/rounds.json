@@ -1,0 +1,1 @@
+{"current_round": 0, "exact_target": 0.944, "notes": ["exact = DroidCall-style exact name+args+order on frozen 36-case eval", "routing = tool-name-only match (diagnostic, not the target)", "v1 target 34/36; all content authored in-repo, EN-only", "training on Kaggle TPU; first push is a hardware probe ([kaggle] probe=true)"], "rounds": []}

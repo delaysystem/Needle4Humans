@@ -119,6 +119,55 @@ def test_train_env_existing_cache_env_wins(tmp_path, monkeypatch):
     assert not (tmp_path / "out" / "jax_cache").exists()
 
 
+def write_finetune_task(tmp_path):
+    task_dir = tmp_path / "task"
+    (task_dir / "out").mkdir(parents=True)
+    (task_dir / "task.toml").write_text(
+        "[task]\nout_dir = \"out\"\n"
+        "[data]\ntrain_file = \"train.jsonl\"\n"
+        "[train]\n"
+        "epochs = 1\nbatch_size = 1\nlr = 0.0001\n"
+        "lora_rank = 4\nlora_alpha = 4\nmax_len = 128\n"
+        "val_split = 0.1\nseed = 0\n"
+        "adapter_file = \"a.safetensors\"\nlog_file = \"train.log\"\n"
+        "[build]\nlayers = 20\nweights_file = \"w.cact\"\n",
+        encoding="utf-8",
+    )
+    return task_dir
+
+
+def test_finetune_main_refuses_overwrite_without_flag(
+    tmp_path, monkeypatch
+):
+    import pytest
+
+    def bomb(*args, **kwargs):
+        raise AssertionError("must not launch")
+
+    monkeypatch.setattr(finetune, "run_tee", bomb)
+    task_dir = write_finetune_task(tmp_path)
+    log_path = task_dir / "out" / "train.log"
+    log_path.write_text("sentinel", encoding="utf-8")
+    with pytest.raises(SystemExit):
+        finetune.main(["--task", str(task_dir / "task.toml")])
+    assert log_path.read_text(encoding="utf-8") == "sentinel"
+
+
+def test_build_main_refuses_overwrite_without_flag(tmp_path, monkeypatch):
+    import pytest
+
+    def bomb(*args, **kwargs):
+        raise AssertionError("must not launch")
+
+    monkeypatch.setattr(build.subprocess, "run", bomb)
+    task_dir = write_finetune_task(tmp_path)
+    weights = task_dir / "out" / "w.cact"
+    weights.write_text("sentinel", encoding="utf-8")
+    with pytest.raises(SystemExit):
+        build.main(["--task", str(task_dir / "task.toml")])
+    assert weights.read_text(encoding="utf-8") == "sentinel"
+
+
 def test_run_tee_streams_before_exit(tmp_path, capsys):
     """First line must reach the log while the child still runs.
 

@@ -9,7 +9,8 @@ of the slots in sorted-slot order, deterministically shuffled and capped,
 so the same seed bank plus ``train_seed`` always yields the same dataset.
 
 Fails loudly when a (language, category) cell is short of its quota: add
-seeds, never silently duplicate rows.
+seeds, never silently duplicate rows. Refuses to overwrite existing
+outputs unless ``--overwrite`` is passed.
 """
 
 from __future__ import annotations
@@ -134,6 +135,19 @@ def check_cell_counts(
     return counts
 
 
+def output_paths_for_split(
+    data: dict, out_dir: Path, split: str
+) -> list[Path]:
+    """Output files a generate run with this split will write."""
+    paths = []
+    if split in ("train", "both"):
+        paths.append(out_dir / data["train_file"])
+    if split in ("eval", "both"):
+        paths.append(out_dir / data["eval_file"])
+    paths.append(out_dir / data["manifest_file"])
+    return paths
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = _common.add_task_argument(
         argparse.ArgumentParser(description=__doc__)
@@ -144,10 +158,18 @@ def main(argv: list[str] | None = None) -> int:
         default="both",
         help="Which split(s) to generate.",
     )
+    parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Replace existing output files instead of refusing.",
+    )
     args = parser.parse_args(argv)
     config, task_dir = _common.load_task_config(args.task)
     data = config["data"]
     out_dir = _common.task_relative_path(task_dir, config["task"]["out_dir"])
+    _common.check_no_overwrite(
+        output_paths_for_split(data, out_dir, args.split), args.overwrite
+    )
     tools = _common.read_json(
         _common.task_relative_path(task_dir, config["task"]["tools"])
     )

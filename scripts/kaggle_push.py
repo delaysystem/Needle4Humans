@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Render the kernel bundle and push a GPU training run.
+"""Render the kernel bundle and push a GPU or TPU training run.
 
 Stages the training driver plus a rendered ``kernel-metadata.json``
-(GPU on, internet on for pip + HuggingFace, input dataset attached,
-private) and runs ``kaggle kernels push`` with the configured timeout.
-``--dry-run`` stages files and prints the argv without pushing.
+(accelerator on, internet on for pip + HuggingFace, input dataset
+attached, private) and runs ``kaggle kernels push`` with the configured
+timeout. ``--dry-run`` stages files and prints the argv without pushing.
 """
 
 from __future__ import annotations
@@ -34,7 +34,7 @@ def kernel_ref(config: dict) -> str:
 
 
 def render_kernel_metadata(config: dict, resume: bool = False) -> dict:
-    """Render ``kernel-metadata.json`` for a GPU training run.
+    """Render ``kernel-metadata.json`` for a GPU or TPU training run.
 
     With ``resume``, the kernel also mounts the checkpoints dataset
     (populated from a failed run by kaggle_save_checkpoints.py) so the
@@ -44,13 +44,20 @@ def render_kernel_metadata(config: dict, resume: bool = False) -> dict:
     warm_start`` true, the kernel instead mounts the outputs dataset so
     the driver can warm-start the LoRA weights from the prior run's
     published adapter; resume and warm-start together would set the
-    weights twice, so that combination dies.
+    weights twice, so that combination dies. With ``[kaggle] tpu``
+    true, the kernel requests a TPU (``enable_tpu`` plus the configured
+    ``tpu_shape``) instead of a GPU; gpu and tpu together die.
     """
     kaggle = config["kaggle"]
     gpu = bool(kaggle.get("gpu", True))
+    tpu = bool(kaggle.get("tpu", False))
     warm_start = bool(kaggle.get("warm_start", False))
+    if gpu and tpu:
+        _common.die("[kaggle] gpu=true with tpu=true: pick one")
     if resume and warm_start:
         _common.die("--resume with [kaggle] warm_start=true: pick one")
+    if tpu and "tpu_shape" not in kaggle:
+        _common.die("[kaggle] tpu_shape is required for tpu=true")
     sources = [_kaggle.dataset_ref(config, "input_dataset")]
     if resume:
         if "checkpoints_dataset" not in kaggle:
@@ -60,7 +67,7 @@ def render_kernel_metadata(config: dict, resume: bool = False) -> dict:
         if "output_dataset" not in kaggle:
             _common.die("[kaggle] output_dataset is required for warm_start=true")
         sources.append(_kaggle.dataset_ref(config, "output_dataset"))
-    return {
+    metadata = {
         "id": kernel_ref(config),
         "title": _kaggle.title_from_slug(kaggle["kernel"]),
         "code_file": DRIVER_NAME,
@@ -69,12 +76,18 @@ def render_kernel_metadata(config: dict, resume: bool = False) -> dict:
         "is_private": TRUE,
         "enable_gpu": TRUE if gpu else "false",
         "enable_internet": TRUE,
-        "machine_shape": kaggle["accelerator"] if gpu else "",
+        "machine_shape": (
+            kaggle["tpu_shape"] if tpu
+            else kaggle["accelerator"] if gpu else ""
+        ),
         "dataset_sources": sources,
         "competition_sources": [],
         "kernel_sources": [],
         "model_sources": [],
     }
+    if tpu:
+        metadata["enable_tpu"] = TRUE
+    return metadata
 
 
 def stage_kernel(

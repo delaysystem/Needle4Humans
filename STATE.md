@@ -1,5 +1,24 @@
 # Migration state — Needle 3 human-handoff finetune
 
+## Status addendum 2026-11-16 (moderation task + TPU path; handoff notes below stand)
+
+Repo is now multi-task. New `tasks/moderation/` finetune (separate
+adapter, owner decision): `flag_content` tool with `violation`
+(toxicity, jailbreak, prompt_injection, tool_abuse, manipulation) and
+`source` (user, llm) enums, EN-only v1, 158 train + 36 eval rows, all
+seeds authored in-repo, validated 0 errors. Target 34/36 exact
+(`tasks/moderation/rounds.json`). No PII content anywhere by owner
+decision. Scripts generalized task-neutrally: `evaluate.py` prints
+neutral `[]` labels plus a tool-name-only routing diagnostic;
+`kaggle_push.py` renders TPU kernels (`[kaggle] tpu` + `tpu_shape`);
+the driver resolves its pip stack from `[kaggle] train_package`,
+supports `[kaggle] probe` hardware probes, and passes
+`--expect-backend` so the loop dies on a backend mismatch instead of
+mistraining. Moderation trains on Kaggle TPU: first push is a probe
+(`probe=true`), flip only after the log shows TPU devices; if TPU
+still gates to CPU (Nov-12 verdict) or the train stack won't install,
+the recorded fallback is the proven GPU path.
+
 ## Status addendum 2026-11-14 03:55 UTC (supersedes the notes below)
 
 Training moved to Kaggle GPU (account `blonded2`). Round 5 finished on

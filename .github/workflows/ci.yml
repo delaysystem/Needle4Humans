@@ -14,3 +14,7 @@ jobs:
       - run: pip install pytest
       - run: python -m pytest tests/ -q
       - run: python -m compileall -q scripts tests
+      - run: python scripts/generate_data.py --task tasks/human_handoff/task.toml
+      - run: python scripts/validate_data.py --task tasks/human_handoff/task.toml
+      - run: python scripts/generate_data.py --task tasks/moderation/task.toml
+      - run: python scripts/validate_data.py --task tasks/moderation/task.toml

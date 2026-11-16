@@ -16,6 +16,18 @@ def test_resolve_devices():
         kaggle_train_loop.resolve_devices("2", 2)
 
 
+def test_check_backend():
+    kaggle_train_loop.check_backend("auto", "cpu")
+    kaggle_train_loop.check_backend("tpu", "tpu")
+    kaggle_train_loop.check_backend("gpu", "gpu")
+    with pytest.raises(SystemExit):
+        kaggle_train_loop.check_backend("tpu", "cpu")
+    with pytest.raises(SystemExit):
+        kaggle_train_loop.check_backend("gpu", "cpu")
+    with pytest.raises(SystemExit):
+        kaggle_train_loop.check_backend("bogus", "cpu")
+
+
 def test_build_parser_defaults():
     base = [
         "data.jsonl", "--epochs", "1", "--batch-size", "2", "--lr", "0.1",
@@ -26,6 +38,7 @@ def test_build_parser_defaults():
     args = kaggle_train_loop.build_parser().parse_args(base)
     assert (args.devices, args.init_adapter, args.val_every) == (
         "auto", None, 1)
+    assert args.expect_backend == "auto"
     args = kaggle_train_loop.build_parser().parse_args(
         base + ["--devices", "1", "--val-every", "0"]
     )

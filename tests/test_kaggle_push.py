@@ -46,6 +46,32 @@ def test_render_kernel_metadata_cpu():
     metadata = kaggle_push.render_kernel_metadata(config)
     assert metadata["enable_gpu"] == "false"
     assert metadata["machine_shape"] == ""
+    assert "enable_tpu" not in metadata
+
+
+def test_render_kernel_metadata_tpu():
+    config = make_config()
+    config["kaggle"]["gpu"] = False
+    config["kaggle"]["tpu"] = True
+    config["kaggle"]["tpu_shape"] = "Tpu1VmV38"
+    metadata = kaggle_push.render_kernel_metadata(config)
+    assert metadata["enable_gpu"] == "false"
+    assert metadata["enable_tpu"] == "true"
+    assert metadata["machine_shape"] == "Tpu1VmV38"
+
+
+def test_render_kernel_metadata_tpu_needs_shape_and_no_gpu():
+    import pytest
+
+    config = make_config()
+    config["kaggle"]["gpu"] = False
+    config["kaggle"]["tpu"] = True
+    with pytest.raises(SystemExit):
+        kaggle_push.render_kernel_metadata(config)
+    config["kaggle"]["tpu_shape"] = "Tpu1VmV38"
+    config["kaggle"]["gpu"] = True
+    with pytest.raises(SystemExit):
+        kaggle_push.render_kernel_metadata(config)
 
 
 def test_render_kernel_metadata_resume_mounts_checkpoints():

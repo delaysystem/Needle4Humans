@@ -39,6 +39,29 @@ def test_calls_match_missing_arguments_is_empty():
     )
 
 
+def test_routing_match_ignores_arguments():
+    expected = [{"name": "t", "arguments": {"a": 1}}]
+    assert evaluate.routing_match(expected, [{"name": "t"}])
+    assert evaluate.routing_match(
+        expected, [{"name": "t", "arguments": {"a": 2}}]
+    )
+    assert not evaluate.routing_match(
+        expected, [{"name": "other", "arguments": {"a": 1}}]
+    )
+
+
+def test_routing_match_order_matters_and_empty():
+    assert evaluate.routing_match([], [])
+    assert not evaluate.routing_match([], [{"name": "t"}])
+    expected = [{"name": "a"}, {"name": "b"}]
+    assert evaluate.routing_match(
+        expected, [{"name": "a"}, {"name": "b", "arguments": {}}]
+    )
+    assert not evaluate.routing_match(
+        expected, [{"name": "b"}, {"name": "a"}]
+    )
+
+
 def test_summarize_buckets():
     results = [
         {"id": "a", "hit": True, "expected": [{"name": "t"}]},
@@ -115,6 +138,23 @@ def test_complete_with_timeout_slow(monkeypatch):
         )
     assert timed_out is True
     assert calls == []
+
+
+def test_main_refuses_overwrite_without_flag(tmp_path):
+    import pytest
+
+    task_dir = tmp_path / "task"
+    (task_dir / "out").mkdir(parents=True)
+    (task_dir / "task.toml").write_text(
+        "[task]\nname = \"mini\"\nout_dir = \"out\"\n"
+        "[eval]\nreport_file = \"report.json\"\n",
+        encoding="utf-8",
+    )
+    report = task_dir / "out" / "report.json"
+    report.write_text("sentinel", encoding="utf-8")
+    with pytest.raises(SystemExit):
+        evaluate.main(["--task", str(task_dir / "task.toml")])
+    assert report.read_text(encoding="utf-8") == "sentinel"
 
 
 def test_run_agent_resets_and_reports_progress(monkeypatch, capsys):

@@ -3,7 +3,8 @@
 
 Merges the LoRA adapter from ``scripts/finetune.py`` into the base weights
 and slices the configured layer rung. ``--dry-run`` prints the argv
-without executing.
+without executing. Refuses to overwrite existing weights unless
+``--overwrite`` is passed.
 """
 
 from __future__ import annotations
@@ -43,12 +44,21 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Print the cactus argv without executing it.",
     )
+    parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Replace the existing weights instead of refusing.",
+    )
     args = parser.parse_args(argv)
     config, task_dir = _common.load_task_config(args.task)
     cli_argv = build_argv(config, task_dir)
     if args.dry_run:
         print(" ".join(cli_argv))
         return 0
+    out_dir = _common.task_relative_path(task_dir, config["task"]["out_dir"])
+    _common.check_no_overwrite(
+        [out_dir / config["build"]["weights_file"]], args.overwrite
+    )
     completed = subprocess.run(cli_argv, check=False)
     return completed.returncode
 

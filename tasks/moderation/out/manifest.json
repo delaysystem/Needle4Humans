@@ -1,0 +1,1170 @@
+{
+  "task": "moderation",
+  "train_seed": 7,
+  "rows": {
+    "tr-00000": {
+      "seed": "mod-benign-02",
+      "lang": "en",
+      "category": "benign",
+      "variant": 4
+    },
+    "tr-00001": {
+      "seed": "mod-benign-03",
+      "lang": "en",
+      "category": "benign",
+      "variant": 0
+    },
+    "tr-00002": {
+      "seed": "mod-tu-01",
+      "lang": "en",
+      "category": "toxic_user",
+      "variant": 7
+    },
+    "tr-00003": {
+      "seed": "mod-tu-02",
+      "lang": "en",
+      "category": "toxic_user",
+      "variant": 1
+    },
+    "tr-00004": {
+      "seed": "mod-benign-01",
+      "lang": "en",
+      "category": "benign",
+      "variant": 0
+    },
+    "tr-00005": {
+      "seed": "mod-tl-01",
+      "lang": "en",
+      "category": "toxic_llm",
+      "variant": 4
+    },
+    "tr-00006": {
+      "seed": "mod-benign-03",
+      "lang": "en",
+      "category": "benign",
+      "variant": 5
+    },
+    "tr-00007": {
+      "seed": "mod-eu-05",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 3
+    },
+    "tr-00008": {
+      "seed": "mod-el-02",
+      "lang": "en",
+      "category": "exploit_llm",
+      "variant": 5
+    },
+    "tr-00009": {
+      "seed": "mod-el-01",
+      "lang": "en",
+      "category": "exploit_llm",
+      "variant": 0
+    },
+    "tr-00010": {
+      "seed": "mod-tl-01",
+      "lang": "en",
+      "category": "toxic_llm",
+      "variant": 2
+    },
+    "tr-00011": {
+      "seed": "mod-el-02",
+      "lang": "en",
+      "category": "exploit_llm",
+      "variant": 0
+    },
+    "tr-00012": {
+      "seed": "mod-tu-01",
+      "lang": "en",
+      "category": "toxic_user",
+      "variant": 9
+    },
+    "tr-00013": {
+      "seed": "mod-benign-01",
+      "lang": "en",
+      "category": "benign",
+      "variant": 6
+    },
+    "tr-00014": {
+      "seed": "mod-eu-02",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 6
+    },
+    "tr-00015": {
+      "seed": "mod-el-03",
+      "lang": "en",
+      "category": "exploit_llm",
+      "variant": 3
+    },
+    "tr-00016": {
+      "seed": "mod-tl-01",
+      "lang": "en",
+      "category": "toxic_llm",
+      "variant": 3
+    },
+    "tr-00017": {
+      "seed": "mod-eu-01",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 5
+    },
+    "tr-00018": {
+      "seed": "mod-el-02",
+      "lang": "en",
+      "category": "exploit_llm",
+      "variant": 2
+    },
+    "tr-00019": {
+      "seed": "mod-edge-02",
+      "lang": "en",
+      "category": "edge",
+      "variant": 5
+    },
+    "tr-00020": {
+      "seed": "mod-tl-01",
+      "lang": "en",
+      "category": "toxic_llm",
+      "variant": 7
+    },
+    "tr-00021": {
+      "seed": "mod-tu-01",
+      "lang": "en",
+      "category": "toxic_user",
+      "variant": 6
+    },
+    "tr-00022": {
+      "seed": "mod-eu-03",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 5
+    },
+    "tr-00023": {
+      "seed": "mod-el-04",
+      "lang": "en",
+      "category": "exploit_llm",
+      "variant": 1
+    },
+    "tr-00024": {
+      "seed": "mod-edge-03",
+      "lang": "en",
+      "category": "edge",
+      "variant": 0
+    },
+    "tr-00025": {
+      "seed": "mod-edge-01",
+      "lang": "en",
+      "category": "edge",
+      "variant": 4
+    },
+    "tr-00026": {
+      "seed": "mod-benign-01",
+      "lang": "en",
+      "category": "benign",
+      "variant": 2
+    },
+    "tr-00027": {
+      "seed": "mod-tl-01",
+      "lang": "en",
+      "category": "toxic_llm",
+      "variant": 1
+    },
+    "tr-00028": {
+      "seed": "mod-tu-01",
+      "lang": "en",
+      "category": "toxic_user",
+      "variant": 1
+    },
+    "tr-00029": {
+      "seed": "mod-tl-02",
+      "lang": "en",
+      "category": "toxic_llm",
+      "variant": 6
+    },
+    "tr-00030": {
+      "seed": "mod-edge-02",
+      "lang": "en",
+      "category": "edge",
+      "variant": 1
+    },
+    "tr-00031": {
+      "seed": "mod-eu-01",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 8
+    },
+    "tr-00032": {
+      "seed": "mod-eu-02",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 0
+    },
+    "tr-00033": {
+      "seed": "mod-el-03",
+      "lang": "en",
+      "category": "exploit_llm",
+      "variant": 0
+    },
+    "tr-00034": {
+      "seed": "mod-el-01",
+      "lang": "en",
+      "category": "exploit_llm",
+      "variant": 5
+    },
+    "tr-00035": {
+      "seed": "mod-eu-04",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 0
+    },
+    "tr-00036": {
+      "seed": "mod-eu-02",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 10
+    },
+    "tr-00037": {
+      "seed": "mod-eu-05",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 0
+    },
+    "tr-00038": {
+      "seed": "mod-eu-02",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 8
+    },
+    "tr-00039": {
+      "seed": "mod-tl-01",
+      "lang": "en",
+      "category": "toxic_llm",
+      "variant": 0
+    },
+    "tr-00040": {
+      "seed": "mod-tu-01",
+      "lang": "en",
+      "category": "toxic_user",
+      "variant": 3
+    },
+    "tr-00041": {
+      "seed": "mod-benign-01",
+      "lang": "en",
+      "category": "benign",
+      "variant": 1
+    },
+    "tr-00042": {
+      "seed": "mod-edge-02",
+      "lang": "en",
+      "category": "edge",
+      "variant": 2
+    },
+    "tr-00043": {
+      "seed": "mod-el-03",
+      "lang": "en",
+      "category": "exploit_llm",
+      "variant": 4
+    },
+    "tr-00044": {
+      "seed": "mod-el-01",
+      "lang": "en",
+      "category": "exploit_llm",
+      "variant": 1
+    },
+    "tr-00045": {
+      "seed": "mod-tu-02",
+      "lang": "en",
+      "category": "toxic_user",
+      "variant": 9
+    },
+    "tr-00046": {
+      "seed": "mod-el-02",
+      "lang": "en",
+      "category": "exploit_llm",
+      "variant": 6
+    },
+    "tr-00047": {
+      "seed": "mod-tu-01",
+      "lang": "en",
+      "category": "toxic_user",
+      "variant": 2
+    },
+    "tr-00048": {
+      "seed": "mod-eu-02",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 5
+    },
+    "tr-00049": {
+      "seed": "mod-el-01",
+      "lang": "en",
+      "category": "exploit_llm",
+      "variant": 2
+    },
+    "tr-00050": {
+      "seed": "mod-tu-02",
+      "lang": "en",
+      "category": "toxic_user",
+      "variant": 5
+    },
+    "tr-00051": {
+      "seed": "mod-eu-04",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 2
+    },
+    "tr-00052": {
+      "seed": "mod-edge-04",
+      "lang": "en",
+      "category": "edge",
+      "variant": 4
+    },
+    "tr-00053": {
+      "seed": "mod-eu-03",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 2
+    },
+    "tr-00054": {
+      "seed": "mod-benign-01",
+      "lang": "en",
+      "category": "benign",
+      "variant": 3
+    },
+    "tr-00055": {
+      "seed": "mod-benign-01",
+      "lang": "en",
+      "category": "benign",
+      "variant": 4
+    },
+    "tr-00056": {
+      "seed": "mod-tu-02",
+      "lang": "en",
+      "category": "toxic_user",
+      "variant": 6
+    },
+    "tr-00057": {
+      "seed": "mod-tl-03",
+      "lang": "en",
+      "category": "toxic_llm",
+      "variant": 1
+    },
+    "tr-00058": {
+      "seed": "mod-tu-01",
+      "lang": "en",
+      "category": "toxic_user",
+      "variant": 4
+    },
+    "tr-00059": {
+      "seed": "mod-edge-01",
+      "lang": "en",
+      "category": "edge",
+      "variant": 5
+    },
+    "tr-00060": {
+      "seed": "mod-tl-02",
+      "lang": "en",
+      "category": "toxic_llm",
+      "variant": 2
+    },
+    "tr-00061": {
+      "seed": "mod-eu-05",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 4
+    },
+    "tr-00062": {
+      "seed": "mod-el-02",
+      "lang": "en",
+      "category": "exploit_llm",
+      "variant": 1
+    },
+    "tr-00063": {
+      "seed": "mod-edge-01",
+      "lang": "en",
+      "category": "edge",
+      "variant": 2
+    },
+    "tr-00064": {
+      "seed": "mod-eu-03",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 3
+    },
+    "tr-00065": {
+      "seed": "mod-eu-02",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 4
+    },
+    "tr-00066": {
+      "seed": "mod-tu-02",
+      "lang": "en",
+      "category": "toxic_user",
+      "variant": 8
+    },
+    "tr-00067": {
+      "seed": "mod-eu-03",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 4
+    },
+    "tr-00068": {
+      "seed": "mod-eu-03",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 6
+    },
+    "tr-00069": {
+      "seed": "mod-eu-04",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 5
+    },
+    "tr-00070": {
+      "seed": "mod-benign-01",
+      "lang": "en",
+      "category": "benign",
+      "variant": 5
+    },
+    "tr-00071": {
+      "seed": "mod-eu-01",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 6
+    },
+    "tr-00072": {
+      "seed": "mod-tl-02",
+      "lang": "en",
+      "category": "toxic_llm",
+      "variant": 4
+    },
+    "tr-00073": {
+      "seed": "mod-benign-02",
+      "lang": "en",
+      "category": "benign",
+      "variant": 7
+    },
+    "tr-00074": {
+      "seed": "mod-eu-02",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 3
+    },
+    "tr-00075": {
+      "seed": "mod-benign-03",
+      "lang": "en",
+      "category": "benign",
+      "variant": 1
+    },
+    "tr-00076": {
+      "seed": "mod-tl-01",
+      "lang": "en",
+      "category": "toxic_llm",
+      "variant": 5
+    },
+    "tr-00077": {
+      "seed": "mod-tl-03",
+      "lang": "en",
+      "category": "toxic_llm",
+      "variant": 0
+    },
+    "tr-00078": {
+      "seed": "mod-el-02",
+      "lang": "en",
+      "category": "exploit_llm",
+      "variant": 4
+    },
+    "tr-00079": {
+      "seed": "mod-edge-02",
+      "lang": "en",
+      "category": "edge",
+      "variant": 3
+    },
+    "tr-00080": {
+      "seed": "mod-eu-01",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 7
+    },
+    "tr-00081": {
+      "seed": "mod-tu-02",
+      "lang": "en",
+      "category": "toxic_user",
+      "variant": 0
+    },
+    "tr-00082": {
+      "seed": "mod-el-04",
+      "lang": "en",
+      "category": "exploit_llm",
+      "variant": 3
+    },
+    "tr-00083": {
+      "seed": "mod-tu-02",
+      "lang": "en",
+      "category": "toxic_user",
+      "variant": 7
+    },
+    "tr-00084": {
+      "seed": "mod-eu-04",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 3
+    },
+    "tr-00085": {
+      "seed": "mod-tl-03",
+      "lang": "en",
+      "category": "toxic_llm",
+      "variant": 2
+    },
+    "tr-00086": {
+      "seed": "mod-edge-03",
+      "lang": "en",
+      "category": "edge",
+      "variant": 2
+    },
+    "tr-00087": {
+      "seed": "mod-el-01",
+      "lang": "en",
+      "category": "exploit_llm",
+      "variant": 3
+    },
+    "tr-00088": {
+      "seed": "mod-benign-01",
+      "lang": "en",
+      "category": "benign",
+      "variant": 10
+    },
+    "tr-00089": {
+      "seed": "mod-eu-03",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 0
+    },
+    "tr-00090": {
+      "seed": "mod-eu-02",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 9
+    },
+    "tr-00091": {
+      "seed": "mod-el-01",
+      "lang": "en",
+      "category": "exploit_llm",
+      "variant": 6
+    },
+    "tr-00092": {
+      "seed": "mod-edge-01",
+      "lang": "en",
+      "category": "edge",
+      "variant": 0
+    },
+    "tr-00093": {
+      "seed": "mod-edge-04",
+      "lang": "en",
+      "category": "edge",
+      "variant": 3
+    },
+    "tr-00094": {
+      "seed": "mod-tu-02",
+      "lang": "en",
+      "category": "toxic_user",
+      "variant": 10
+    },
+    "tr-00095": {
+      "seed": "mod-tl-02",
+      "lang": "en",
+      "category": "toxic_llm",
+      "variant": 0
+    },
+    "tr-00096": {
+      "seed": "mod-el-01",
+      "lang": "en",
+      "category": "exploit_llm",
+      "variant": 4
+    },
+    "tr-00097": {
+      "seed": "mod-tl-02",
+      "lang": "en",
+      "category": "toxic_llm",
+      "variant": 1
+    },
+    "tr-00098": {
+      "seed": "mod-tu-02",
+      "lang": "en",
+      "category": "toxic_user",
+      "variant": 4
+    },
+    "tr-00099": {
+      "seed": "mod-eu-03",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 7
+    },
+    "tr-00100": {
+      "seed": "mod-edge-02",
+      "lang": "en",
+      "category": "edge",
+      "variant": 4
+    },
+    "tr-00101": {
+      "seed": "mod-tl-03",
+      "lang": "en",
+      "category": "toxic_llm",
+      "variant": 3
+    },
+    "tr-00102": {
+      "seed": "mod-el-01",
+      "lang": "en",
+      "category": "exploit_llm",
+      "variant": 7
+    },
+    "tr-00103": {
+      "seed": "mod-tl-02",
+      "lang": "en",
+      "category": "toxic_llm",
+      "variant": 5
+    },
+    "tr-00104": {
+      "seed": "mod-tu-01",
+      "lang": "en",
+      "category": "toxic_user",
+      "variant": 0
+    },
+    "tr-00105": {
+      "seed": "mod-eu-01",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 9
+    },
+    "tr-00106": {
+      "seed": "mod-benign-01",
+      "lang": "en",
+      "category": "benign",
+      "variant": 7
+    },
+    "tr-00107": {
+      "seed": "mod-eu-01",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 2
+    },
+    "tr-00108": {
+      "seed": "mod-benign-01",
+      "lang": "en",
+      "category": "benign",
+      "variant": 8
+    },
+    "tr-00109": {
+      "seed": "mod-eu-02",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 11
+    },
+    "tr-00110": {
+      "seed": "mod-eu-01",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 0
+    },
+    "tr-00111": {
+      "seed": "mod-el-04",
+      "lang": "en",
+      "category": "exploit_llm",
+      "variant": 0
+    },
+    "tr-00112": {
+      "seed": "mod-tu-02",
+      "lang": "en",
+      "category": "toxic_user",
+      "variant": 11
+    },
+    "tr-00113": {
+      "seed": "mod-edge-03",
+      "lang": "en",
+      "category": "edge",
+      "variant": 3
+    },
+    "tr-00114": {
+      "seed": "mod-eu-02",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 1
+    },
+    "tr-00115": {
+      "seed": "mod-el-02",
+      "lang": "en",
+      "category": "exploit_llm",
+      "variant": 3
+    },
+    "tr-00116": {
+      "seed": "mod-el-03",
+      "lang": "en",
+      "category": "exploit_llm",
+      "variant": 1
+    },
+    "tr-00117": {
+      "seed": "mod-benign-02",
+      "lang": "en",
+      "category": "benign",
+      "variant": 1
+    },
+    "tr-00118": {
+      "seed": "mod-edge-01",
+      "lang": "en",
+      "category": "edge",
+      "variant": 3
+    },
+    "tr-00119": {
+      "seed": "mod-eu-02",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 7
+    },
+    "tr-00120": {
+      "seed": "mod-eu-04",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 4
+    },
+    "tr-00121": {
+      "seed": "mod-eu-01",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 1
+    },
+    "tr-00122": {
+      "seed": "mod-tu-02",
+      "lang": "en",
+      "category": "toxic_user",
+      "variant": 3
+    },
+    "tr-00123": {
+      "seed": "mod-eu-01",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 3
+    },
+    "tr-00124": {
+      "seed": "mod-el-04",
+      "lang": "en",
+      "category": "exploit_llm",
+      "variant": 2
+    },
+    "tr-00125": {
+      "seed": "mod-tl-03",
+      "lang": "en",
+      "category": "toxic_llm",
+      "variant": 4
+    },
+    "tr-00126": {
+      "seed": "mod-edge-04",
+      "lang": "en",
+      "category": "edge",
+      "variant": 0
+    },
+    "tr-00127": {
+      "seed": "mod-edge-02",
+      "lang": "en",
+      "category": "edge",
+      "variant": 0
+    },
+    "tr-00128": {
+      "seed": "mod-eu-01",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 4
+    },
+    "tr-00129": {
+      "seed": "mod-tu-01",
+      "lang": "en",
+      "category": "toxic_user",
+      "variant": 8
+    },
+    "tr-00130": {
+      "seed": "mod-benign-01",
+      "lang": "en",
+      "category": "benign",
+      "variant": 11
+    },
+    "tr-00131": {
+      "seed": "mod-tl-01",
+      "lang": "en",
+      "category": "toxic_llm",
+      "variant": 8
+    },
+    "tr-00132": {
+      "seed": "mod-edge-04",
+      "lang": "en",
+      "category": "edge",
+      "variant": 1
+    },
+    "tr-00133": {
+      "seed": "mod-edge-04",
+      "lang": "en",
+      "category": "edge",
+      "variant": 2
+    },
+    "tr-00134": {
+      "seed": "mod-edge-03",
+      "lang": "en",
+      "category": "edge",
+      "variant": 4
+    },
+    "tr-00135": {
+      "seed": "mod-tl-01",
+      "lang": "en",
+      "category": "toxic_llm",
+      "variant": 9
+    },
+    "tr-00136": {
+      "seed": "mod-tu-01",
+      "lang": "en",
+      "category": "toxic_user",
+      "variant": 5
+    },
+    "tr-00137": {
+      "seed": "mod-benign-02",
+      "lang": "en",
+      "category": "benign",
+      "variant": 3
+    },
+    "tr-00138": {
+      "seed": "mod-eu-05",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 2
+    },
+    "tr-00139": {
+      "seed": "mod-benign-03",
+      "lang": "en",
+      "category": "benign",
+      "variant": 3
+    },
+    "tr-00140": {
+      "seed": "mod-tl-02",
+      "lang": "en",
+      "category": "toxic_llm",
+      "variant": 3
+    },
+    "tr-00141": {
+      "seed": "mod-benign-02",
+      "lang": "en",
+      "category": "benign",
+      "variant": 5
+    },
+    "tr-00142": {
+      "seed": "mod-eu-05",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 1
+    },
+    "tr-00143": {
+      "seed": "mod-eu-05",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 5
+    },
+    "tr-00144": {
+      "seed": "mod-benign-03",
+      "lang": "en",
+      "category": "benign",
+      "variant": 2
+    },
+    "tr-00145": {
+      "seed": "mod-benign-01",
+      "lang": "en",
+      "category": "benign",
+      "variant": 9
+    },
+    "tr-00146": {
+      "seed": "mod-tl-01",
+      "lang": "en",
+      "category": "toxic_llm",
+      "variant": 6
+    },
+    "tr-00147": {
+      "seed": "mod-el-03",
+      "lang": "en",
+      "category": "exploit_llm",
+      "variant": 2
+    },
+    "tr-00148": {
+      "seed": "mod-benign-02",
+      "lang": "en",
+      "category": "benign",
+      "variant": 2
+    },
+    "tr-00149": {
+      "seed": "mod-edge-03",
+      "lang": "en",
+      "category": "edge",
+      "variant": 1
+    },
+    "tr-00150": {
+      "seed": "mod-eu-03",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 1
+    },
+    "tr-00151": {
+      "seed": "mod-benign-03",
+      "lang": "en",
+      "category": "benign",
+      "variant": 4
+    },
+    "tr-00152": {
+      "seed": "mod-edge-01",
+      "lang": "en",
+      "category": "edge",
+      "variant": 1
+    },
+    "tr-00153": {
+      "seed": "mod-benign-02",
+      "lang": "en",
+      "category": "benign",
+      "variant": 6
+    },
+    "tr-00154": {
+      "seed": "mod-benign-02",
+      "lang": "en",
+      "category": "benign",
+      "variant": 0
+    },
+    "tr-00155": {
+      "seed": "mod-eu-04",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 1
+    },
+    "tr-00156": {
+      "seed": "mod-tu-02",
+      "lang": "en",
+      "category": "toxic_user",
+      "variant": 2
+    },
+    "tr-00157": {
+      "seed": "mod-eu-02",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 2
+    },
+    "ev-00000": {
+      "seed": "mod-benign-e01",
+      "lang": "en",
+      "category": "benign",
+      "variant": 0
+    },
+    "ev-00001": {
+      "seed": "mod-benign-e02",
+      "lang": "en",
+      "category": "benign",
+      "variant": 0
+    },
+    "ev-00002": {
+      "seed": "mod-benign-e03",
+      "lang": "en",
+      "category": "benign",
+      "variant": 0
+    },
+    "ev-00003": {
+      "seed": "mod-benign-e04",
+      "lang": "en",
+      "category": "benign",
+      "variant": 0
+    },
+    "ev-00004": {
+      "seed": "mod-benign-e05",
+      "lang": "en",
+      "category": "benign",
+      "variant": 0
+    },
+    "ev-00005": {
+      "seed": "mod-benign-e06",
+      "lang": "en",
+      "category": "benign",
+      "variant": 0
+    },
+    "ev-00006": {
+      "seed": "mod-tu-e01",
+      "lang": "en",
+      "category": "toxic_user",
+      "variant": 0
+    },
+    "ev-00007": {
+      "seed": "mod-tu-e02",
+      "lang": "en",
+      "category": "toxic_user",
+      "variant": 0
+    },
+    "ev-00008": {
+      "seed": "mod-tu-e03",
+      "lang": "en",
+      "category": "toxic_user",
+      "variant": 0
+    },
+    "ev-00009": {
+      "seed": "mod-tu-e04",
+      "lang": "en",
+      "category": "toxic_user",
+      "variant": 0
+    },
+    "ev-00010": {
+      "seed": "mod-tu-e05",
+      "lang": "en",
+      "category": "toxic_user",
+      "variant": 0
+    },
+    "ev-00011": {
+      "seed": "mod-tu-e06",
+      "lang": "en",
+      "category": "toxic_user",
+      "variant": 0
+    },
+    "ev-00012": {
+      "seed": "mod-tl-e01",
+      "lang": "en",
+      "category": "toxic_llm",
+      "variant": 0
+    },
+    "ev-00013": {
+      "seed": "mod-tl-e02",
+      "lang": "en",
+      "category": "toxic_llm",
+      "variant": 0
+    },
+    "ev-00014": {
+      "seed": "mod-tl-e03",
+      "lang": "en",
+      "category": "toxic_llm",
+      "variant": 0
+    },
+    "ev-00015": {
+      "seed": "mod-tl-e04",
+      "lang": "en",
+      "category": "toxic_llm",
+      "variant": 0
+    },
+    "ev-00016": {
+      "seed": "mod-tl-e05",
+      "lang": "en",
+      "category": "toxic_llm",
+      "variant": 0
+    },
+    "ev-00017": {
+      "seed": "mod-tl-e06",
+      "lang": "en",
+      "category": "toxic_llm",
+      "variant": 0
+    },
+    "ev-00018": {
+      "seed": "mod-eu-e01",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 0
+    },
+    "ev-00019": {
+      "seed": "mod-eu-e02",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 0
+    },
+    "ev-00020": {
+      "seed": "mod-eu-e03",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 0
+    },
+    "ev-00021": {
+      "seed": "mod-eu-e04",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 0
+    },
+    "ev-00022": {
+      "seed": "mod-eu-e05",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 0
+    },
+    "ev-00023": {
+      "seed": "mod-eu-e06",
+      "lang": "en",
+      "category": "exploit_user",
+      "variant": 0
+    },
+    "ev-00024": {
+      "seed": "mod-el-e01",
+      "lang": "en",
+      "category": "exploit_llm",
+      "variant": 0
+    },
+    "ev-00025": {
+      "seed": "mod-el-e02",
+      "lang": "en",
+      "category": "exploit_llm",
+      "variant": 0
+    },
+    "ev-00026": {
+      "seed": "mod-el-e03",
+      "lang": "en",
+      "category": "exploit_llm",
+      "variant": 0
+    },
+    "ev-00027": {
+      "seed": "mod-el-e04",
+      "lang": "en",
+      "category": "exploit_llm",
+      "variant": 0
+    },
+    "ev-00028": {
+      "seed": "mod-el-e05",
+      "lang": "en",
+      "category": "exploit_llm",
+      "variant": 0
+    },
+    "ev-00029": {
+      "seed": "mod-el-e06",
+      "lang": "en",
+      "category": "exploit_llm",
+      "variant": 0
+    },
+    "ev-00030": {
+      "seed": "mod-edge-e01",
+      "lang": "en",
+      "category": "edge",
+      "variant": 0
+    },
+    "ev-00031": {
+      "seed": "mod-edge-e02",
+      "lang": "en",
+      "category": "edge",
+      "variant": 0
+    },
+    "ev-00032": {
+      "seed": "mod-edge-e03",
+      "lang": "en",
+      "category": "edge",
+      "variant": 0
+    },
+    "ev-00033": {
+      "seed": "mod-edge-e04",
+      "lang": "en",
+      "category": "edge",
+      "variant": 0
+    },
+    "ev-00034": {
+      "seed": "mod-edge-e05",
+      "lang": "en",
+      "category": "edge",
+      "variant": 0
+    },
+    "ev-00035": {
+      "seed": "mod-edge-e06",
+      "lang": "en",
+      "category": "edge",
+      "variant": 0
+    }
+  }
+}

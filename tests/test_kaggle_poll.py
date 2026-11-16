@@ -32,6 +32,63 @@ def test_parse_status_unknown():
     assert kaggle_poll.parse_status("???") == "unknown"
 
 
+def test_plan_download_moves_preserves_tree(tmp_path):
+    staging = tmp_path / "staging"
+    nested = staging / "task" / "out"
+    nested.mkdir(parents=True)
+    (staging / "top.json").write_text("t", encoding="utf-8")
+    (nested / "deep.json").write_text("d", encoding="utf-8")
+    out_dir = tmp_path / "out"
+    assert kaggle_poll.plan_download_moves(staging, out_dir) == [
+        (nested / "deep.json", out_dir / "task" / "out" / "deep.json"),
+        (staging / "top.json", out_dir / "top.json"),
+    ]
+
+
+def test_main_download_refuses_overwrite_without_flag(
+    tmp_path, monkeypatch
+):
+    import subprocess
+    from pathlib import Path
+
+    task_toml = write_poll_task(tmp_path)
+    out_dir = tmp_path / "t" / "out"
+    out_dir.mkdir(parents=True)
+    sentinel = out_dir / "STATUS.json"
+    sentinel.write_text("old", encoding="utf-8")
+
+    def fresh_script():
+        return [
+            subprocess.CompletedProcess([], 0, "RUNNING", ""),
+            subprocess.CompletedProcess([], 0, "COMPLETE", ""),
+            subprocess.CompletedProcess([], 0, "", ""),
+        ]
+
+    script = fresh_script()
+
+    def fake_run(argv, timeout=None):
+        if "output" in argv:
+            target = argv[argv.index("-p") + 1]
+            dest = Path(target) / "STATUS.json"
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            dest.write_text("new", encoding="utf-8")
+        return script.pop(0)
+
+    monkeypatch.setattr(kaggle_poll, "run_capture", fake_run)
+    monkeypatch.setattr(kaggle_poll.time, "sleep", lambda s: None)
+    monkeypatch.setattr(
+        kaggle_poll._common, "kaggle_bin", lambda: "kaggle"
+    )
+    with pytest.raises(SystemExit):
+        kaggle_poll.main(["--task", str(task_toml)])
+    assert sentinel.read_text(encoding="utf-8") == "old"
+    script[:] = fresh_script()
+    assert kaggle_poll.main(
+        ["--task", str(task_toml), "--overwrite"]
+    ) == 0
+    assert sentinel.read_text(encoding="utf-8") == "new"
+
+
 def test_build_argv(tmp_path):
     assert kaggle_poll.build_status_argv("kaggle", "o/s") == [
         "kaggle", "kernels", "status", "o/s",

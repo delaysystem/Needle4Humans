@@ -1,9 +1,11 @@
 # Needle 3 finetuning
 
-Reusable scripts to finetune a Cactus Needle 3 model locally, plus a
-complete test task: human-handoff detection in 7 languages (EN, DE, FR,
-ES, IT, NL, PL) with sarcasm, implicit requests, multi-sentence context,
-and edge cases.
+Reusable scripts to finetune Cactus Needle 3 models, plus two complete
+tasks: human-handoff detection in 7 languages (EN, DE, FR, ES, IT, NL,
+PL) with sarcasm, implicit requests, multi-sentence context, and edge
+cases; and moderation (toxicity plus AI-exploit detection on both user
+messages and assistant output, EN-only v1). Each task trains its own
+separate adapter.
 
 How it works: every stage is one script, and every task-specific value
 lives in the task's `task.toml`. A new finetune needs a new task
@@ -32,6 +34,20 @@ Per-language parity: worst 33/36 (de/fr/it), best 36/36 (es).
 Target 250/252 (99.2%) is set in `tasks/human_handoff/rounds.json`,
 which also logs every round; round 6 (3257 rows, miss-targeted) is next.
 
+## Results (moderation)
+
+Frozen 36-case eval, exact name+args+order, EN × 6 categories
+(benign, toxic_user, toxic_llm, exploit_user, exploit_llm, edge):
+
+| Round | Train rows | Exact | Routing |
+|---|---|---|---|
+| v1 | 158 | pending TPU probe | pending |
+
+Target 34/36 (94.4%) is set in `tasks/moderation/rounds.json`.
+Training runs on Kaggle TPU; the first push is a hardware probe
+(`[kaggle] probe=true`), flipped to a full run only after the probe
+log shows TPU devices.
+
 ## Layout
 
 - `scripts/check_env.py` — verify Python, the `cactus` package/CLI, the
@@ -44,12 +60,16 @@ which also logs every round; round 6 (3257 rows, miss-targeted) is next.
 - `scripts/finetune.py` — run `cactus finetune` (local LoRA) from config.
 - `scripts/build.py` — run `cactus build` to export the `.cact`.
 - `scripts/evaluate.py` — score base vs tuned weights on the frozen eval
-  set (exact-calls-in-order).
+  set (exact-calls-in-order, plus a tool-name-only routing diagnostic).
 - `scripts/kaggle_upload_dataset.py`, `kaggle_push.py`, `kaggle_poll.py`,
   `kaggle_publish_outputs.py` (+ `kaggle_train_driver.py`, which runs on
-  Kaggle) — versioned datasets in/out, GPU kernel runs, status polling.
-- `tasks/human_handoff/` — the test task: `task.toml`, `tools.json`,
+  Kaggle) — versioned datasets in/out, GPU or TPU kernel runs, status
+  polling. TPU tasks can push a hardware probe (`[kaggle] probe=true`)
+  before burning quota on training.
+- `tasks/human_handoff/` — the handoff task: `task.toml`, `tools.json`,
   `slot_banks.json`, `seeds_train.jsonl`, `seeds_eval.jsonl`.
+- `tasks/moderation/` — the moderation task: same layout, `flag_content`
+  tool (violation + source enums), EN-only v1.
 - `tests/` — unit tests mirroring the scripts.
 
 ## Setup
@@ -60,11 +80,11 @@ uv venv --python 3.11
 uv pip install -r requirements.txt
 ```
 
-## Run (human-handoff task)
+## Run (either task)
 
 ```sh
 . .venv/bin/activate
-export TASK=tasks/human_handoff/task.toml
+export TASK=tasks/human_handoff/task.toml  # or tasks/moderation/task.toml
 python scripts/check_env.py
 python scripts/generate_data.py --task $TASK
 python scripts/validate_data.py --task $TASK
@@ -75,18 +95,21 @@ python scripts/evaluate.py --task $TASK
 
 `finetune.py` and `build.py` accept `--dry-run` to print the `cactus`
 argv without executing. `evaluate.py --limit N` smoke-tests the first
-N eval cases.
+N eval cases. No script overwrites existing outputs: `generate_data.py`,
+`finetune.py`, `build.py`, `evaluate.py`, and `kaggle_poll.py` all
+refuse when their targets exist and need an explicit `--overwrite` to
+replace them (poll downloads stage first, then move into place).
 
-## Run on Kaggle GPUs
+## Run on Kaggle (GPU or TPU)
 
-Compile + training run in a private GPU kernel; datasets carry the
-inputs and the binaries. Needs the CLI (`uv tool install kaggle`) and
-a token at `~/.kaggle/access_token`:
+Compile + training run in a private GPU or TPU kernel; datasets carry
+the inputs and the binaries. Needs the CLI (`uv tool install kaggle`)
+and a token at `~/.kaggle/access_token`:
 
 ```sh
-export TASK=tasks/human_handoff/task.toml
+export TASK=tasks/human_handoff/task.toml  # or tasks/moderation/task.toml
 python scripts/kaggle_upload_dataset.py --task $TASK   # version inputs
-python scripts/kaggle_push.py --task $TASK             # push GPU run
+python scripts/kaggle_push.py --task $TASK             # push kernel run
 python scripts/kaggle_poll.py --task $TASK             # wait + download
 python scripts/kaggle_publish_outputs.py --task $TASK  # version binaries
 python scripts/evaluate.py --task $TASK                # local, runtime-only
@@ -96,10 +119,18 @@ All four Kaggle scripts accept `--dry-run`; `kaggle_poll.py --once`
 prints a single status line. Kernel + dataset titles derive from their
 slugs (Kaggle remaps mismatches). The on-Kaggle driver
 (`scripts/kaggle_train_driver.py`) runs generate → validate → finetune
-→ build, then prunes the GPU compile cache and flattens artifacts so
+→ build, then prunes the compile cache and flattens artifacts so
 downloads stay small. Every wait is bounded: per-call eval timeouts,
 per-stage kernel timeouts, poller status/download timeouts, and 429
 backoff that never burns the failure budget.
+
+TPU tasks (`tpu=true` in `[kaggle]`) push a hardware probe first:
+with `[kaggle] probe=true` the driver reports JAX backend/devices and
+exits without installing or training. Past TPU requests silently
+landed on CPU (see `STATE.md`), so flip `probe` to false only after
+the probe log shows TPU devices. The training loop also dies on a
+backend mismatch (`--expect-backend`, wired from the same flags), so a
+misplaced kernel can never burn a full run quietly.
 
 ## Verification
 
@@ -130,10 +161,10 @@ python -m compileall -q scripts tests
 - Forks: `[kaggle] username` in each `task.toml` is owner-specific
   (`blonded2` here) — point it at your own account plus your
   `~/.kaggle/` credentials before pushing.
-- `tasks/human_handoff/out/` deliberately tracks `train.jsonl`,
-  `eval.jsonl`, `manifest.json`, and the kernel log (byte-reproducible
-  inputs and run records); binaries (`.cact`, `.safetensors`, caches,
-  staging dirs) stay ignored.
+- Each task's `out/` deliberately tracks `train.jsonl`, `eval.jsonl`,
+  `manifest.json`, and the kernel log (byte-reproducible inputs and
+  run records); binaries (`.cact`, `.safetensors`, caches, staging
+  dirs) stay ignored.
 
 ## License
 

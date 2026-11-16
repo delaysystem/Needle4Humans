@@ -9,5 +9,6 @@ jax_cache/
 staging_input/
 staging_kernel/
 staging_output/
+staging_poll/
 checkpoints/
 task/

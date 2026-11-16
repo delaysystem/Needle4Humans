@@ -5,12 +5,15 @@ Loops ``kaggle kernels status`` on the configured interval until the run
 reads complete or error (or the overall timeout hits). On complete,
 downloads the kernel outputs into the task ``out/``. On error, prints the
 kernel logs and exits 1. ``--once`` prints one status line instead of
-looping. ``--dry-run`` prints the plan without calling Kaggle.
+looping. ``--dry-run`` prints the plan without calling Kaggle. Downloads
+land in a staging dir first and refuse to overwrite existing outputs
+unless ``--overwrite`` is passed.
 """
 
 from __future__ import annotations
 
 import argparse
+import shutil
 import subprocess
 import sys
 import time
@@ -58,6 +61,28 @@ def build_logs_argv(kaggle: str, ref: str) -> list[str]:
     return [kaggle, "kernels", "logs", ref]
 
 
+def plan_download_moves(
+    staging_dir: Path, out_dir: Path
+) -> list[tuple[Path, Path]]:
+    """(source, destination) pairs moving a download tree into out_dir.
+
+    Kernel downloads preserve the remote tree, so destinations keep each
+    file's staging-relative path. Sorted for deterministic behavior.
+    """
+    moves = []
+    for path in sorted(staging_dir.rglob("*")):
+        if path.is_file():
+            moves.append((path, out_dir / path.relative_to(staging_dir)))
+    return moves
+
+
+def apply_download_moves(moves: list[tuple[Path, Path]]) -> None:
+    """Move staged downloads into place, creating parent dirs as needed."""
+    for src, dst in moves:
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.move(str(src), dst)
+
+
 def is_rate_limited(stderr: str) -> bool:
     """True when CLI stderr reports API throttling (HTTP 429)."""
     folded = stderr.casefold()
@@ -96,6 +121,11 @@ def main(argv: list[str] | None = None) -> int:
         "--dry-run",
         action="store_true",
         help="Print the poll plan without calling Kaggle.",
+    )
+    parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Replace existing outputs with downloads instead of refusing.",
     )
     args = parser.parse_args(argv)
     config, task_dir = _common.load_task_config(args.task)
@@ -156,13 +186,17 @@ def main(argv: list[str] | None = None) -> int:
                 )
                 time.sleep(interval)
             elif state == "complete":
+                staging = out_dir / "staging_poll"
+                if staging.exists():
+                    shutil.rmtree(staging)
+                staging.mkdir(parents=True, exist_ok=True)
                 print(
-                    " ".join(build_output_argv(kaggle, ref, out_dir)),
+                    " ".join(build_output_argv(kaggle, ref, staging)),
                     flush=True,
                 )
                 try:
                     downloaded = run_capture(
-                        build_output_argv(kaggle, ref, out_dir),
+                        build_output_argv(kaggle, ref, staging),
                         timeout=DOWNLOAD_TIMEOUT_S,
                     )
                 except subprocess.TimeoutExpired:
@@ -174,6 +208,12 @@ def main(argv: list[str] | None = None) -> int:
                 if downloaded.returncode != 0:
                     print(downloaded.stderr.strip(), flush=True)
                     return 1
+                moves = plan_download_moves(staging, out_dir)
+                _common.check_no_overwrite(
+                    [dst for _, dst in moves], args.overwrite
+                )
+                apply_download_moves(moves)
+                shutil.rmtree(staging)
                 log_line(f"outputs downloaded to {out_dir}")
                 return 0
             elif state == "error":

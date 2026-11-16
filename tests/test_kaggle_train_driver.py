@@ -1,5 +1,6 @@
 """Tests for scripts/kaggle_train_driver.py pure helpers."""
 
+import json
 import sys
 import tomllib
 from pathlib import Path
@@ -239,6 +240,102 @@ def test_stage_prior_checkpoints_ambiguous_dies(tmp_path):
         kaggle_train_driver.stage_prior_checkpoints(
             str(tmp_path), tmp_path / "out" / "checkpoints"
         )
+
+
+def test_build_loop_argv_expect_backend(tmp_path):
+    task = {
+        "epochs": 14, "lr": 0.0001, "lora_rank": 32, "lora_alpha": 32,
+        "max_len": 1024, "val_split": 0.1, "seed": 0,
+        "adapter_file": "a.safetensors", "save_every_min": 30,
+        "val_every": 1,
+    }
+    argv = kaggle_train_driver.build_loop_argv(
+        tmp_path / "kaggle_train_loop.py", task, tmp_path / "out", "16",
+        None, "tpu",
+    )
+    assert argv[-2:] == ["--expect-backend", "tpu"]
+
+
+def test_resolve_train_package_default_and_override(tmp_path):
+    bare = tmp_path / "bare.toml"
+    bare.write_text("[task]\nname = \"x\"\n", encoding="utf-8")
+    assert kaggle_train_driver.resolve_train_package(bare) == (
+        kaggle_train_driver.TRAIN_PACKAGE
+    )
+    custom = tmp_path / "custom.toml"
+    custom.write_text(
+        "[kaggle]\ntrain_package = \"cactus-compute[train]==4.2.0\"\n",
+        encoding="utf-8",
+    )
+    assert kaggle_train_driver.resolve_train_package(custom) == (
+        "cactus-compute[train]==4.2.0"
+    )
+
+
+def test_resolve_probe_toml_and_cli(tmp_path):
+    bare = tmp_path / "bare.toml"
+    bare.write_text("[task]\nname = \"x\"\n", encoding="utf-8")
+    assert kaggle_train_driver.resolve_probe(bare, False) is False
+    assert kaggle_train_driver.resolve_probe(bare, True) is True
+    probing = tmp_path / "probing.toml"
+    probing.write_text("[kaggle]\nprobe = true\n", encoding="utf-8")
+    assert kaggle_train_driver.resolve_probe(probing, False) is True
+
+
+def test_resolve_expect_backend(tmp_path):
+    import pytest
+
+    bare = tmp_path / "bare.toml"
+    bare.write_text("[task]\nname = \"x\"\n", encoding="utf-8")
+    assert kaggle_train_driver.resolve_expect_backend(bare) == "gpu"
+    tpu = tmp_path / "tpu.toml"
+    tpu.write_text(
+        "[kaggle]\ngpu = false\ntpu = true\n", encoding="utf-8"
+    )
+    assert kaggle_train_driver.resolve_expect_backend(tpu) == "tpu"
+    cpu = tmp_path / "cpu.toml"
+    cpu.write_text("[kaggle]\ngpu = false\n", encoding="utf-8")
+    assert kaggle_train_driver.resolve_expect_backend(cpu) == "cpu"
+    both = tmp_path / "both.toml"
+    both.write_text(
+        "[kaggle]\ngpu = true\ntpu = true\n", encoding="utf-8"
+    )
+    with pytest.raises(SystemExit):
+        kaggle_train_driver.resolve_expect_backend(both)
+
+
+def test_probe_hardware_reports_without_raising():
+    report = kaggle_train_driver.probe_hardware()
+    assert "python" in report and "machine" in report
+    assert "jax" in report and "installed" in report["jax"]
+    assert isinstance(report["env"], dict)
+
+
+def test_main_probe_branch_skips_stages(tmp_path, monkeypatch, capsys):
+    # End-to-end through main() with simulated Kaggle mounts, driven by
+    # task.toml alone (Kaggle executes the driver with no argv).
+    input_root = tmp_path / "input"
+    task_src = input_root / "datasets" / "o" / "slug"
+    task_src.mkdir(parents=True)
+    (task_src / "task.toml").write_text(
+        "[kaggle]\nprobe = true\n", encoding="utf-8"
+    )
+    workspace = tmp_path / "working"
+    workspace.mkdir()
+    monkeypatch.setattr(kaggle_train_driver, "INPUT_ROOT", str(input_root))
+    monkeypatch.setattr(kaggle_train_driver, "WORKSPACE", str(workspace))
+    assert kaggle_train_driver.main([]) == 0
+    status = json.loads(
+        (workspace / "task" / "out" / "STATUS.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert status[0]["stage"] == "probe"
+    assert status[0]["returncode"] == 0
+    assert "jax" in status[0]["report"]
+    out = capsys.readouterr().out
+    assert "=== stage probe ===" in out
+    assert "pip-install" not in out
 
 
 def test_build_loop_argv(tmp_path):

@@ -1,0 +1,113 @@
+# Moderation finetune task for Needle 3.
+# Flags toxicity and AI exploits in both user messages and assistant
+# output. Separate adapter from human_handoff (owner decision); every
+# value a script needs lives here (agents2.md Rule 1).
+
+[task]
+name = "moderation"
+tools = "tools.json"
+slot_banks = "slot_banks.json"
+seed_bank = "seeds_train.jsonl"
+eval_bank = "seeds_eval.jsonl"
+out_dir = "out"
+
+[data]
+# EN-only v1; the slot-bank mechanism carries later languages.
+languages = ["en"]
+categories = ["benign", "toxic_user", "toxic_llm", "exploit_user", "exploit_llm", "edge"]
+# Minimum train examples per (language, category) cell after expansion.
+train_per_cell = 20
+# Exact eval examples per (language, category) cell, from the eval bank only.
+eval_per_cell = 6
+# Benign [] share. Structural: 1 of 6 cells is fully benign (edge stays
+# all-positive, mirroring handoff), so ~1/6 negatives is by design.
+# Measured 26/158 (0.165) at v1 generation; the band allows seed growth.
+negative_ratio_min = 0.12
+negative_ratio_max = 0.22
+train_seed = 7
+# Cap on expanded variants per seed; guards against slot-product explosion.
+max_variants_per_seed = 12
+train_file = "train.jsonl"
+eval_file = "eval.jsonl"
+manifest_file = "manifest.json"
+# Must match [train] max_len. Origin: finetuning guide default 1024; longer
+# examples are silently truncated, so validation warns near the cap.
+max_len_tokens = 1024
+# Origin: finetuning guide, non-English fragments into ~1.7x tokens
+# (measured on Spanish). Used only for length warnings.
+fragmentation_warning = 1.7
+
+[train]
+# Weak-box survival defaults mirror human_handoff; Kaggle overrides below.
+backend = "cpu"
+jax_cache_dir = "out/jax_cache"
+epochs = 14
+batch_size = 4
+lr = 0.0001
+lora_rank = 64
+lora_alpha = 64
+max_len = 1024
+val_split = 0.1
+seed = 0
+# 0 skips in-loop holdout scoring: on 2xT4 the eval executable OOMs next
+# to the pmap train state. Diagnostic-only loss — evaluate.py scores the
+# holdout for real. Restore 1 on a bigger GPU.
+val_every = 0
+adapter_file = "adapter.safetensors"
+log_file = "train.log"
+# Minutes between training checkpoints (kaggle_train_loop.py). A killed
+# run loses at most this much work; a re-push with --resume continues.
+save_every_min = 30
+
+[build]
+# Full model. Origin: owner decision; CLI default is 20 (cactus build --help).
+layers = 20
+weights_file = "moderation_20l.cact"
+
+[eval]
+# DroidCall-style exact-calls-in-order scoring; see scripts/evaluate.py.
+report_file = "eval_report.json"
+
+[kaggle]
+# Owner for dataset/kernel refs. Origin: `kaggle config view` on this box.
+username = "blonded2"
+# TPU run: gpu stays false (push dies when both are true).
+gpu = false
+tpu = true
+# TPU machine shape for kernel-metadata. Origin: Kaggle server remap
+# observed 2026-11-16 ("'Tpu1VmV38' is retired. Sessions run on the
+# default TPU (TpuV5E8) instead") on the probe push.
+tpu_shape = "TpuV5E8"
+input_dataset = "needle3-moderation-input"
+output_dataset = "needle3-moderation-outputs"
+checkpoints_dataset = "needle3-moderation-checkpoints"
+kernel = "needle3-moderation-train"
+# GPU type for a fallback kernel run (unused while tpu=true).
+accelerator = "NvidiaTeslaT4"
+# Hard cap on the kernel run in seconds; the server bounds it further.
+timeout = 21600
+# Per-stage cap in seconds. Disabled (0): fixed caps kept killing healthy
+# slow runs on handoff. The 6h kernel timeout stays the outer backstop,
+# and 30-min checkpoints bound any kill's cost.
+stage_timeout = 0
+poll_interval = 60
+poll_timeout = 25200
+# Train settings used on Kaggle (override the weak-box [train] values).
+# auto inherits the environment so JAX sees the TPU; never "gpu" here
+# (that name means CUDA, and the loop guard expects the tpu backend).
+backend = "auto"
+batch_size = 32
+# Training stack for pip on the kernel. Provisional: the GPU pin pulls
+# CUDA JAX, which is wrong for TPU; the base train extra is the first
+# candidate, confirmed or replaced when the probe/full push runs.
+train_package = "cactus-compute[train]==4.2.0"
+# True while the next push is a hardware probe (no install, no training).
+# Flip to false only after the probe log shows TPU devices.
+probe = true
+# Warm-start the LoRA weights from the prior round's published adapter
+# (mounts the outputs dataset; the driver dies loud when no adapter is
+# mounted). False for from-scratch rounds; true only for a follow-up
+# round reusing the previous round's adapter. Never with --resume.
+warm_start = false
+# Output files published to the binaries dataset (relative to out/).
+publish_files = ["adapter.safetensors", "moderation_20l.cact", "eval_report.json", "train.log", "manifest.json", "train.jsonl", "eval.jsonl"]

@@ -4,8 +4,10 @@
 Runs ``Cactus.complete()`` for every eval query under the base model and
 under the tuned ``.cact``, scoring DroidCall-style exact-calls-in-order:
 the call names, order, and argument objects must match ``answers`` exactly.
-Prints accuracy overall, per language, and per category, plus the
-false-handoff rate on ``[]`` negatives, and writes a JSON report.
+Prints accuracy overall, per language, and per category, plus the exact
+rate on ``[]`` negatives and a tool-name-only routing diagnostic, and
+writes a JSON report. Refuses to overwrite an existing report unless
+``--overwrite`` is passed.
 
 ``cactus`` is imported lazily so the pure scoring helpers stay testable
 without the package.
@@ -33,6 +35,13 @@ def calls_match(expected: list, actual: list) -> bool:
         if (want.get("arguments") or {}) != (got.get("arguments") or {}):
             return False
     return True
+
+
+def routing_match(expected: list, actual: list) -> bool:
+    """Tool-name-only ordered match (routing diagnostic, not the target)."""
+    return [call.get("name") for call in expected] == [
+        call.get("name") for call in actual
+    ]
 
 
 def summarize(
@@ -79,7 +88,7 @@ def print_summary(label: str, summary: dict) -> None:
         f"({rate(summary['hits'], summary['total']):.1%})"
     )
     print(
-        f"negatives refused: {summary['negative_hits']}/"
+        f"negatives ([]) exact: {summary['negative_hits']}/"
         f"{summary['negatives']} "
         f"({rate(summary['negative_hits'], summary['negatives']):.1%})"
     )
@@ -168,10 +177,18 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="Score only the first N eval cases (smoke test).",
     )
+    parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Replace the existing report instead of refusing.",
+    )
     args = parser.parse_args(argv)
     config, task_dir = _common.load_task_config(args.task)
-    data = config["data"]
     out_dir = _common.task_relative_path(task_dir, config["task"]["out_dir"])
+    _common.check_no_overwrite(
+        [out_dir / config["eval"]["report_file"]], args.overwrite
+    )
+    data = config["data"]
     tools = _common.read_json(
         _common.task_relative_path(task_dir, config["task"]["tools"])
     )
@@ -194,7 +211,10 @@ def main(argv: list[str] | None = None) -> int:
     base_results = run_agent(tools, None, queries, "base")
     tuned_results = run_agent(tools, str(weights_path), queries, "tuned")
 
-    report = {"cases": [], "base": {}, "tuned": {}}
+    report = {
+        "cases": [], "base": {}, "tuned": {},
+        "base_routing": {}, "tuned_routing": {},
+    }
     for row, (base, base_timeout), (tuned, tuned_timeout) in zip(
         eval_rows, base_results, tuned_results
     ):
@@ -210,6 +230,10 @@ def main(argv: list[str] | None = None) -> int:
                 and calls_match(row["answers"], base),
                 "tuned_hit": (not tuned_timeout)
                 and calls_match(row["answers"], tuned),
+                "base_routing_hit": (not base_timeout)
+                and routing_match(row["answers"], base),
+                "tuned_routing_hit": (not tuned_timeout)
+                and routing_match(row["answers"], tuned),
             }
         )
     report["base"] = summarize(
@@ -234,11 +258,35 @@ def main(argv: list[str] | None = None) -> int:
         ],
         manifest["rows"],
     )
+    report["base_routing"] = summarize(
+        [
+            {
+                "id": case["id"],
+                "hit": case["base_routing_hit"],
+                "expected": case["expected"],
+            }
+            for case in report["cases"]
+        ],
+        manifest["rows"],
+    )
+    report["tuned_routing"] = summarize(
+        [
+            {
+                "id": case["id"],
+                "hit": case["tuned_routing_hit"],
+                "expected": case["expected"],
+            }
+            for case in report["cases"]
+        ],
+        manifest["rows"],
+    )
     report_path = out_dir / config["eval"]["report_file"]
     with open(report_path, "w", encoding="utf-8") as handle:
         json.dump(report, handle, ensure_ascii=False, indent=2)
     print_summary("base", report["base"])
     print_summary("tuned", report["tuned"])
+    print_summary("base routing", report["base_routing"])
+    print_summary("tuned routing", report["tuned_routing"])
     timeouts = sum(
         case["base_timeout"] + case["tuned_timeout"]
         for case in report["cases"]

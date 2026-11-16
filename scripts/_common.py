@@ -86,3 +86,16 @@ def write_jsonl(path: Path, rows: list[dict]) -> None:
 def die(message: str, code: int = 1) -> "NoReturn":
     print(f"error: {message}", file=sys.stderr)
     raise SystemExit(code)
+
+
+def check_no_overwrite(paths, overwrite: bool) -> None:
+    """Die naming every existing output path, unless overwrite is true."""
+    if overwrite:
+        return
+    existing = [str(path) for path in paths if Path(path).exists()]
+    if existing:
+        die(
+            "refusing to overwrite existing outputs: "
+            + ", ".join(existing)
+            + " (pass --overwrite to replace them)"
+        )

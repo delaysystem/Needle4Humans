@@ -213,6 +213,23 @@ def _snapshot(ckpt_dir, step_i, lora, opt_state, order_full, order, epoch,
     save_checkpoint(ckpt_dir, step_i, arrays, meta)
 
 
+def check_backend(expected: str, actual: str) -> None:
+    """Die unless the observed JAX backend matches the expected one.
+
+    ``auto`` (local use) skips the check. Kaggle runs pass the backend
+    the kernel metadata requested, so a TPU request that silently
+    landed on CPU dies here instead of burning quota on mistraining.
+    """
+    allowed = ("auto", "cpu", "gpu", "tpu")
+    if expected not in allowed:
+        raise SystemExit(f"unknown --expect-backend: {expected!r} (want auto/cpu/gpu/tpu)")
+    if expected != "auto" and actual != expected:
+        raise SystemExit(
+            f"backend mismatch: expected {expected}, JAX reports {actual}; "
+            "the kernel landed on the wrong hardware"
+        )
+
+
 def resolve_devices(requested: str, available: int) -> int:
     """Data-parallel device count for training.
 
@@ -371,6 +388,7 @@ def train(args) -> int:
     config.dtype = "float32"
     params = jax.tree.map(lambda a: np.asarray(a).astype(np.float32), params)
     backend = jax.default_backend().lower()
+    check_backend(args.expect_backend, backend)
     apply_backend_tuning(config, backend)
     params = jax.device_put(params)
     emit(f"  {'backend':<9} {backend}  float32")
@@ -613,6 +631,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--val-every", type=int, default=1,
                         help="Score the holdout every N epochs (0 skips "
                         "in-loop scoring; evaluate.py scores held-out)")
+    parser.add_argument("--expect-backend", default="auto",
+                        help="Die unless JAX reports this backend "
+                        "(auto skips the check)")
     return parser
 
 

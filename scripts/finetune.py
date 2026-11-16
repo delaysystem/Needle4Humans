@@ -4,6 +4,8 @@
 Builds the CLI argv from ``[train]`` plus the generated train file, streams
 the subprocess output to stdout and the configured log file, and passes
 the exit code through. ``--dry-run`` prints the argv without executing.
+Refuses to overwrite an existing log or adapter unless ``--overwrite``
+is passed.
 
 ``[train] backend`` selects the JAX device: ``cpu`` hides GPUs via
 ``CUDA_VISIBLE_DEVICES``; ``gpu`` and ``auto`` (the default) inherit the
@@ -141,6 +143,11 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="Override [train] batch_size for this run.",
     )
+    parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Replace the existing log/adapter instead of refusing.",
+    )
     args = parser.parse_args(argv)
     config, task_dir = _common.load_task_config(args.task)
     config = apply_overrides(config, args.backend, args.batch_size)
@@ -148,9 +155,12 @@ def main(argv: list[str] | None = None) -> int:
     if args.dry_run:
         print(" ".join(cli_argv))
         return 0
-    log_path = _common.task_relative_path(
-        task_dir, config["task"]["out_dir"]
-    ) / config["train"]["log_file"]
+    out_dir = _common.task_relative_path(task_dir, config["task"]["out_dir"])
+    log_path = out_dir / config["train"]["log_file"]
+    _common.check_no_overwrite(
+        [log_path, out_dir / config["train"]["adapter_file"]],
+        args.overwrite,
+    )
     return run_tee(cli_argv, log_path, train_env(config, task_dir))
 
 

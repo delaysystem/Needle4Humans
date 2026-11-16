@@ -2,12 +2,15 @@
 """Run one finetune task end to end inside a Kaggle kernel.
 
 Copies the mounted input dataset to the writable workspace (input mounts
-are read-only), installs the GPU training stack, and runs generate →
+are read-only), installs the training stack, and runs generate →
 validate → finetune → build with the task config plus CLI overrides for
 the Kaggle backend and batch size. Evaluation runs locally after
 downloading the ``.cact`` (inference needs no JAX), so the driver stops
 at build. Every stage banners to stdout (visible in kernel logs) and is
-recorded in STATUS.json; the first failing stage stops the run.
+recorded in STATUS.json; the first failing stage stops the run. With
+``[kaggle] probe`` true, the driver instead reports the kernel's
+hardware/JAX backend and exits without installing or training, so a TPU
+request that silently landed on CPU is discovered in seconds.
 
 Stdlib-only with no repo imports: this file executes standalone on
 Kaggle. ``KAGGLE_INPUT_ROOT``/``KAGGLE_WORKSPACE`` override the platform
@@ -163,6 +166,7 @@ def find_warm_start_adapter(input_root: str, task_src: Path) -> Path | None:
 def build_loop_argv(
     loop_path: Path, task: dict, out_dir: Path, batch_size: str,
     init_adapter: str | None = None,
+    expect_backend: str | None = None,
 ) -> list[str]:
     """Argv for the resumable training loop from the task config."""
     train_file = out_dir / "train.jsonl"
@@ -185,7 +189,90 @@ def build_loop_argv(
     ]
     if init_adapter:
         argv += ["--init-adapter", init_adapter]
+    if expect_backend is not None:
+        argv += ["--expect-backend", expect_backend]
     return argv
+
+
+def resolve_train_package(task_file: Path) -> str:
+    """Pip training stack: ``[kaggle] train_package`` or the GPU pin.
+
+    The GPU pin pulls CUDA JAX, which is wrong for a TPU kernel, so
+    TPU tasks set their own stack in task.toml instead of code.
+    """
+    import tomllib
+
+    with open(task_file, "rb") as handle:
+        kaggle_config = tomllib.load(handle).get("kaggle", {})
+    return kaggle_config.get("train_package", TRAIN_PACKAGE)
+
+
+def resolve_probe(task_file: Path, probe_arg: bool) -> bool:
+    """True when this push is a hardware probe, not a training run.
+
+    Kaggle executes the driver with no argv, so task.toml ``[kaggle]``
+    carries the value; the explicit CLI flag still wins for local use.
+    """
+    import tomllib
+
+    with open(task_file, "rb") as handle:
+        kaggle_config = tomllib.load(handle).get("kaggle", {})
+    return bool(probe_arg or kaggle_config.get("probe", False))
+
+
+def resolve_expect_backend(task_file: Path) -> str:
+    """JAX backend the training loop must observe (tpu/gpu/cpu).
+
+    Derived from the same ``[kaggle]`` accelerator flags the kernel
+    metadata renders, so a kernel that silently landed on the wrong
+    hardware dies at loop startup instead of mistraining.
+    """
+    import tomllib
+
+    with open(task_file, "rb") as handle:
+        kaggle_config = tomllib.load(handle).get("kaggle", {})
+    gpu = bool(kaggle_config.get("gpu", True))
+    tpu = bool(kaggle_config.get("tpu", False))
+    if gpu and tpu:
+        raise SystemExit("[kaggle] gpu=true with tpu=true: pick one")
+    if tpu:
+        return "tpu"
+    if gpu:
+        return "gpu"
+    return "cpu"
+
+
+# Origin: task choice; the env hints a TPU runtime leaves behind.
+PROBE_ENV_KEYS = ("TPU_NAME", "COLAB_TPU_ADDR", "CUDA_VISIBLE_DEVICES")
+
+
+def probe_hardware() -> dict:
+    """Hardware/JAX report for ``[kaggle] probe`` runs (no install)."""
+    import platform
+
+    report: dict = {
+        "python": platform.python_version(),
+        "machine": platform.machine(),
+        "env": {
+            key: os.environ.get(key) for key in PROBE_ENV_KEYS
+            if key in os.environ
+        },
+    }
+    try:
+        import jax
+
+        report["jax"] = {
+            "installed": True,
+            "version": jax.__version__,
+            "backend": jax.default_backend(),
+            "devices": [str(device) for device in jax.devices()],
+        }
+    except Exception as exc:  # noqa: BLE001 - probe reports, never raises
+        report["jax"] = {
+            "installed": False,
+            "error": type(exc).__name__,
+        }
+    return report
 
 
 def get_stage_timeout(task_file: Path) -> float | None:
@@ -256,6 +343,12 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="Batch-size override (default: task.toml [kaggle] batch_size).",
     )
+    parser.add_argument(
+        "--probe",
+        action="store_true",
+        help="Report hardware/JAX and exit (default: task.toml "
+        "[kaggle] probe).",
+    )
     args = parser.parse_args(argv)
     task_src = find_task(INPUT_ROOT)
     task_dir = Path(WORKSPACE) / "task"
@@ -266,6 +359,19 @@ def main(argv: list[str] | None = None) -> int:
     backend, batch_size, warm_start = resolve_kaggle_defaults(
         task_file, args.backend, args.batch_size
     )
+    if resolve_probe(task_file, args.probe):
+        report = probe_hardware()
+        print("=== stage probe ===", flush=True)
+        print(json.dumps(report, indent=2), flush=True)
+        status_path = task_dir / "out" / "STATUS.json"
+        status_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(status_path, "w", encoding="utf-8") as handle:
+            json.dump(
+                [{"stage": "probe", "returncode": 0, "report": report}],
+                handle, indent=2,
+            )
+        print("=== driver done (probe) ===", flush=True)
+        return 0
     out_dir = task_dir / "out"
     staged = stage_prior_checkpoints(INPUT_ROOT, out_dir / CHECKPOINTS_DIRNAME)
     init_adapter = None
@@ -294,8 +400,10 @@ def main(argv: list[str] | None = None) -> int:
 
     print("=== stage pip-install ===", flush=True)
     start = time.monotonic()
+    package = resolve_train_package(task_file)
+    print(f"installing {package}", flush=True)
     completed = subprocess.run(
-        [sys.executable, "-m", "pip", "install", "-q", TRAIN_PACKAGE],
+        [sys.executable, "-m", "pip", "install", "-q", package],
         check=False,
     )
     status.append(
@@ -315,6 +423,7 @@ def main(argv: list[str] | None = None) -> int:
         train_config = tomllib.load(handle)["train"]
     check_train_config(train_config)
     loop_env = {"CUDA_VISIBLE_DEVICES": ""} if backend == "cpu" else None
+    expect_backend = resolve_expect_backend(task_file)
     for stage in STAGES:
         if stage == "finetune":
             argv = build_loop_argv(
@@ -323,6 +432,7 @@ def main(argv: list[str] | None = None) -> int:
                 out_dir,
                 batch_size,
                 init_adapter,
+                expect_backend,
             )
             run_stage(argv, status, stage_timeout, name="finetune", env=loop_env)
         else:

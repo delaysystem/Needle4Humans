@@ -169,3 +169,69 @@ def test_main_short_cell_dies(tmp_path):
     with pytest.raises(SystemExit):
         generate_data.main(["--task", str(task_dir / "task.toml"),
                             "--split", "train"])
+
+
+def test_output_paths_for_split(tmp_path):
+    data = {
+        "train_file": "train.jsonl",
+        "eval_file": "eval.jsonl",
+        "manifest_file": "manifest.json",
+    }
+    out = tmp_path / "out"
+    assert generate_data.output_paths_for_split(data, out, "train") == [
+        out / "train.jsonl", out / "manifest.json",
+    ]
+    assert generate_data.output_paths_for_split(data, out, "eval") == [
+        out / "eval.jsonl", out / "manifest.json",
+    ]
+    assert generate_data.output_paths_for_split(data, out, "both") == [
+        out / "train.jsonl", out / "eval.jsonl", out / "manifest.json",
+    ]
+
+
+def test_main_refuses_overwrite_without_flag(tmp_path):
+    seeds_train = [
+        make_seed(),
+        make_seed(
+            id="en-negative-01",
+            category="negative",
+            query="What time is it?",
+            slots={},
+            answers=[],
+            reasoning="routine -> []",
+        ),
+        make_seed(
+            id="en-negative-02",
+            category="negative",
+            query="Thanks!",
+            slots={},
+            answers=[],
+            reasoning="thanks -> []",
+        ),
+    ]
+    seeds_eval = [
+        make_seed(
+            id="en-explicit-e01",
+            slots={},
+            query="I want to talk.",
+            reasoning="'talk' -> handoff",
+        ),
+        make_seed(
+            id="en-negative-e01",
+            category="negative",
+            query="Hello.",
+            slots={},
+            answers=[],
+            reasoning="greeting -> []",
+        ),
+    ]
+    task_dir = write_task(tmp_path, seeds_train, seeds_eval)
+    argv = ["--task", str(task_dir / "task.toml")]
+    assert generate_data.main(argv) == 0
+    train_path = task_dir / "out" / "train.jsonl"
+    train_path.write_text("sentinel", encoding="utf-8")
+    with pytest.raises(SystemExit):
+        generate_data.main(argv)
+    assert train_path.read_text(encoding="utf-8") == "sentinel"
+    assert generate_data.main(argv + ["--overwrite"]) == 0
+    assert train_path.read_text(encoding="utf-8") != "sentinel"

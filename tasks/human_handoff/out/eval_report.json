@@ -46,14 +46,14 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "reason": "account"
+            "reason": "general"
           }
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00002",
@@ -625,11 +625,18 @@
         }
       ],
       "base": [],
-      "tuned": [],
+      "tuned": [
+        {
+          "name": "request_human_handoff",
+          "arguments": {
+            "reason": "general"
+          }
+        }
+      ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00026",
@@ -780,11 +787,18 @@
       "id": "ev-00033",
       "expected": [],
       "base": [],
-      "tuned": [],
+      "tuned": [
+        {
+          "name": "request_human_handoff",
+          "arguments": {
+            "reason": "general"
+          }
+        }
+      ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": true,
-      "tuned_hit": true
+      "tuned_hit": false
     },
     {
       "id": "ev-00034",
@@ -824,18 +838,11 @@
         }
       ],
       "base": [],
-      "tuned": [
-        {
-          "name": "request_human_handoff",
-          "arguments": {
-            "reason": "general"
-          }
-        }
-      ],
+      "tuned": [],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": true
+      "tuned_hit": false
     },
     {
       "id": "ev-00037",
@@ -1188,14 +1195,14 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "reason": "general"
+            "reason": "account"
           }
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": true
+      "tuned_hit": false
     },
     {
       "id": "ev-00052",
@@ -1520,18 +1527,11 @@
         }
       ],
       "base": [],
-      "tuned": [
-        {
-          "name": "request_human_handoff",
-          "arguments": {
-            "reason": "general"
-          }
-        }
-      ],
+      "tuned": [],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": true
+      "tuned_hit": false
     },
     {
       "id": "ev-00066",
@@ -1974,7 +1974,14 @@
           }
         }
       ],
-      "base": [],
+      "base": [
+        {
+          "name": "request_human_handoff",
+          "arguments": {
+            "reason": "billing"
+          }
+        }
+      ],
       "tuned": [
         {
           "name": "request_human_handoff",
@@ -2123,14 +2130,14 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "reason": "general"
+            "reason": "billing"
           }
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00093",
@@ -2352,11 +2359,18 @@
       "id": "ev-00102",
       "expected": [],
       "base": [],
-      "tuned": [],
+      "tuned": [
+        {
+          "name": "request_human_handoff",
+          "arguments": {
+            "reason": "general"
+          }
+        }
+      ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": true,
-      "tuned_hit": true
+      "tuned_hit": false
     },
     {
       "id": "ev-00103",
@@ -2915,14 +2929,14 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "reason": "general"
+            "reason": "technical"
           }
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00128",
@@ -3055,18 +3069,11 @@
         }
       ],
       "base": [],
-      "tuned": [
-        {
-          "name": "request_human_handoff",
-          "arguments": {
-            "reason": "general"
-          }
-        }
-      ],
+      "tuned": [],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": true
+      "tuned_hit": false
     },
     {
       "id": "ev-00134",
@@ -3232,11 +3239,18 @@
       "id": "ev-00143",
       "expected": [],
       "base": [],
-      "tuned": [],
+      "tuned": [
+        {
+          "name": "request_human_handoff",
+          "arguments": {
+            "reason": "general"
+          }
+        }
+      ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": true,
-      "tuned_hit": true
+      "tuned_hit": false
     },
     {
       "id": "ev-00144",
@@ -3280,11 +3294,18 @@
         }
       ],
       "base": [],
-      "tuned": [],
+      "tuned": [
+        {
+          "name": "request_human_handoff",
+          "arguments": {
+            "reason": "general"
+          }
+        }
+      ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00146",
@@ -3733,14 +3754,14 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "reason": "general"
+            "reason": "billing"
           }
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00165",
@@ -3781,14 +3802,14 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "reason": "general"
+            "reason": "billing"
           }
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": true
+      "tuned_hit": false
     },
     {
       "id": "ev-00167",
@@ -3849,11 +3870,18 @@
         }
       ],
       "base": [],
-      "tuned": [],
+      "tuned": [
+        {
+          "name": "request_human_handoff",
+          "arguments": {
+            "reason": "general"
+          }
+        }
+      ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00170",
@@ -3955,18 +3983,11 @@
       "id": "ev-00174",
       "expected": [],
       "base": [],
-      "tuned": [
-        {
-          "name": "request_human_handoff",
-          "arguments": {
-            "reason": "technical"
-          }
-        }
-      ],
+      "tuned": [],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": true,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00175",
@@ -3987,11 +4008,18 @@
       "id": "ev-00176",
       "expected": [],
       "base": [],
-      "tuned": [],
+      "tuned": [
+        {
+          "name": "request_human_handoff",
+          "arguments": {
+            "reason": "general"
+          }
+        }
+      ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": true,
-      "tuned_hit": true
+      "tuned_hit": false
     },
     {
       "id": "ev-00177",
@@ -4094,18 +4122,11 @@
         }
       ],
       "base": [],
-      "tuned": [
-        {
-          "name": "request_human_handoff",
-          "arguments": {
-            "reason": "general"
-          }
-        }
-      ],
+      "tuned": [],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": true
+      "tuned_hit": false
     },
     {
       "id": "ev-00183",
@@ -4453,14 +4474,7 @@
           }
         }
       ],
-      "base": [
-        {
-          "name": "request_human_handoff",
-          "arguments": {
-            "reason": "billing"
-          }
-        }
-      ],
+      "base": [],
       "tuned": [
         {
           "name": "request_human_handoff",
@@ -4513,14 +4527,14 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "reason": "technical"
+            "reason": "general"
           }
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": true
+      "tuned_hit": false
     },
     {
       "id": "ev-00200",
@@ -4609,14 +4623,14 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "reason": "account"
+            "reason": "general"
           }
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00204",
@@ -4779,11 +4793,18 @@
       "id": "ev-00212",
       "expected": [],
       "base": [],
-      "tuned": [],
+      "tuned": [
+        {
+          "name": "request_human_handoff",
+          "arguments": {
+            "reason": "general"
+          }
+        }
+      ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": true,
-      "tuned_hit": true
+      "tuned_hit": false
     },
     {
       "id": "ev-00213",
@@ -5166,14 +5187,14 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "reason": "account"
+            "reason": "general"
           }
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false
+      "tuned_hit": true
     },
     {
       "id": "ev-00231",
@@ -5286,14 +5307,14 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "reason": "technical"
+            "reason": "billing"
           }
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": true
+      "tuned_hit": false
     },
     {
       "id": "ev-00236",
@@ -5548,11 +5569,18 @@
     {
       "id": "ev-00247",
       "expected": [],
-      "base": [],
+      "base": [
+        {
+          "name": "request_human_handoff",
+          "arguments": {
+            "reason": "billing"
+          }
+        }
+      ],
       "tuned": [],
       "base_timeout": false,
       "tuned_timeout": false,
-      "base_hit": true,
+      "base_hit": false,
       "tuned_hit": true
     },
     {
@@ -5624,7 +5652,7 @@
   ],
   "base": {
     "total": 252,
-    "hits": 34,
+    "hits": 33,
     "by_language": {
       "en": {
         "total": 36,
@@ -5652,7 +5680,7 @@
       },
       "pl": {
         "total": 36,
-        "hits": 4
+        "hits": 3
       }
     },
     "by_category": {
@@ -5678,23 +5706,23 @@
       },
       "negative": {
         "total": 42,
-        "hits": 34
+        "hits": 33
       }
     },
     "negatives": 42,
-    "negative_hits": 34
+    "negative_hits": 33
   },
   "tuned": {
     "total": 252,
-    "hits": 222,
+    "hits": 219,
     "by_language": {
       "en": {
         "total": 36,
-        "hits": 30
+        "hits": 31
       },
       "de": {
         "total": 36,
-        "hits": 32
+        "hits": 29
       },
       "fr": {
         "total": 36,
@@ -5702,15 +5730,15 @@
       },
       "es": {
         "total": 36,
-        "hits": 32
+        "hits": 31
       },
       "it": {
         "total": 36,
-        "hits": 30
+        "hits": 32
       },
       "nl": {
         "total": 36,
-        "hits": 33
+        "hits": 31
       },
       "pl": {
         "total": 36,
@@ -5732,7 +5760,7 @@
       },
       "multisentence": {
         "total": 42,
-        "hits": 29
+        "hits": 30
       },
       "edge": {
         "total": 42,
@@ -5740,10 +5768,10 @@
       },
       "negative": {
         "total": 42,
-        "hits": 31
+        "hits": 27
       }
     },
     "negatives": 42,
-    "negative_hits": 31
+    "negative_hits": 27
   }
 }

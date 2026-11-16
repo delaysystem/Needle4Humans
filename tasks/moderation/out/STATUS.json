@@ -1,0 +1,32 @@
+[
+  {
+    "stage": "pip-install",
+    "returncode": 0,
+    "elapsed_s": 24.3,
+    "timeout": false
+  },
+  {
+    "stage": "generate_data",
+    "returncode": 0,
+    "elapsed_s": 0.1,
+    "timeout": false
+  },
+  {
+    "stage": "validate_data",
+    "returncode": 0,
+    "elapsed_s": 0.1,
+    "timeout": false
+  },
+  {
+    "stage": "finetune",
+    "returncode": 0,
+    "elapsed_s": 423.5,
+    "timeout": false
+  },
+  {
+    "stage": "build",
+    "returncode": 0,
+    "elapsed_s": 25.0,
+    "timeout": false
+  }
+]

@@ -41,7 +41,7 @@ Frozen 36-case eval, exact name+args+order, EN × 6 categories
 
 | Round | Train rows | Exact | Routing |
 |---|---|---|---|
-| v1 | 158 | pending TPU probe | pending |
+| v1 (GPU) | 158 | 22.2% (8) | 41.7% |
 
 Target 34/36 (94.4%) is set in `tasks/moderation/rounds.json`.
 Training runs on Kaggle GPU: TPU was tried first (probe v1 starved

@@ -21,6 +21,17 @@ recorded GPU fallback (batch 32, T4 fit validated by that same
 completed handoff run: 1358 steps, 2xT4, returncode 0). The queued
 TPU probe v1 was left in place; if it ever runs it is bonus data only.
 
+Moderation v1 trained 2026-11-16 on GPU (kernel v2, 2xT4, batch 32,
+rank 64, 14 epochs, 70 steps, loss 2.03→1.70, all stages returncode
+0). Local eval: base 5/36 exact (6/36 routing) → tuned 8/36 exact
+(15/36 routing), 0 timeouts. Miss pattern: partial-arg calls (model
+drops `source`), multi-call hedging on edge cases, and every
+injection/tool_abuse/manipulation eval case → []. Verdict:
+undertrained (70 steps vs handoff's thousands) — round 2 needs more
+steps (epochs up) and/or more seeds before any schema rethink.
+Outputs dataset `blonded2/needle3-moderation-outputs` v1 published
+(adapter, `.cact`, report, logs, data) as the warm-start base.
+
 ## Status addendum 2026-11-14 03:55 UTC (supersedes the notes below)
 
 Training moved to Kaggle GPU (account `blonded2`). Round 5 finished on

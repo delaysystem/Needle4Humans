@@ -1,5 +1,5 @@
 {
-  "current_round": 13,
+  "current_round": 14,
   "max_rounds": 7,
   "min_gain_to_continue": 1,
   "notes": [
@@ -215,6 +215,24 @@
         "over-rotation: billing learned travel-words not money-words (car-rental x4 -> billing); technical absorbed anger (frustrated demands -> technical); account stole de plain asks",
         "lesson: splits were label-right but topic-skewed; model learns instance clusters not word semantics",
         "round 13: keep v12 base (flights learned!), add ~49 guard/balance seeds"
+      ]
+    },
+    {
+      "name": "v13",
+      "adapter": "rank64/3484-rows/14ep/batch32/pmap",
+      "exact": 0.881,
+      "routing": 0.9365,
+      "explicit": 0.952,
+      "implicit": 0.929,
+      "sarcastic": 0.976,
+      "multisentence": 0.738,
+      "edge": 0.929,
+      "negative": 0.762,
+      "eval_artifact": "eval_report_v13.json (round-13 kernel)",
+      "notes": [
+        "guards worked: 213->222; fixed 17 broke 8",
+        "rental x4 + premium + STOP BOT over-fire billing; flight en/de/nl ask-locked (fix/klaren/oplossen); sister 5/7; staff-it eternal",
+        "round 14: rental contrast pairs, sister contrast pairs, fix-ask billing, premium guards, minimal-diff closers (~54 seeds)"
       ]
     }
   ],

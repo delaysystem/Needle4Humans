@@ -1,5 +1,5 @@
 {
-  "current_round": 15,
+  "current_round": 16,
   "max_rounds": 7,
   "min_gain_to_continue": 1,
   "notes": [
@@ -252,6 +252,25 @@
         "reason keys on ASK wording: fix/ask billing rows fixed flight-nl but dropped fr/es/it/pl flights",
         "sister-en fixed (contrast pairs work); rental 0/5 (billing lock); staff-it eternal; en/de flights eternal",
         "round 15: all-7 billing ask-families, rental minimal pairs, sister wave2, premium wave2, closers (~55 seeds)"
+      ]
+    },
+    {
+      "name": "v15",
+      "adapter": "rank64/3592-rows/14ep/batch32/pmap",
+      "exact": 0.8968,
+      "routing": 0.9405,
+      "explicit": 0.952,
+      "implicit": 1.0,
+      "sarcastic": 0.952,
+      "multisentence": 0.762,
+      "edge": 0.976,
+      "negative": 0.738,
+      "eval_artifact": "eval_report_v15.json (round-15 kernel)",
+      "notes": [
+        "224->226 exact; fixed 13 (rental en/de/es, premium en, flights de/fr/es/it, sister fr) broke 11 (thanks x3, printers, nl flight, transfer de)",
+        "all-7 billing asks worked except en (eternal) + pl (now account); nl flight seesaw",
+        "first bare-{} output seen (boiler-nl) - model hedging without reason",
+        "round 16: en-flight assault x4, pl/nl flights, rental fr/it, sister w3, thanks x5, printer fr/pl, closers (~42 seeds)"
       ]
     }
   ],

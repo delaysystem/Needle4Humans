@@ -1,5 +1,5 @@
 {
-  "current_round": 17,
+  "current_round": 18,
   "max_rounds": 7,
   "min_gain_to_continue": 1,
   "notes": [
@@ -289,6 +289,24 @@
         "226->220; fixed 7 broke 13; flights de/fr/es flipped back, en eternal (16 rounds)",
         "seesaw dominates: 54 cases missed across v13-v16 (11 eternal, 10x3, 9x2, 24x1-noise)",
         "round 17: anchor-the-unstable - 95 paraphrases dosed by instability (33+20+18+24), labels preserved"
+      ]
+    },
+    {
+      "name": "v17",
+      "adapter": "rank64/3739-rows/14ep/batch32/pmap",
+      "exact": 0.873,
+      "routing": 0.9286,
+      "explicit": 0.929,
+      "implicit": 1.0,
+      "sarcastic": 0.976,
+      "multisentence": 0.69,
+      "edge": 1.0,
+      "negative": 0.643,
+      "eval_artifact": "eval_report_v17.json (round-17 kernel)",
+      "notes": [
+        "220->220; fixed 14 (en-flight eternal! rental-fr, medicine-de, payment-en + 10) broke 14 (9 stable cases incl nl x4)",
+        "waterbed: anchors fix locally but perturb neighbors; error mass conserved ~30 -> capacity saturation",
+        "round 18: rank 128, same data (capacity test)"
       ]
     }
   ],

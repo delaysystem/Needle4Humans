@@ -1,152 +1,152 @@
-[{"stream_name":"stdout","time":4.316005996,"data":"no prior checkpoints mounted; fresh run\n"}
-,{"stream_name":"stdout","time":4.316770484,"data":"=== stage pip-install ===\n"}
-,{"stream_name":"stdout","time":4.317418489,"data":"installing cactus-compute[train,gpu]==4.2.0\n"}
-,{"stream_name":"stdout","time":23.890314320999998,"data":"=== stage generate_data ===\n"}
-,{"stream_name":"stdout","time":24.100912406,"data":"wrote 3634 train rows to /kaggle/working/task/out/train.jsonl\n"}
-,{"stream_name":"stdout","time":24.100940078,"data":"wrote 252 eval rows to /kaggle/working/task/out/eval.jsonl\n"}
-,{"stream_name":"stdout","time":24.100944913,"data":"wrote manifest to /kaggle/working/task/out/manifest.json\n"}
-,{"stream_name":"stdout","time":24.113240183,"data":"=== stage validate_data ===\n"}
-,{"stream_name":"stdout","time":24.279796492,"data":"checked 3634 train + 252 eval rows: 0 errors, 0 warnings\n"}
-,{"stream_name":"stdout","time":24.291424773,"data":"=== stage finetune ===\n"}
-,{"stream_name":"stdout","time":30.359471156,"data":"  versions  cactus-compute 4.2.0  jax 0.11.1\n"}
-,{"stream_name":"stdout","time":30.359499754,"data":"  fetch     checkpoints/needle3.safetensors  downloading from Hugging Face\n"}
-,{"stream_name":"stderr","time":31.0639102,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
-,{"stream_name":"stderr","time":47.878127549,"data":"Jax plugin configuration error: Exception when calling jax_plugins.xla_cuda13.initialize()\n"}
-,{"stream_name":"stderr","time":47.878169524,"data":"Traceback (most recent call last):\n"}
-,{"stream_name":"stderr","time":47.87817616,"data":"  File \"/usr/local/lib/python3.13/dist-packages/jax/_src/xla_bridge.py\", line 495, in discover_pjrt_plugins\n"}
-,{"stream_name":"stderr","time":47.878182114,"data":"    plugin_module.initialize()\n"}
-,{"stream_name":"stderr","time":47.878187582,"data":"    ~~~~~~~~~~~~~~~~~~~~~~~~^^\n"}
-,{"stream_name":"stderr","time":47.878192424,"data":"  File \"/usr/local/lib/python3.13/dist-packages/jax_plugins/xla_cuda13/__init__.py\", line 373, in initialize\n"}
-,{"stream_name":"stderr","time":47.878197376,"data":"    c_api = xb.register_plugin(\n"}
-,{"stream_name":"stderr","time":47.878203579,"data":"        'cuda', priority=500, library_path=str(path), options=options\n"}
-,{"stream_name":"stderr","time":47.878208276,"data":"    )\n"}
-,{"stream_name":"stderr","time":47.878214806,"data":"  File \"/usr/local/lib/python3.13/dist-packages/jax/_src/xla_bridge.py\", line 637, in register_plugin\n"}
-,{"stream_name":"stderr","time":47.87821994,"data":"    c_api = xla_client.load_pjrt_plugin_dynamically(plugin_name, library_path)\n"}
-,{"stream_name":"stderr","time":47.878225177,"data":"  File \"/usr/local/lib/python3.13/dist-packages/jaxlib/xla_client.py\", line 115, in load_pjrt_plugin_dynamically\n"}
-,{"stream_name":"stderr","time":47.878230616,"data":"    return _xla.load_pjrt_plugin(plugin_name, library_path, c_api=None)\n"}
-,{"stream_name":"stderr","time":47.878235516,"data":"           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
-,{"stream_name":"stderr","time":47.878240291,"data":"jax.errors.JaxRuntimeError: ALREADY_EXISTS: PJRT_Api already exists for device type cuda\n"}
-,{"stream_name":"stdout","time":48.885987643,"data":"  backend   gpu  float32\n"}
-,{"stream_name":"stdout","time":48.886020793,"data":"  tuning    remat True  flash True  unroll 1\n"}
-,{"stream_name":"stdout","time":48.886026392,"data":"  depth     20 layers\n"}
-,{"stream_name":"stdout","time":52.080497486,"data":"  fetch     tokenizer tokenizer  downloading from Hugging Face\n"}
-,{"stream_name":"stdout","time":52.080608002,"data":"  data      3634 examples  seq_len 512  cap 1024\n"}
-,{"stream_name":"stdout","time":52.081462373,"data":"  numerics  CQ W4 STE + A8 (matches export)\n"}
-,{"stream_name":"stdout","time":54.089775181,"data":"  lora      rank 64  alpha 64  5 weight groups\n"}
-,{"stream_name":"stdout","time":54.096146213,"data":"  holdout   363 examples for validation\n"}
-,{"stream_name":"stdout","time":54.158414228,"data":"  schedule  1442 steps  warmup 72  cosine decay  clip 1.0  (compiling...)\n"}
-,{"stream_name":"stdout","time":54.46690733,"data":"  devices   2 x gpu  data-parallel\n"}
-,{"stream_name":"stdout","time":54.466935955,"data":"  val       in-loop scoring off (evaluate.py scores the 363-row holdout)\n"}
-,{"stream_name":"stdout","time":260.497580461,"data":"  step      28/1442  loss 1.2243\n"}
-,{"stream_name":"stdout","time":349.696867691,"data":"  step      56/1442  loss 1.1451\n"}
-,{"stream_name":"stdout","time":438.715833793,"data":"  step      84/1442  loss 0.9445\n"}
-,{"stream_name":"stdout","time":556.601178531,"data":"  save      checkpoint at end of epoch 1\n"}
-,{"stream_name":"stdout","time":556.60122882,"data":"  epoch     1/14  loss 0.7264\n"}
-,{"stream_name":"stdout","time":585.342138674,"data":"  step      112/1442  loss 0.6842\n"}
-,{"stream_name":"stdout","time":674.587779227,"data":"  step      140/1442  loss 0.5725\n"}
-,{"stream_name":"stdout","time":763.667201321,"data":"  step      168/1442  loss 0.4648\n"}
-,{"stream_name":"stdout","time":852.715935247,"data":"  step      196/1442  loss 0.6092\n"}
-,{"stream_name":"stdout","time":882.475596523,"data":"  save      checkpoint at end of epoch 2\n"}
-,{"stream_name":"stdout","time":882.475635355,"data":"  epoch     2/14  loss 0.4037\n"}
-,{"stream_name":"stdout","time":939.754040221,"data":"  step      224/1442  loss 0.3723\n"}
-,{"stream_name":"stdout","time":1028.948212822,"data":"  step      252/1442  loss 0.2807\n"}
-,{"stream_name":"stdout","time":1118.178788795,"data":"  step      280/1442  loss 0.3384\n"}
-,{"stream_name":"stdout","time":1207.30942928,"data":"  step      308/1442  loss 0.3234\n"}
-,{"stream_name":"stdout","time":1208.381269215,"data":"  save      checkpoint at end of epoch 3\n"}
-,{"stream_name":"stdout","time":1208.381297023,"data":"  epoch     3/14  loss 0.2377\n"}
-,{"stream_name":"stdout","time":1294.195362408,"data":"  step      336/1442  loss 0.2732\n"}
-,{"stream_name":"stdout","time":1383.227315677,"data":"  step      364/1442  loss 0.1517\n"}
-,{"stream_name":"stdout","time":1472.247244841,"data":"  step      392/1442  loss 0.1814\n"}
-,{"stream_name":"stdout","time":1533.776133149,"data":"  save      checkpoint at end of epoch 4\n"}
-,{"stream_name":"stdout","time":1533.776189325,"data":"  epoch     4/14  loss 0.4361\n"}
-,{"stream_name":"stdout","time":1559.160248751,"data":"  step      420/1442  loss 0.1925\n"}
-,{"stream_name":"stdout","time":1648.118188136,"data":"  step      448/1442  loss 0.2234\n"}
-,{"stream_name":"stdout","time":1737.167654936,"data":"  step      476/1442  loss 0.1823\n"}
-,{"stream_name":"stdout","time":1826.17383717,"data":"  step      504/1442  loss 0.1680\n"}
-,{"stream_name":"stdout","time":1859.01883895,"data":"  save      checkpoint at end of epoch 5\n"}
-,{"stream_name":"stdout","time":1859.018874456,"data":"  epoch     5/14  loss 0.1142\n"}
-,{"stream_name":"stdout","time":1912.999149961,"data":"  step      532/1442  loss 0.1701\n"}
-,{"stream_name":"stdout","time":2002.012084385,"data":"  step      560/1442  loss 0.1027\n"}
-,{"stream_name":"stdout","time":2091.102829421,"data":"  step      588/1442  loss 0.1320\n"}
-,{"stream_name":"stdout","time":2180.064166747,"data":"  step      616/1442  loss 0.1205\n"}
-,{"stream_name":"stdout","time":2184.312911484,"data":"  save      checkpoint at end of epoch 6\n"}
-,{"stream_name":"stdout","time":2184.312947036,"data":"  epoch     6/14  loss 0.0340\n"}
-,{"stream_name":"stdout","time":2267.076767153,"data":"  step      644/1442  loss 0.1221\n"}
-,{"stream_name":"stdout","time":2356.00960282,"data":"  step      672/1442  loss 0.1113\n"}
-,{"stream_name":"stdout","time":2445.154792664,"data":"  step      700/1442  loss 0.1572\n"}
-,{"stream_name":"stdout","time":2509.915537994,"data":"  save      checkpoint at end of epoch 7\n"}
-,{"stream_name":"stdout","time":2509.915598698,"data":"  epoch     7/14  loss 0.0633\n"}
-,{"stream_name":"stdout","time":2532.16618186,"data":"  step      728/1442  loss 0.1240\n"}
-,{"stream_name":"stdout","time":2621.246392444,"data":"  step      756/1442  loss 0.1043\n"}
-,{"stream_name":"stdout","time":2710.487171977,"data":"  step      784/1442  loss 0.0727\n"}
-,{"stream_name":"stdout","time":2799.766799062,"data":"  step      812/1442  loss 0.1438\n"}
-,{"stream_name":"stdout","time":2835.809354518,"data":"  save      checkpoint at end of epoch 8\n"}
-,{"stream_name":"stdout","time":2835.80939883,"data":"  epoch     8/14  loss 0.0633\n"}
-,{"stream_name":"stdout","time":2886.609563229,"data":"  step      840/1442  loss 0.1519\n"}
-,{"stream_name":"stdout","time":2975.725429657,"data":"  step      868/1442  loss 0.0570\n"}
-,{"stream_name":"stdout","time":3064.80258685,"data":"  step      896/1442  loss 0.0824\n"}
-,{"stream_name":"stdout","time":3153.953468403,"data":"  step      924/1442  loss 0.0806\n"}
-,{"stream_name":"stdout","time":3161.420664676,"data":"  save      checkpoint at end of epoch 9\n"}
-,{"stream_name":"stdout","time":3161.420707565,"data":"  epoch     9/14  loss 0.1311\n"}
-,{"stream_name":"stdout","time":3240.896612638,"data":"  step      952/1442  loss 0.1123\n"}
-,{"stream_name":"stdout","time":3329.917290156,"data":"  step      980/1442  loss 0.0415\n"}
-,{"stream_name":"stdout","time":3419.033188707,"data":"  step      1008/1442  loss 0.1397\n"}
-,{"stream_name":"stdout","time":3486.875984214,"data":"  save      checkpoint at end of epoch 10\n"}
-,{"stream_name":"stdout","time":3486.876029297,"data":"  epoch     10/14  loss 0.0684\n"}
-,{"stream_name":"stdout","time":3505.886785235,"data":"  step      1036/1442  loss 0.0995\n"}
-,{"stream_name":"stdout","time":3594.927889771,"data":"  step      1064/1442  loss 0.0764\n"}
-,{"stream_name":"stdout","time":3684.094124089,"data":"  step      1092/1442  loss 0.0821\n"}
-,{"stream_name":"stdout","time":3773.106519035,"data":"  step      1120/1442  loss 0.0576\n"}
-,{"stream_name":"stdout","time":3812.399644103,"data":"  save      checkpoint at end of epoch 11\n"}
-,{"stream_name":"stdout","time":3812.39969298,"data":"  epoch     11/14  loss 0.0202\n"}
-,{"stream_name":"stdout","time":3860.143804299,"data":"  step      1148/1442  loss 0.1108\n"}
-,{"stream_name":"stdout","time":3949.348823366,"data":"  step      1176/1442  loss 0.0305\n"}
-,{"stream_name":"stdout","time":4038.678067741,"data":"  step      1204/1442  loss 0.0943\n"}
-,{"stream_name":"stdout","time":4127.874165696,"data":"  step      1232/1442  loss 0.0696\n"}
-,{"stream_name":"stdout","time":4138.562181252,"data":"  save      checkpoint at end of epoch 12\n"}
-,{"stream_name":"stdout","time":4138.562220366,"data":"  epoch     12/14  loss 0.0387\n"}
-,{"stream_name":"stdout","time":4214.958178143,"data":"  step      1260/1442  loss 0.1262\n"}
-,{"stream_name":"stdout","time":4303.972616917,"data":"  step      1288/1442  loss 0.1119\n"}
-,{"stream_name":"stdout","time":4392.950637968,"data":"  step      1316/1442  loss 0.1559\n"}
-,{"stream_name":"stdout","time":4464.142071831,"data":"  save      checkpoint at end of epoch 13\n"}
-,{"stream_name":"stdout","time":4464.142149667,"data":"  epoch     13/14  loss 0.0967\n"}
-,{"stream_name":"stdout","time":4480.012661518,"data":"  step      1344/1442  loss 0.0967\n"}
-,{"stream_name":"stdout","time":4569.000854746,"data":"  step      1372/1442  loss 0.0728\n"}
-,{"stream_name":"stdout","time":4658.231824361,"data":"  step      1400/1442  loss 0.1083\n"}
-,{"stream_name":"stdout","time":4747.255138324,"data":"  step      1428/1442  loss 0.0774\n"}
-,{"stream_name":"stdout","time":4789.682251419,"data":"  save      checkpoint at end of epoch 14\n"}
-,{"stream_name":"stdout","time":4789.682298099,"data":"  epoch     14/14  loss 0.0437\n"}
-,{"stream_name":"stdout","time":4789.697668912,"data":"  adapter   /kaggle/working/task/out/adapter.safetensors\n"}
-,{"stream_name":"stdout","time":4789.697702903,"data":"  note      held-out scoring left to evaluate.py\n"}
-,{"stream_name":"stdout","time":4797.730929156,"data":"=== stage build ===\n"}
-,{"stream_name":"stderr","time":4797.963791013,"data":"cactus-compute collects anonymous usage counts (function name, version, OS) to guide development; no prompts or outputs. Disable with CACTUS_TELEMETRY=0.\n"}
-,{"stream_name":"stderr","time":4799.67301511,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
-,{"stream_name":"stderr","time":4802.008221901,"data":"Jax plugin configuration error: Exception when calling jax_plugins.xla_cuda13.initialize()\n"}
-,{"stream_name":"stderr","time":4802.008264899,"data":"Traceback (most recent call last):\n"}
-,{"stream_name":"stderr","time":4802.008271953,"data":"  File \"/usr/local/lib/python3.13/dist-packages/jax/_src/xla_bridge.py\", line 495, in discover_pjrt_plugins\n"}
-,{"stream_name":"stderr","time":4802.0082779,"data":"    plugin_module.initialize()\n"}
-,{"stream_name":"stderr","time":4802.008289115,"data":"    ~~~~~~~~~~~~~~~~~~~~~~~~^^\n"}
-,{"stream_name":"stderr","time":4802.00829302,"data":"  File \"/usr/local/lib/python3.13/dist-packages/jax_plugins/xla_cuda13/__init__.py\", line 373, in initialize\n"}
-,{"stream_name":"stderr","time":4802.008296774,"data":"    c_api = xb.register_plugin(\n"}
-,{"stream_name":"stderr","time":4802.008300334,"data":"        'cuda', priority=500, library_path=str(path), options=options\n"}
-,{"stream_name":"stderr","time":4802.008303849,"data":"    )\n"}
-,{"stream_name":"stderr","time":4802.008307257,"data":"  File \"/usr/local/lib/python3.13/dist-packages/jax/_src/xla_bridge.py\", line 637, in register_plugin\n"}
-,{"stream_name":"stderr","time":4802.008310879,"data":"    c_api = xla_client.load_pjrt_plugin_dynamically(plugin_name, library_path)\n"}
-,{"stream_name":"stderr","time":4802.008331676,"data":"  File \"/usr/local/lib/python3.13/dist-packages/jaxlib/xla_client.py\", line 115, in load_pjrt_plugin_dynamically\n"}
-,{"stream_name":"stderr","time":4802.008338839,"data":"    return _xla.load_pjrt_plugin(plugin_name, library_path, c_api=None)\n"}
-,{"stream_name":"stderr","time":4802.008345084,"data":"           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
-,{"stream_name":"stderr","time":4802.008351084,"data":"jax.errors.JaxRuntimeError: ALREADY_EXISTS: PJRT_Api already exists for device type cuda\n"}
-,{"stream_name":"stdout","time":4826.887425161,"data":"  base      /root/.cache/cactus/models/needle3/d6c7d6a2e9655505e0f8e23339356dd1705900eb/needle3.cact  35.34 MB\n"}
-,{"stream_name":"stdout","time":4826.887511056,"data":"  merged    5 weight groups  /kaggle/working/task/out/adapter.safetensors\n"}
-,{"stream_name":"stdout","time":4826.887586004,"data":"  dropped   the confidence head; it is not trained locally, so confidence reports None\n"}
-,{"stream_name":"stdout","time":4826.887595278,"data":"  depth     20 layers\n"}
-,{"stream_name":"stdout","time":4826.887600138,"data":"  wrote     /kaggle/working/task/out/handoff_20l.cact  63.44 MB  574 tensors  W4A8\n"}
-,{"stream_name":"stdout","time":4826.88760476,"data":"  next      cactus.Needle(weights='/kaggle/working/task/out/handoff_20l.cact', tools=[...])\n"}
-,{"stream_name":"stdout","time":4827.757335027,"data":"=== driver done ===\n"}
-,{"stream_name":"stderr","time":4830.463076663,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
-,{"stream_name":"stderr","time":4830.463131506,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
-,{"stream_name":"stderr","time":4830.846732248,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
-,{"stream_name":"stderr","time":4830.846766376,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
-,{"stream_name":"stderr","time":4831.896389782,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
-,{"stream_name":"stderr","time":4833.340487214,"data":"[NbConvertApp] Writing 340275 bytes to __results__.html\n"}
+[{"stream_name":"stdout","time":4.12112758,"data":"no prior checkpoints mounted; fresh run\n"}
+,{"stream_name":"stdout","time":4.12200614,"data":"=== stage pip-install ===\n"}
+,{"stream_name":"stdout","time":4.122817345,"data":"installing cactus-compute[train,gpu]==4.2.0\n"}
+,{"stream_name":"stdout","time":23.694467522,"data":"=== stage generate_data ===\n"}
+,{"stream_name":"stdout","time":23.939668147,"data":"wrote 3739 train rows to /kaggle/working/task/out/train.jsonl\n"}
+,{"stream_name":"stdout","time":23.939726518,"data":"wrote 252 eval rows to /kaggle/working/task/out/eval.jsonl\n"}
+,{"stream_name":"stdout","time":23.939733282,"data":"wrote manifest to /kaggle/working/task/out/manifest.json\n"}
+,{"stream_name":"stdout","time":23.953179701,"data":"=== stage validate_data ===\n"}
+,{"stream_name":"stdout","time":24.150041113,"data":"checked 3739 train + 252 eval rows: 0 errors, 0 warnings\n"}
+,{"stream_name":"stdout","time":24.163665158,"data":"=== stage finetune ===\n"}
+,{"stream_name":"stdout","time":30.043744645,"data":"  versions  cactus-compute 4.2.0  jax 0.11.1\n"}
+,{"stream_name":"stdout","time":30.043823056,"data":"  fetch     checkpoints/needle3.safetensors  downloading from Hugging Face\n"}
+,{"stream_name":"stderr","time":30.699215764,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stderr","time":50.480295668,"data":"Jax plugin configuration error: Exception when calling jax_plugins.xla_cuda13.initialize()\n"}
+,{"stream_name":"stderr","time":50.480336762,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":50.480343438,"data":"  File \"/usr/local/lib/python3.13/dist-packages/jax/_src/xla_bridge.py\", line 495, in discover_pjrt_plugins\n"}
+,{"stream_name":"stderr","time":50.480349433,"data":"    plugin_module.initialize()\n"}
+,{"stream_name":"stderr","time":50.480355275,"data":"    ~~~~~~~~~~~~~~~~~~~~~~~~^^\n"}
+,{"stream_name":"stderr","time":50.48036058,"data":"  File \"/usr/local/lib/python3.13/dist-packages/jax_plugins/xla_cuda13/__init__.py\", line 373, in initialize\n"}
+,{"stream_name":"stderr","time":50.480366091,"data":"    c_api = xb.register_plugin(\n"}
+,{"stream_name":"stderr","time":50.480371141,"data":"        'cuda', priority=500, library_path=str(path), options=options\n"}
+,{"stream_name":"stderr","time":50.480378046,"data":"    )\n"}
+,{"stream_name":"stderr","time":50.480387011,"data":"  File \"/usr/local/lib/python3.13/dist-packages/jax/_src/xla_bridge.py\", line 637, in register_plugin\n"}
+,{"stream_name":"stderr","time":50.480390656,"data":"    c_api = xla_client.load_pjrt_plugin_dynamically(plugin_name, library_path)\n"}
+,{"stream_name":"stderr","time":50.480394008,"data":"  File \"/usr/local/lib/python3.13/dist-packages/jaxlib/xla_client.py\", line 115, in load_pjrt_plugin_dynamically\n"}
+,{"stream_name":"stderr","time":50.48039746,"data":"    return _xla.load_pjrt_plugin(plugin_name, library_path, c_api=None)\n"}
+,{"stream_name":"stderr","time":50.480400793,"data":"           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":50.480404024,"data":"jax.errors.JaxRuntimeError: ALREADY_EXISTS: PJRT_Api already exists for device type cuda\n"}
+,{"stream_name":"stdout","time":51.56627074,"data":"  backend   gpu  float32\n"}
+,{"stream_name":"stdout","time":51.566309535,"data":"  tuning    remat True  flash True  unroll 1\n"}
+,{"stream_name":"stdout","time":51.566316565,"data":"  depth     20 layers\n"}
+,{"stream_name":"stdout","time":54.987627129,"data":"  fetch     tokenizer tokenizer  downloading from Hugging Face\n"}
+,{"stream_name":"stdout","time":54.987725247,"data":"  data      3739 examples  seq_len 512  cap 1024\n"}
+,{"stream_name":"stdout","time":54.988793841,"data":"  numerics  CQ W4 STE + A8 (matches export)\n"}
+,{"stream_name":"stdout","time":57.221449411,"data":"  lora      rank 64  alpha 64  5 weight groups\n"}
+,{"stream_name":"stdout","time":57.229273253,"data":"  holdout   373 examples for validation\n"}
+,{"stream_name":"stdout","time":57.302647013,"data":"  schedule  1484 steps  warmup 74  cosine decay  clip 1.0  (compiling...)\n"}
+,{"stream_name":"stdout","time":57.637362017,"data":"  devices   2 x gpu  data-parallel\n"}
+,{"stream_name":"stdout","time":57.637393177,"data":"  val       in-loop scoring off (evaluate.py scores the 373-row holdout)\n"}
+,{"stream_name":"stdout","time":282.278503991,"data":"  step      29/1484  loss 1.2525\n"}
+,{"stream_name":"stdout","time":379.094075183,"data":"  step      58/1484  loss 1.0662\n"}
+,{"stream_name":"stdout","time":475.483186589,"data":"  step      87/1484  loss 1.0430\n"}
+,{"stream_name":"stdout","time":600.356142211,"data":"  save      checkpoint at end of epoch 1\n"}
+,{"stream_name":"stdout","time":600.356206081,"data":"  epoch     1/14  loss 0.7526\n"}
+,{"stream_name":"stdout","time":634.675074843,"data":"  step      116/1484  loss 0.6700\n"}
+,{"stream_name":"stdout","time":731.037469597,"data":"  step      145/1484  loss 0.5786\n"}
+,{"stream_name":"stdout","time":827.364701904,"data":"  step      174/1484  loss 0.4183\n"}
+,{"stream_name":"stdout","time":923.64299001,"data":"  step      203/1484  loss 0.4229\n"}
+,{"stream_name":"stdout","time":951.07759007,"data":"  save      checkpoint at end of epoch 2\n"}
+,{"stream_name":"stdout","time":951.07761987,"data":"  epoch     2/14  loss 0.5108\n"}
+,{"stream_name":"stdout","time":1017.588539745,"data":"  step      232/1484  loss 0.3763\n"}
+,{"stream_name":"stdout","time":1114.009905521,"data":"  step      261/1484  loss 0.3665\n"}
+,{"stream_name":"stdout","time":1210.112790558,"data":"  step      290/1484  loss 0.3195\n"}
+,{"stream_name":"stdout","time":1300.410724371,"data":"  save      checkpoint at end of epoch 3\n"}
+,{"stream_name":"stdout","time":1300.410771303,"data":"  epoch     3/14  loss 0.4775\n"}
+,{"stream_name":"stdout","time":1303.696811146,"data":"  step      319/1484  loss 0.2790\n"}
+,{"stream_name":"stdout","time":1399.914402704,"data":"  step      348/1484  loss 0.2945\n"}
+,{"stream_name":"stdout","time":1496.343998827,"data":"  step      377/1484  loss 0.1906\n"}
+,{"stream_name":"stdout","time":1592.36680843,"data":"  step      406/1484  loss 0.2005\n"}
+,{"stream_name":"stdout","time":1649.861250846,"data":"  save      checkpoint at end of epoch 4\n"}
+,{"stream_name":"stdout","time":1649.86130847,"data":"  epoch     4/14  loss 0.1997\n"}
+,{"stream_name":"stdout","time":1686.178366975,"data":"  step      435/1484  loss 0.2494\n"}
+,{"stream_name":"stdout","time":1782.622038643,"data":"  step      464/1484  loss 0.1923\n"}
+,{"stream_name":"stdout","time":1879.12804573,"data":"  step      493/1484  loss 0.1785\n"}
+,{"stream_name":"stdout","time":1975.168041363,"data":"  step      522/1484  loss 0.1468\n"}
+,{"stream_name":"stdout","time":1999.242869589,"data":"  save      checkpoint at end of epoch 5\n"}
+,{"stream_name":"stdout","time":1999.24292997,"data":"  epoch     5/14  loss 0.0583\n"}
+,{"stream_name":"stdout","time":2068.864750578,"data":"  step      551/1484  loss 0.2281\n"}
+,{"stream_name":"stdout","time":2165.187970418,"data":"  step      580/1484  loss 0.1306\n"}
+,{"stream_name":"stdout","time":2261.525973146,"data":"  step      609/1484  loss 0.2027\n"}
+,{"stream_name":"stdout","time":2348.602903895,"data":"  save      checkpoint at end of epoch 6\n"}
+,{"stream_name":"stdout","time":2348.602952053,"data":"  epoch     6/14  loss 0.0943\n"}
+,{"stream_name":"stdout","time":2355.206015064,"data":"  step      638/1484  loss 0.1392\n"}
+,{"stream_name":"stdout","time":2451.48435672,"data":"  step      667/1484  loss 0.1184\n"}
+,{"stream_name":"stdout","time":2547.982105938,"data":"  step      696/1484  loss 0.1812\n"}
+,{"stream_name":"stdout","time":2644.109727547,"data":"  step      725/1484  loss 0.1233\n"}
+,{"stream_name":"stdout","time":2698.141537321,"data":"  save      checkpoint at end of epoch 7\n"}
+,{"stream_name":"stdout","time":2698.141576099,"data":"  epoch     7/14  loss 0.0205\n"}
+,{"stream_name":"stdout","time":2737.868506989,"data":"  step      754/1484  loss 0.1001\n"}
+,{"stream_name":"stdout","time":2833.994783641,"data":"  step      783/1484  loss 0.1094\n"}
+,{"stream_name":"stdout","time":2930.298581108,"data":"  step      812/1484  loss 0.0745\n"}
+,{"stream_name":"stdout","time":3026.567466536,"data":"  step      841/1484  loss 0.1191\n"}
+,{"stream_name":"stdout","time":3047.289676451,"data":"  save      checkpoint at end of epoch 8\n"}
+,{"stream_name":"stdout","time":3047.289716174,"data":"  epoch     8/14  loss 0.1246\n"}
+,{"stream_name":"stdout","time":3120.004925705,"data":"  step      870/1484  loss 0.1046\n"}
+,{"stream_name":"stdout","time":3216.424320699,"data":"  step      899/1484  loss 0.0523\n"}
+,{"stream_name":"stdout","time":3312.884254897,"data":"  step      928/1484  loss 0.1212\n"}
+,{"stream_name":"stdout","time":3396.638654182,"data":"  save      checkpoint at end of epoch 9\n"}
+,{"stream_name":"stdout","time":3396.638699091,"data":"  epoch     9/14  loss 0.0884\n"}
+,{"stream_name":"stdout","time":3406.576558375,"data":"  step      957/1484  loss 0.0733\n"}
+,{"stream_name":"stdout","time":3503.242557996,"data":"  step      986/1484  loss 0.0896\n"}
+,{"stream_name":"stdout","time":3599.239917016,"data":"  step      1015/1484  loss 0.1005\n"}
+,{"stream_name":"stdout","time":3695.793885313,"data":"  step      1044/1484  loss 0.1539\n"}
+,{"stream_name":"stdout","time":3746.473101224,"data":"  save      checkpoint at end of epoch 10\n"}
+,{"stream_name":"stdout","time":3746.473136924,"data":"  epoch     10/14  loss 0.0137\n"}
+,{"stream_name":"stdout","time":3789.505754821,"data":"  step      1073/1484  loss 0.0651\n"}
+,{"stream_name":"stdout","time":3886.152227045,"data":"  step      1102/1484  loss 0.0748\n"}
+,{"stream_name":"stdout","time":3982.573883316,"data":"  step      1131/1484  loss 0.0865\n"}
+,{"stream_name":"stdout","time":4079.117484053,"data":"  step      1160/1484  loss 0.1018\n"}
+,{"stream_name":"stdout","time":4096.564265486,"data":"  save      checkpoint at end of epoch 11\n"}
+,{"stream_name":"stdout","time":4096.56429964,"data":"  epoch     11/14  loss 0.0196\n"}
+,{"stream_name":"stdout","time":4173.013151756,"data":"  step      1189/1484  loss 0.1335\n"}
+,{"stream_name":"stdout","time":4269.493009425,"data":"  step      1218/1484  loss 0.1076\n"}
+,{"stream_name":"stdout","time":4365.675353215,"data":"  step      1247/1484  loss 0.1186\n"}
+,{"stream_name":"stdout","time":4446.117377208,"data":"  save      checkpoint at end of epoch 12\n"}
+,{"stream_name":"stdout","time":4446.117430764,"data":"  epoch     12/14  loss 0.0261\n"}
+,{"stream_name":"stdout","time":4459.340209843,"data":"  step      1276/1484  loss 0.1211\n"}
+,{"stream_name":"stdout","time":4555.365731109,"data":"  step      1305/1484  loss 0.0384\n"}
+,{"stream_name":"stdout","time":4651.672625349,"data":"  step      1334/1484  loss 0.0689\n"}
+,{"stream_name":"stdout","time":4747.993752987,"data":"  step      1363/1484  loss 0.0860\n"}
+,{"stream_name":"stdout","time":4795.282200606,"data":"  save      checkpoint at end of epoch 13\n"}
+,{"stream_name":"stdout","time":4795.28226673,"data":"  epoch     13/14  loss 0.0946\n"}
+,{"stream_name":"stdout","time":4841.870454766,"data":"  step      1392/1484  loss 0.0965\n"}
+,{"stream_name":"stdout","time":4938.491580811,"data":"  step      1421/1484  loss 0.0750\n"}
+,{"stream_name":"stdout","time":5034.719517534,"data":"  step      1450/1484  loss 0.0626\n"}
+,{"stream_name":"stdout","time":5130.894301983,"data":"  step      1479/1484  loss 0.0589\n"}
+,{"stream_name":"stdout","time":5145.047577736,"data":"  save      checkpoint at end of epoch 14\n"}
+,{"stream_name":"stdout","time":5145.047627709,"data":"  epoch     14/14  loss 0.0177\n"}
+,{"stream_name":"stdout","time":5145.062211171,"data":"  adapter   /kaggle/working/task/out/adapter.safetensors\n"}
+,{"stream_name":"stdout","time":5145.062252994,"data":"  note      held-out scoring left to evaluate.py\n"}
+,{"stream_name":"stdout","time":5151.755193554,"data":"=== stage build ===\n"}
+,{"stream_name":"stderr","time":5151.961045051,"data":"cactus-compute collects anonymous usage counts (function name, version, OS) to guide development; no prompts or outputs. Disable with CACTUS_TELEMETRY=0.\n"}
+,{"stream_name":"stderr","time":5153.428921253,"data":"Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stderr","time":5155.721069432,"data":"Jax plugin configuration error: Exception when calling jax_plugins.xla_cuda13.initialize()\n"}
+,{"stream_name":"stderr","time":5155.721103998,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":5155.721116718,"data":"  File \"/usr/local/lib/python3.13/dist-packages/jax/_src/xla_bridge.py\", line 495, in discover_pjrt_plugins\n"}
+,{"stream_name":"stderr","time":5155.721120943,"data":"    plugin_module.initialize()\n"}
+,{"stream_name":"stderr","time":5155.721124385,"data":"    ~~~~~~~~~~~~~~~~~~~~~~~~^^\n"}
+,{"stream_name":"stderr","time":5155.72112766,"data":"  File \"/usr/local/lib/python3.13/dist-packages/jax_plugins/xla_cuda13/__init__.py\", line 373, in initialize\n"}
+,{"stream_name":"stderr","time":5155.721131088,"data":"    c_api = xb.register_plugin(\n"}
+,{"stream_name":"stderr","time":5155.721134248,"data":"        'cuda', priority=500, library_path=str(path), options=options\n"}
+,{"stream_name":"stderr","time":5155.721137526,"data":"    )\n"}
+,{"stream_name":"stderr","time":5155.721140572,"data":"  File \"/usr/local/lib/python3.13/dist-packages/jax/_src/xla_bridge.py\", line 637, in register_plugin\n"}
+,{"stream_name":"stderr","time":5155.721143823,"data":"    c_api = xla_client.load_pjrt_plugin_dynamically(plugin_name, library_path)\n"}
+,{"stream_name":"stderr","time":5155.721147073,"data":"  File \"/usr/local/lib/python3.13/dist-packages/jaxlib/xla_client.py\", line 115, in load_pjrt_plugin_dynamically\n"}
+,{"stream_name":"stderr","time":5155.721150524,"data":"    return _xla.load_pjrt_plugin(plugin_name, library_path, c_api=None)\n"}
+,{"stream_name":"stderr","time":5155.721153658,"data":"           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":5155.721156809,"data":"jax.errors.JaxRuntimeError: ALREADY_EXISTS: PJRT_Api already exists for device type cuda\n"}
+,{"stream_name":"stdout","time":5179.310524706,"data":"  base      /root/.cache/cactus/models/needle3/d6c7d6a2e9655505e0f8e23339356dd1705900eb/needle3.cact  35.34 MB\n"}
+,{"stream_name":"stdout","time":5179.310571603,"data":"  merged    5 weight groups  /kaggle/working/task/out/adapter.safetensors\n"}
+,{"stream_name":"stdout","time":5179.310594316,"data":"  dropped   the confidence head; it is not trained locally, so confidence reports None\n"}
+,{"stream_name":"stdout","time":5179.310599731,"data":"  depth     20 layers\n"}
+,{"stream_name":"stdout","time":5179.310604157,"data":"  wrote     /kaggle/working/task/out/handoff_20l.cact  63.44 MB  574 tensors  W4A8\n"}
+,{"stream_name":"stdout","time":5179.310608616,"data":"  next      cactus.Needle(weights='/kaggle/working/task/out/handoff_20l.cact', tools=[...])\n"}
+,{"stream_name":"stdout","time":5180.065906322,"data":"=== driver done ===\n"}
+,{"stream_name":"stderr","time":5182.533505813,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":5182.533534887,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":5182.838295974,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":5182.83833465,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":5183.743406478,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":5184.908189596,"data":"[NbConvertApp] Writing 340275 bytes to __results__.html\n"}
 ]

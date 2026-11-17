@@ -1,5 +1,5 @@
 {
-  "current_round": 16,
+  "current_round": 17,
   "max_rounds": 7,
   "min_gain_to_continue": 1,
   "notes": [
@@ -271,6 +271,24 @@
         "all-7 billing asks worked except en (eternal) + pl (now account); nl flight seesaw",
         "first bare-{} output seen (boiler-nl) - model hedging without reason",
         "round 16: en-flight assault x4, pl/nl flights, rental fr/it, sister w3, thanks x5, printer fr/pl, closers (~42 seeds)"
+      ]
+    },
+    {
+      "name": "v16",
+      "adapter": "rank64/3634-rows/14ep/batch32/pmap",
+      "exact": 0.873,
+      "routing": 0.9405,
+      "explicit": 0.952,
+      "implicit": 0.952,
+      "sarcastic": 0.952,
+      "multisentence": 0.667,
+      "edge": 1.0,
+      "negative": 0.714,
+      "eval_artifact": "eval_report_v16.json (round-16 kernel)",
+      "notes": [
+        "226->220; fixed 7 broke 13; flights de/fr/es flipped back, en eternal (16 rounds)",
+        "seesaw dominates: 54 cases missed across v13-v16 (11 eternal, 10x3, 9x2, 24x1-noise)",
+        "round 17: anchor-the-unstable - 95 paraphrases dosed by instability (33+20+18+24), labels preserved"
       ]
     }
   ],

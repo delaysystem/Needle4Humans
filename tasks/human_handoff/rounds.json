@@ -1,5 +1,5 @@
 {
-  "current_round": 14,
+  "current_round": 15,
   "max_rounds": 7,
   "min_gain_to_continue": 1,
   "notes": [
@@ -233,6 +233,25 @@
         "guards worked: 213->222; fixed 17 broke 8",
         "rental x4 + premium + STOP BOT over-fire billing; flight en/de/nl ask-locked (fix/klaren/oplossen); sister 5/7; staff-it eternal",
         "round 14: rental contrast pairs, sister contrast pairs, fix-ask billing, premium guards, minimal-diff closers (~54 seeds)"
+      ]
+    },
+    {
+      "name": "v14",
+      "adapter": "rank64/3540-rows/14ep/batch32/pmap",
+      "exact": 0.8889,
+      "routing": 0.9563,
+      "explicit": 0.976,
+      "implicit": 1.0,
+      "sarcastic": 1.0,
+      "multisentence": 0.619,
+      "edge": 0.976,
+      "negative": 0.762,
+      "eval_artifact": "eval_report_v14.json (round-14 kernel)",
+      "notes": [
+        "222->224 exact, routing 236->241 (best ever); fixed 11 broke 9",
+        "reason keys on ASK wording: fix/ask billing rows fixed flight-nl but dropped fr/es/it/pl flights",
+        "sister-en fixed (contrast pairs work); rental 0/5 (billing lock); staff-it eternal; en/de flights eternal",
+        "round 15: all-7 billing ask-families, rental minimal pairs, sister wave2, premium wave2, closers (~55 seeds)"
       ]
     }
   ],

@@ -187,3 +187,116 @@ def test_run_agent_resets_and_reports_progress(monkeypatch, capsys):
     ]
     assert created[0].resets == 2
     assert "[base] 2/2" in capsys.readouterr().out
+
+
+def test_majority_vote_picks_most_common():
+    a = [{"name": "t", "arguments": {"reason": "billing"}}]
+    b = [{"name": "t", "arguments": {"reason": "general"}}]
+    assert evaluate.majority_vote([a, b, a]) == a
+    assert evaluate.majority_vote([b, a, a]) == a
+
+
+def test_majority_vote_ties_go_first():
+    a = [{"name": "t", "arguments": {}}]
+    b = []
+    assert evaluate.majority_vote([a, b]) == a
+    assert evaluate.majority_vote([b, a]) == b
+
+
+def test_majority_vote_ignores_key_order():
+    first = [{"arguments": {"reason": "x"}, "name": "t"}]
+    second = [{"name": "t", "arguments": {"reason": "x"}}]
+    assert evaluate.majority_vote([first, second, []]) == first
+
+
+def test_majority_vote_empty():
+    assert evaluate.majority_vote([]) == []
+
+
+def test_load_prime_absent_key_returns_none(tmp_path):
+    assert evaluate.load_prime({"eval": {}}, tmp_path) is None
+    assert evaluate.load_prime({}, tmp_path) is None
+
+
+def test_load_prime_reads_file(tmp_path):
+    (tmp_path / "prime.txt").write_text(" route! ", encoding="utf-8")
+    config = {"eval": {"prime_file": "prime.txt"}}
+    assert evaluate.load_prime(config, tmp_path) == "route!"
+
+
+def test_load_prime_missing_file_dies(tmp_path):
+    import pytest
+
+    config = {"eval": {"prime_file": "nope.txt"}}
+    with pytest.raises(SystemExit):
+        evaluate.load_prime(config, tmp_path)
+
+
+def test_run_agent_votes_take_majority(monkeypatch):
+    import cactus
+
+    answers = [
+        {"function_calls": [{"name": "t", "arguments": {"r": 1}}]},
+        {"function_calls": []},
+        {"function_calls": [{"name": "t", "arguments": {"r": 1}}]},
+    ]
+
+    class FakeAgent:
+        def __init__(self, **kwargs):
+            self.resets = 0
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+        def complete(self, query):
+            return answers.pop(0)
+
+        def reset(self):
+            self.resets += 1
+
+    created = []
+    orig_init = FakeAgent.__init__
+
+    def tracking_init(self, **kwargs):
+        orig_init(self, **kwargs)
+        created.append(self)
+
+    monkeypatch.setattr(FakeAgent, "__init__", tracking_init)
+    monkeypatch.setattr(cactus, "Cactus", FakeAgent)
+    results = evaluate.run_agent([], None, ["q"], "base", votes=3)
+    assert results == [
+        ([{"name": "t", "arguments": {"r": 1}}], False),
+    ]
+    assert created[0].resets == 3
+
+
+def test_run_agent_passes_system(monkeypatch):
+    import cactus
+
+    seen = {}
+
+    class FakeAgent:
+        def __init__(self, **kwargs):
+            seen.update(kwargs)
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+        def complete(self, query):
+            return {"function_calls": []}
+
+        def reset(self):
+            pass
+
+    monkeypatch.setattr(cactus, "Cactus", FakeAgent)
+    evaluate.run_agent([], None, ["q"], "base", system="prime!")
+    assert seen.get("system") == "prime!"
+    seen.clear()
+    evaluate.run_agent([], None, ["q"], "base")
+    assert "system" not in seen

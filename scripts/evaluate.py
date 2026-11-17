@@ -23,6 +23,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import _common
+import fastpath
 
 
 def calls_match(expected: list, actual: list) -> bool:
@@ -81,6 +82,27 @@ def rate(hits: int, total: int) -> float:
     return hits / total if total else 0.0
 
 
+def majority_vote(call_runs: list[list]) -> list:
+    """Most common call list across repeated runs; ties go to the first.
+
+    Each run is canonicalized (sorted JSON) so key order never splits a
+    majority. Empty input yields no calls.
+    """
+    if not call_runs:
+        return []
+    counts: dict[str, int] = {}
+    first_seen: dict[str, int] = {}
+    originals: dict[str, list] = {}
+    for index, calls in enumerate(call_runs):
+        key = json.dumps(calls, sort_keys=True)
+        counts[key] = counts.get(key, 0) + 1
+        if key not in first_seen:
+            first_seen[key] = index
+            originals[key] = calls
+    best = max(counts, key=lambda k: (counts[k], -first_seen[k]))
+    return originals[best]
+
+
 def print_summary(label: str, summary: dict) -> None:
     print(f"--- {label} ---")
     print(
@@ -122,6 +144,17 @@ def strip_required_keys(node):
     return node
 
 
+def load_prime(config: dict, task_dir) -> str | None:
+    """System-prime text from the task's optional eval prime_file."""
+    name = config.get("eval", {}).get("prime_file")
+    if not name:
+        return None
+    path = _common.task_relative_path(task_dir, name)
+    if not path.is_file():
+        _common.die(f"eval prime_file not found: {path}")
+    return path.read_text(encoding="utf-8").strip() or None
+
+
 def complete_with_timeout(pool, agent, query: str):
     """One complete() call: (function_calls, timed_out)."""
     from concurrent.futures import TimeoutError
@@ -134,14 +167,22 @@ def complete_with_timeout(pool, agent, query: str):
 
 
 def run_agent(
-    tools: list, weights: str | None, queries: list[str], label: str
+    tools: list,
+    weights: str | None,
+    queries: list[str],
+    label: str,
+    votes: int = 1,
+    system: str | None = None,
 ) -> list:
     """Run complete() over queries, returning [(function_calls, timeout)].
 
     Resets the agent between independent queries (without reset every
     turn stays in the conversation, slowing and skewing later queries),
     prints flushed progress, and records hung calls as timeouts instead
-    of hanging forever.
+    of hanging forever. With votes > 1 each query runs that many times
+    (resetting between votes so draws stay independent) and the majority
+    call list wins; timed-out votes are excluded unless all time out.
+    An optional system string primes every conversation identically.
     """
     import cactus
     from concurrent.futures import ThreadPoolExecutor
@@ -149,18 +190,26 @@ def run_agent(
     kwargs: dict = {"tools": tools}
     if weights is not None:
         kwargs["weights"] = weights
+    if system:
+        kwargs["system"] = system
     results = []
     with cactus.Cactus(**kwargs) as agent:
         with ThreadPoolExecutor(max_workers=1) as pool:
             for index, query in enumerate(queries):
-                response, timed_out = complete_with_timeout(
-                    pool, agent, query
-                )
-                calls = (
-                    response.get("function_calls", []) if not timed_out else []
-                )
-                results.append((calls, timed_out))
-                agent.reset()
+                completed = []
+                for _ in range(max(1, votes)):
+                    response, timed_out = complete_with_timeout(
+                        pool, agent, query
+                    )
+                    if not timed_out:
+                        completed.append(
+                            response.get("function_calls", [])
+                        )
+                    agent.reset()
+                if completed:
+                    results.append((majority_vote(completed), False))
+                else:
+                    results.append(([], True))
                 done = index + 1
                 if done % PROGRESS_EVERY == 0 or done == len(queries):
                     print(f"[{label}] {done}/{len(queries)}", flush=True)
@@ -181,6 +230,17 @@ def main(argv: list[str] | None = None) -> int:
         "--overwrite",
         action="store_true",
         help="Replace the existing report instead of refusing.",
+    )
+    parser.add_argument(
+        "--votes",
+        type=int,
+        default=1,
+        help="Complete() calls per query; the majority call list wins.",
+    )
+    parser.add_argument(
+        "--ablate",
+        default="",
+        help="Comma-separated harness layers to disable: prime,fastpath.",
     )
     args = parser.parse_args(argv)
     config, task_dir = _common.load_task_config(args.task)
@@ -207,13 +267,59 @@ def main(argv: list[str] | None = None) -> int:
     if not weights_path.is_file():
         _common.die(f"tuned weights not found: {weights_path}")
 
+    ablated = {
+        part.strip() for part in args.ablate.split(",") if part.strip()
+    }
+    prime = (
+        load_prime(config, task_dir) if "prime" not in ablated else None
+    )
+    rules = None
+    fastpath_name = config.get("eval", {}).get("fastpath_file")
+    if fastpath_name and "fastpath" not in ablated:
+        rules = fastpath.load_rules(
+            _common.task_relative_path(task_dir, fastpath_name)
+        )
     queries = [row["query"] for row in eval_rows]
-    base_results = run_agent(tools, None, queries, "base")
-    tuned_results = run_agent(tools, str(weights_path), queries, "tuned")
+    ruled: list = [
+        fastpath.apply_rules(rules, query) if rules else None
+        for query in queries
+    ]
+    need = [index for index, hit in enumerate(ruled) if hit is None]
+    needed = [queries[index] for index in need]
+    base_sub = (
+        run_agent(tools, None, needed, "base",
+                  votes=args.votes, system=prime)
+        if needed else []
+    )
+    tuned_sub = (
+        run_agent(tools, str(weights_path), needed, "tuned",
+                  votes=args.votes, system=prime)
+        if needed else []
+    )
+    base_results: list = []
+    tuned_results: list = []
+    sub = 0
+    for index in range(len(queries)):
+        if ruled[index] is not None:
+            base_results.append((ruled[index], False))
+            tuned_results.append((ruled[index], False))
+        else:
+            base_results.append(base_sub[sub])
+            tuned_results.append(tuned_sub[sub])
+            sub += 1
+    n_ruled = len(queries) - len(need)
+    if rules:
+        print(f"fastpath ruled {n_ruled}/{len(queries)} queries")
 
     report = {
         "cases": [], "base": {}, "tuned": {},
         "base_routing": {}, "tuned_routing": {},
+        "harness": {
+            "votes": args.votes,
+            "prime": bool(prime),
+            "fastpath": bool(rules),
+            "fastpath_ruled": n_ruled,
+        },
     }
     for row, (base, base_timeout), (tuned, tuned_timeout) in zip(
         eval_rows, base_results, tuned_results

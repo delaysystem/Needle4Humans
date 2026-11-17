@@ -86,6 +86,10 @@ weights_file = "handoff_20l.cact"
 [eval]
 # DroidCall-style exact-calls-in-order scoring; see scripts/evaluate.py.
 report_file = "eval_report.json"
+# Optional harness layers (both ablatable via --ablate for measurement).
+prime_file = "prime.txt"
+fastpath_file = "fastpath.json"
+fastpath_cases = "fastpath_cases.jsonl"
 
 [kaggle]
 # Owner for dataset/kernel refs. Origin: `kaggle config view` on this box.

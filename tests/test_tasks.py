@@ -74,3 +74,31 @@ def test_seed_cells_declared_in_task_config():
                     seed = json.loads(line)
                     assert seed["lang"] in languages, task_file
                     assert seed["category"] in categories, task_file
+
+
+def test_fastpath_cases_pass_where_declared():
+    import fastpath
+
+    checked = []
+    for task_file in shipped_tasks():
+        task_dir = task_file.parent
+        eval_cfg = load_toml(task_file).get("eval", {})
+        spec_name = eval_cfg.get("fastpath_file")
+        cases_name = eval_cfg.get("fastpath_cases")
+        if not spec_name:
+            assert not cases_name, f"{task_file}: cases without a spec"
+            continue
+        assert cases_name, f"{task_file}: spec without cases"
+        rules = fastpath.load_rules(task_dir / spec_name)
+        cases = [
+            json.loads(line)
+            for line in (task_dir / cases_name).read_text(
+                encoding="utf-8"
+            ).splitlines()
+            if line.strip()
+        ]
+        assert cases, f"{task_file}: empty cases file"
+        failures = fastpath.run_cases(rules, cases)
+        assert failures == [], "\n".join(failures)
+        checked.append(task_file.parent.name)
+    assert checked, "no task declares fastpath_file"

@@ -86,8 +86,9 @@ weights_file = "handoff_20l.cact"
 [eval]
 # DroidCall-style exact-calls-in-order scoring; see scripts/evaluate.py.
 report_file = "eval_report.json"
-# Optional harness layers (both ablatable via --ablate for measurement).
-prime_file = "prime.txt"
+# Optional harness layers (ablatable via --ablate for measurement).
+# NOTE: system priming was tested (v1 shots -40, v2 instruction -22) and
+# dropped: training rows contain no system text, so any prime is OOD.
 fastpath_file = "fastpath.json"
 fastpath_cases = "fastpath_cases.jsonl"
 

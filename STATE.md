@@ -258,3 +258,4 @@ dead; re-arm equivalents if wanted.
 worker `--min-hits` 250->333 with v3 goldens. Rules grew 29->32
 (repetition-futility, patience-gone, stell-durch-staff) + inflection/
 verb completions; eval rule precision still 100%, train 96.8%.
+20L votes3 on 336: 335/336 (single miss ev-00287, FR store-hours FP).

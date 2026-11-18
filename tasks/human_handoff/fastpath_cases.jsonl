@@ -85,3 +85,6 @@
 {"calls": null, "query": "My refund is late. The store says it was sent. Call me!"}
 {"calls": null, "query": "Transfiere mi llamada a otro departamento."}
 {"calls": null, "query": "Nalegam, żebyście dali mi spokój."}
+{"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "J'ai payé pour un support prioritaire. Un robot répond quand même. Donnez-moi du personnel."}
+{"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "We zijn al een half uur bezig zonder enige vooruitgang."}
+{"calls": null, "query": "Il n'y a aucun progrès à signaler, tout va bien."}

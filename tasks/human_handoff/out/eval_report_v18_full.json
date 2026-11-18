@@ -640,7 +640,14 @@
           }
         }
       ],
-      "base": [],
+      "base": [
+        {
+          "name": "request_human_handoff",
+          "arguments": {
+            "reason": "general"
+          }
+        }
+      ],
       "tuned": [
         {
           "name": "request_human_handoff",
@@ -651,9 +658,9 @@
       ],
       "base_timeout": false,
       "tuned_timeout": false,
-      "base_hit": false,
+      "base_hit": true,
       "tuned_hit": true,
-      "base_routing_hit": false,
+      "base_routing_hit": true,
       "tuned_routing_hit": true
     },
     {
@@ -1863,7 +1870,9 @@
       "base": [
         {
           "name": "request_human_handoff",
-          "arguments": {}
+          "arguments": {
+            "reason": "billing"
+          }
         }
       ],
       "tuned": [],
@@ -2541,7 +2550,14 @@
           }
         }
       ],
-      "base": [],
+      "base": [
+        {
+          "name": "request_human_handoff",
+          "arguments": {
+            "reason": "general"
+          }
+        }
+      ],
       "tuned": [
         {
           "name": "request_human_handoff",
@@ -2552,9 +2568,9 @@
       ],
       "base_timeout": false,
       "tuned_timeout": false,
-      "base_hit": false,
+      "base_hit": true,
       "tuned_hit": true,
-      "base_routing_hit": false,
+      "base_routing_hit": true,
       "tuned_routing_hit": true
     },
     {
@@ -2801,20 +2817,13 @@
     {
       "id": "ev-00103",
       "expected": [],
-      "base": [
-        {
-          "name": "request_human_handoff",
-          "arguments": {
-            "reason": "billing"
-          }
-        }
-      ],
+      "base": [],
       "tuned": [],
       "base_timeout": false,
       "tuned_timeout": false,
-      "base_hit": false,
+      "base_hit": true,
       "tuned_hit": true,
-      "base_routing_hit": false,
+      "base_routing_hit": true,
       "tuned_routing_hit": true
     },
     {
@@ -3097,12 +3106,7 @@
           }
         }
       ],
-      "base": [
-        {
-          "name": "request_human_handoff",
-          "arguments": {}
-        }
-      ],
+      "base": [],
       "tuned": [
         {
           "name": "request_human_handoff",
@@ -3115,7 +3119,7 @@
       "tuned_timeout": false,
       "base_hit": false,
       "tuned_hit": true,
-      "base_routing_hit": true,
+      "base_routing_hit": false,
       "tuned_routing_hit": true
     },
     {
@@ -3355,7 +3359,14 @@
           }
         }
       ],
-      "base": [],
+      "base": [
+        {
+          "name": "request_human_handoff",
+          "arguments": {
+            "reason": "general"
+          }
+        }
+      ],
       "tuned": [
         {
           "name": "request_human_handoff",
@@ -3366,9 +3377,9 @@
       ],
       "base_timeout": false,
       "tuned_timeout": false,
-      "base_hit": false,
+      "base_hit": true,
       "tuned_hit": true,
-      "base_routing_hit": false,
+      "base_routing_hit": true,
       "tuned_routing_hit": true
     },
     {
@@ -3478,14 +3489,14 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "reason": "technical"
+            "reason": "general"
           }
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false,
+      "tuned_hit": true,
       "base_routing_hit": false,
       "tuned_routing_hit": true
     },
@@ -3591,20 +3602,27 @@
           }
         }
       ],
-      "base": [],
+      "base": [
+        {
+          "name": "request_human_handoff",
+          "arguments": {
+            "reason": "general"
+          }
+        }
+      ],
       "tuned": [
         {
           "name": "request_human_handoff",
           "arguments": {
-            "reason": "account"
+            "reason": "general"
           }
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
-      "base_hit": false,
-      "tuned_hit": false,
-      "base_routing_hit": false,
+      "base_hit": true,
+      "tuned_hit": true,
+      "base_routing_hit": true,
       "tuned_routing_hit": true
     },
     {
@@ -4527,7 +4545,14 @@
           }
         }
       ],
-      "base": [],
+      "base": [
+        {
+          "name": "request_human_handoff",
+          "arguments": {
+            "reason": "general"
+          }
+        }
+      ],
       "tuned": [
         {
           "name": "request_human_handoff",
@@ -4538,9 +4563,9 @@
       ],
       "base_timeout": false,
       "tuned_timeout": false,
-      "base_hit": false,
+      "base_hit": true,
       "tuned_hit": true,
-      "base_routing_hit": false,
+      "base_routing_hit": true,
       "tuned_routing_hit": true
     },
     {
@@ -5830,18 +5855,27 @@
           }
         }
       ],
-      "base": [],
+      "base": [
+        {
+          "name": "request_human_handoff",
+          "arguments": {
+            "reason": "general"
+          }
+        }
+      ],
       "tuned": [
         {
           "name": "request_human_handoff",
-          "arguments": {}
+          "arguments": {
+            "reason": "general"
+          }
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
-      "base_hit": false,
-      "tuned_hit": false,
-      "base_routing_hit": false,
+      "base_hit": true,
+      "tuned_hit": true,
+      "base_routing_hit": true,
       "tuned_routing_hit": true
     },
     {
@@ -6639,11 +6673,11 @@
   ],
   "base": {
     "total": 252,
-    "hits": 125,
+    "hits": 132,
     "by_language": {
       "en": {
         "total": 36,
-        "hits": 21
+        "hits": 22
       },
       "de": {
         "total": 36,
@@ -6651,15 +6685,15 @@
       },
       "fr": {
         "total": 36,
-        "hits": 17
+        "hits": 19
       },
       "es": {
         "total": 36,
-        "hits": 14
+        "hits": 16
       },
       "it": {
         "total": 36,
-        "hits": 17
+        "hits": 18
       },
       "nl": {
         "total": 36,
@@ -6667,13 +6701,13 @@
       },
       "pl": {
         "total": 36,
-        "hits": 17
+        "hits": 18
       }
     },
     "by_category": {
       "explicit": {
         "total": 42,
-        "hits": 19
+        "hits": 20
       },
       "implicit": {
         "total": 42,
@@ -6681,27 +6715,27 @@
       },
       "sarcastic": {
         "total": 42,
-        "hits": 11
+        "hits": 12
       },
       "multisentence": {
         "total": 42,
-        "hits": 32
+        "hits": 34
       },
       "edge": {
         "total": 42,
-        "hits": 15
+        "hits": 17
       },
       "negative": {
         "total": 42,
-        "hits": 38
+        "hits": 39
       }
     },
     "negatives": 42,
-    "negative_hits": 38
+    "negative_hits": 39
   },
   "tuned": {
     "total": 252,
-    "hits": 249,
+    "hits": 252,
     "by_language": {
       "en": {
         "total": 36,
@@ -6717,7 +6751,7 @@
       },
       "es": {
         "total": 36,
-        "hits": 34
+        "hits": 36
       },
       "it": {
         "total": 36,
@@ -6729,13 +6763,13 @@
       },
       "pl": {
         "total": 36,
-        "hits": 35
+        "hits": 36
       }
     },
     "by_category": {
       "explicit": {
         "total": 42,
-        "hits": 41
+        "hits": 42
       },
       "implicit": {
         "total": 42,
@@ -6747,11 +6781,11 @@
       },
       "multisentence": {
         "total": 42,
-        "hits": 41
+        "hits": 42
       },
       "edge": {
         "total": 42,
-        "hits": 41
+        "hits": 42
       },
       "negative": {
         "total": 42,
@@ -6763,11 +6797,11 @@
   },
   "base_routing": {
     "total": 252,
-    "hits": 132,
+    "hits": 138,
     "by_language": {
       "en": {
         "total": 36,
-        "hits": 23
+        "hits": 24
       },
       "de": {
         "total": 36,
@@ -6775,15 +6809,15 @@
       },
       "fr": {
         "total": 36,
-        "hits": 17
+        "hits": 19
       },
       "es": {
         "total": 36,
-        "hits": 17
+        "hits": 18
       },
       "it": {
         "total": 36,
-        "hits": 18
+        "hits": 19
       },
       "nl": {
         "total": 36,
@@ -6791,37 +6825,37 @@
       },
       "pl": {
         "total": 36,
-        "hits": 17
+        "hits": 18
       }
     },
     "by_category": {
       "explicit": {
         "total": 42,
-        "hits": 22
+        "hits": 23
       },
       "implicit": {
         "total": 42,
-        "hits": 12
+        "hits": 11
       },
       "sarcastic": {
         "total": 42,
-        "hits": 12
+        "hits": 13
       },
       "multisentence": {
         "total": 42,
-        "hits": 32
+        "hits": 34
       },
       "edge": {
         "total": 42,
-        "hits": 16
+        "hits": 18
       },
       "negative": {
         "total": 42,
-        "hits": 38
+        "hits": 39
       }
     },
     "negatives": 42,
-    "negative_hits": 38
+    "negative_hits": 39
   },
   "tuned_routing": {
     "total": 252,
@@ -6889,6 +6923,6 @@
     "votes": 3,
     "prime": false,
     "fastpath": true,
-    "fastpath_ruled": 114
+    "fastpath_ruled": 120
   }
 }

@@ -88,3 +88,11 @@
 {"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "J'ai payé pour un support prioritaire. Un robot répond quand même. Donnez-moi du personnel."}
 {"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "We zijn al een half uur bezig zonder enige vooruitgang."}
 {"calls": null, "query": "Il n'y a aucun progrès à signaler, tout va bien."}
+{"calls": [{"arguments": {"reason": "billing"}, "name": "request_human_handoff"}], "query": "STOP BOT. My bill is wrong, fix it with a person."}
+{"calls": [{"arguments": {"reason": "billing"}, "name": "request_human_handoff"}], "query": "Mijn factuur klopt niet. Ik heb een mens nodig."}
+{"calls": [{"arguments": {"reason": "billing"}, "name": "request_human_handoff"}], "query": "La mia fattura non è corretta. Ho bisogno di una persona."}
+{"calls": [], "query": "Tell me how to pay my bill."}
+{"calls": [], "query": "Dime cómo pagar mi factura."}
+{"calls": null, "query": "Tell me a human will call back."}
+{"calls": null, "query": "My bill is not here yet, whatever."}
+{"calls": null, "query": "I was warned twice about this."}

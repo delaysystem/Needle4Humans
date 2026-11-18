@@ -73,3 +73,9 @@
 {"calls": null, "query": "I was warned twice about this."}
 {"calls": null, "query": "Wer kommt mit mir mit?"}
 {"calls": null, "query": "J'insiste, ne me dérangez plus."}
+{"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "We have been trying for thirty minutes without any progress."}
+{"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "Is there an actual human I could talk to?"}
+{"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "Gibt es hier eine echte Person zum Sprechen?"}
+{"calls": null, "query": "I waited twenty minutes, no problem at all!"}
+{"calls": null, "query": "Is this a real person?"}
+{"calls": null, "query": "Are you a real person or a bot?"}

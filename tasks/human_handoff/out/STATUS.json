@@ -2,7 +2,7 @@
   {
     "stage": "pip-install",
     "returncode": 0,
-    "elapsed_s": 19.6,
+    "elapsed_s": 30.3,
     "timeout": false
   },
   {
@@ -20,13 +20,13 @@
   {
     "stage": "finetune",
     "returncode": 0,
-    "elapsed_s": 5127.6,
+    "elapsed_s": 4900.5,
     "timeout": false
   },
   {
     "stage": "build",
     "returncode": 0,
-    "elapsed_s": 28.3,
+    "elapsed_s": 29.4,
     "timeout": false
   }
 ]

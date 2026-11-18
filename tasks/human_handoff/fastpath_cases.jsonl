@@ -79,3 +79,9 @@
 {"calls": null, "query": "I waited twenty minutes, no problem at all!"}
 {"calls": null, "query": "Is this a real person?"}
 {"calls": null, "query": "Are you a real person or a bot?"}
+{"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "My parcel is delayed. The courier insists all is fine. Please have an agent call me."}
+{"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "Transfiéreme con un humano por favor."}
+{"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "Nalegam na kontakt z człowiekiem."}
+{"calls": null, "query": "My refund is late. The store says it was sent. Call me!"}
+{"calls": null, "query": "Transfiere mi llamada a otro departamento."}
+{"calls": null, "query": "Nalegam, żebyście dali mi spokój."}

@@ -27,7 +27,7 @@
 {"calls": null, "query": "Please stop bothering me, bot."}
 {"calls": null, "query": "I will stop using this bot."}
 {"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "Thanks bot! But I still need a human."}
-{"calls": null, "query": "Thanks for nothing. Get me an agent."}
+{"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "Thanks for nothing. Get me an agent."}
 {"calls": null, "query": "Just checking my balance before I ask for help."}
 {"calls": null, "query": "I check my balance daily."}
 {"calls": null, "query": "My card was charged twice last month."}
@@ -124,3 +124,44 @@
 {"calls": null, "query": "My balance is zero."}
 {"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "STOP BOT GIVE HUMAN NOW!!!"}
 {"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "Veuillez me transférer vers un humain."}
+{"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "Je veux parler à mon superviseur."}
+{"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "gimme a human"}
+{"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "lemme talk to someone real"}
+{"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "yo i need an actual person"}
+{"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "Please please please get me a real person!!!"}
+{"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "STOP BOT GIVE HUMAN 😡"}
+{"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "Your bot is great. I love waiting. Anyway, get me a person."}
+{"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "Necesito hablar con un human being, please."}
+{"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "I want live support right now."}
+{"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "STOP BOT GIVE HUMAN NOW!!!"}
+{"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "Veuillez me transférer vers un humain."}
+{"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "human"}
+{"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "HUMAN!!"}
+{"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "??agent??"}
+{"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "hilfe"}
+{"calls": null, "query": "My sister is asking for a raise."}
+{"calls": null, "query": "I support my sister."}
+{"calls": null, "query": "The transfer completed successfully."}
+{"calls": null, "query": "Bank transfer received, thanks!"}
+{"calls": null, "query": "Please transfer €50 to my savings."}
+{"calls": null, "query": "Thank you so much for your help!"}
+{"calls": null, "query": "My balance is zero."}
+{"calls": null, "query": "STOP! Hammer time."}
+{"calls": null, "query": "BOT! Come here!"}
+{"calls": null, "query": "Oh great, another bot. Just what I needed. NOT. Human. Now."}
+{"calls": null, "query": "I'M DONE WITH ROBOTS. HUMAN. NOW."}
+{"calls": null, "query": "This is ridiculous. Third time explaining. Person. Please."}
+{"calls": null, "query": "hello? anyone there? ...hello??"}
+{"calls": null, "query": "a/s/l?"}
+{"calls": null, "query": "My rental is due back tomorrow."}
+{"calls": null, "query": "Rental cars are expensive."}
+{"calls": null, "query": "Is premium support worth it?"}
+{"calls": null, "query": "My printer is out of ink."}
+{"calls": null, "query": "Please do not connect me."}
+{"calls": null, "query": "I insist this is wrong."}
+{"calls": null, "query": "Is there a real solution?"}
+{"calls": null, "query": "There is a real person behind every bot."}
+{"calls": null, "query": "Moje konto jest zablokowane. Chcę człowieka."}
+{"calls": null, "query": "Mijn wachtwoordreset komt nooit aan. Ik wil met een mens spreken."}
+{"calls": null, "query": "To nieakceptowalna obsługa. Chcę porozmawiać z konsultantem."}
+{"calls": null, "query": "Su conductor dañó mi valla. Quiero hablar con alguien."}

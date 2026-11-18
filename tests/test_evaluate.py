@@ -516,3 +516,174 @@ def test_load_prime_config_without_eval():
 
 def test_rate_zero_hits():
     assert evaluate.rate(0, 5) == 0.0
+
+
+# ---------------------------------------------------------------------------
+# Integration: main() wiring with a mocked engine
+# ---------------------------------------------------------------------------
+def _write_eval_task(tmp_path, queries, with_fastpath=True, with_prime=True):
+    import json as _json
+
+    task_dir = tmp_path / "etask"
+    out_dir = task_dir / "out"
+    out_dir.mkdir(parents=True)
+    eval_extra = ""
+    if with_fastpath:
+        eval_extra += 'fastpath_file = "fastpath.json"\n'
+    if with_prime:
+        eval_extra += 'prime_file = "prime.txt"\n'
+        (task_dir / "prime.txt").write_text("prime!", encoding="utf-8")
+    (task_dir / "task.toml").write_text(
+        "[task]\nname = \"mini\"\nout_dir = \"out\"\ntools = \"tools.json\"\n"
+        "[data]\ntrain_file = \"train.jsonl\"\neval_file = \"eval.jsonl\"\n"
+        "manifest_file = \"manifest.json\"\n"
+        "[eval]\nreport_file = \"report.json\"\n" + eval_extra
+        + "[build]\nweights_file = \"w.cact\"\n",
+        encoding="utf-8",
+    )
+    (task_dir / "tools.json").write_text(
+        _json.dumps([{"name": "t", "parameters": {"properties": {}}}]),
+        encoding="utf-8",
+    )
+    if with_fastpath:
+        (task_dir / "fastpath.json").write_text(
+            _json.dumps({"rules": [
+                {"id": "r", "pattern": "^RULED", "calls": [{"name": "t", "arguments": {}}]},
+            ]}),
+            encoding="utf-8",
+        )
+    rows = [
+        {
+            "id": f"ev-{i:05d}", "query": q,
+            "tools": [{"name": "t"}],
+            "answers": [{"name": "t", "arguments": {}}],
+            "reasoning": "r",
+        }
+        for i, q in enumerate(queries)
+    ]
+    (out_dir / "train.jsonl").write_text("", encoding="utf-8")
+    with open(out_dir / "eval.jsonl", "w", encoding="utf-8") as handle:
+        for row in rows:
+            handle.write(_json.dumps(row) + "\n")
+    manifest = {"rows": {
+        row["id"]: {"lang": "en", "category": "explicit"} for row in rows
+    }}
+    (out_dir / "manifest.json").write_text(_json.dumps(manifest), encoding="utf-8")
+    (out_dir / "w.cact").write_text("weights", encoding="utf-8")
+    return task_dir / "task.toml"
+
+
+class _ScriptedAgent:
+    instances = []
+
+    def __init__(self, **kwargs):
+        self.kwargs = kwargs
+        self.seen = []
+        self.resets = 0
+        _ScriptedAgent.instances.append(self)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        return False
+
+    def complete(self, query):
+        self.seen.append(query)
+        if "MISS" in query:
+            return {"function_calls": []}
+        return {"function_calls": [{"name": "t", "arguments": {}}]}
+
+    def reset(self):
+        self.resets += 1
+
+
+def _patch_cactus(monkeypatch):
+    import cactus
+
+    _ScriptedAgent.instances = []
+    monkeypatch.setattr(cactus, "Cactus", _ScriptedAgent)
+
+
+def test_main_rules_short_circuit_engine(tmp_path, monkeypatch):
+    import json as _json
+
+    _patch_cactus(monkeypatch)
+    task = _write_eval_task(tmp_path, ["RULED please", "plain query"])
+    assert evaluate.main(["--task", str(task), "--overwrite"]) == 0
+    agents = _ScriptedAgent.instances
+    assert len(agents) == 2
+    for agent in agents:
+        assert agent.seen == ["plain query"]
+    report = _json.loads((tmp_path / "etask" / "out" / "report.json").read_text(encoding="utf-8"))
+    assert report["harness"]["fastpath"] is True
+    assert report["harness"]["fastpath_ruled"] == 1
+    assert report["tuned"]["hits"] == 2
+
+
+def test_main_ablate_fastpath_runs_everything(tmp_path, monkeypatch):
+    _patch_cactus(monkeypatch)
+    task = _write_eval_task(tmp_path, ["RULED please", "plain query"])
+    assert evaluate.main(["--task", str(task), "--overwrite", "--ablate", "fastpath"]) == 0
+    for agent in _ScriptedAgent.instances:
+        assert agent.seen == ["RULED please", "plain query"]
+
+
+def test_main_prime_reaches_both_agents(tmp_path, monkeypatch):
+    _patch_cactus(monkeypatch)
+    task = _write_eval_task(tmp_path, ["plain query"])
+    assert evaluate.main(["--task", str(task), "--overwrite"]) == 0
+    assert len(_ScriptedAgent.instances) == 2
+    for agent in _ScriptedAgent.instances:
+        assert agent.kwargs.get("system") == "prime!"
+
+
+def test_main_ablate_prime_drops_system(tmp_path, monkeypatch):
+    _patch_cactus(monkeypatch)
+    task = _write_eval_task(tmp_path, ["plain query"])
+    assert evaluate.main(["--task", str(task), "--overwrite", "--ablate", "prime"]) == 0
+    for agent in _ScriptedAgent.instances:
+        assert "system" not in agent.kwargs
+
+
+def test_main_votes_majority_end_to_end(tmp_path, monkeypatch):
+    import cactus
+    import json as _json
+
+    calls = {"n": 0}
+
+    class Flipper(_ScriptedAgent):
+        def complete(self, query):
+            self.seen.append(query)
+            calls["n"] += 1
+            if calls["n"] % 3 == 2:
+                return {"function_calls": []}
+            return {"function_calls": [{"name": "t", "arguments": {}}]}
+
+    instances = []
+    orig_init = Flipper.__init__
+
+    def tracking_init(self, **kwargs):
+        orig_init(self, **kwargs)
+        instances.append(self)
+
+    monkeypatch.setattr(Flipper, "__init__", tracking_init)
+    monkeypatch.setattr(cactus, "Cactus", Flipper)
+    task = _write_eval_task(tmp_path, ["plain query"], with_fastpath=False, with_prime=False)
+    assert evaluate.main(["--task", str(task), "--overwrite", "--votes", "3"]) == 0
+    report = _json.loads((tmp_path / "etask" / "out" / "report.json").read_text(encoding="utf-8"))
+    assert report["harness"]["votes"] == 3
+    assert report["tuned"]["hits"] == 1
+    assert report["tuned"]["total"] == 1
+
+
+def test_main_records_harness_provenance(tmp_path, monkeypatch):
+    import json as _json
+
+    _patch_cactus(monkeypatch)
+    task = _write_eval_task(tmp_path, ["plain query"], with_fastpath=False, with_prime=False)
+    assert evaluate.main(["--task", str(task), "--overwrite", "--votes", "2"]) == 0
+    report = _json.loads((tmp_path / "etask" / "out" / "report.json").read_text(encoding="utf-8"))
+    assert report["harness"] == {
+        "votes": 2, "prime": False, "fastpath": False, "fastpath_ruled": 0,
+    }

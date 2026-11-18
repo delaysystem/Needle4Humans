@@ -1836,14 +1836,14 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "reason": "general"
+            "reason": "billing"
           }
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": true,
+      "tuned_hit": false,
       "base_routing_hit": false,
       "tuned_routing_hit": true
     },
@@ -1865,7 +1865,9 @@
       "base": [
         {
           "name": "request_human_handoff",
-          "arguments": {}
+          "arguments": {
+            "reason": "billing"
+          }
         }
       ],
       "tuned": [],
@@ -3180,14 +3182,14 @@
         {
           "name": "request_human_handoff",
           "arguments": {
-            "reason": "technical"
+            "reason": "general"
           }
         }
       ],
       "base_timeout": false,
       "tuned_timeout": false,
       "base_hit": false,
-      "tuned_hit": false,
+      "tuned_hit": true,
       "base_routing_hit": true,
       "tuned_routing_hit": true
     },
@@ -6639,13 +6641,20 @@
     {
       "id": "ev-00247",
       "expected": [],
-      "base": [],
+      "base": [
+        {
+          "name": "request_human_handoff",
+          "arguments": {
+            "reason": "billing"
+          }
+        }
+      ],
       "tuned": [],
       "base_timeout": false,
       "tuned_timeout": false,
-      "base_hit": true,
+      "base_hit": false,
       "tuned_hit": true,
-      "base_routing_hit": true,
+      "base_routing_hit": false,
       "tuned_routing_hit": true
     },
     {
@@ -6699,7 +6708,7 @@
   ],
   "base": {
     "total": 252,
-    "hits": 136,
+    "hits": 135,
     "by_language": {
       "en": {
         "total": 36,
@@ -6727,7 +6736,7 @@
       },
       "pl": {
         "total": 36,
-        "hits": 18
+        "hits": 17
       }
     },
     "by_category": {
@@ -6753,11 +6762,11 @@
       },
       "negative": {
         "total": 42,
-        "hits": 39
+        "hits": 38
       }
     },
     "negatives": 42,
-    "negative_hits": 39
+    "negative_hits": 38
   },
   "tuned": {
     "total": 252,
@@ -6769,7 +6778,7 @@
       },
       "de": {
         "total": 36,
-        "hits": 36
+        "hits": 35
       },
       "fr": {
         "total": 36,
@@ -6777,7 +6786,7 @@
       },
       "es": {
         "total": 36,
-        "hits": 35
+        "hits": 36
       },
       "it": {
         "total": 36,
@@ -6799,7 +6808,7 @@
       },
       "implicit": {
         "total": 42,
-        "hits": 41
+        "hits": 42
       },
       "sarcastic": {
         "total": 42,
@@ -6811,7 +6820,7 @@
       },
       "edge": {
         "total": 42,
-        "hits": 42
+        "hits": 41
       },
       "negative": {
         "total": 42,
@@ -6823,7 +6832,7 @@
   },
   "base_routing": {
     "total": 252,
-    "hits": 142,
+    "hits": 141,
     "by_language": {
       "en": {
         "total": 36,
@@ -6851,7 +6860,7 @@
       },
       "pl": {
         "total": 36,
-        "hits": 18
+        "hits": 17
       }
     },
     "by_category": {
@@ -6877,11 +6886,11 @@
       },
       "negative": {
         "total": 42,
-        "hits": 39
+        "hits": 38
       }
     },
     "negatives": 42,
-    "negative_hits": 39
+    "negative_hits": 38
   },
   "tuned_routing": {
     "total": 252,

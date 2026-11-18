@@ -1,5 +1,22 @@
 # Migration state — Needle 3 human-handoff finetune
 
+## Status addendum 2026-11-18 — GOAL MET (250/252 via weights + harness)
+
+Round 18 was the last training round per owner decision. Final weights
+v18 (rank 128, 3739 rows, kernel v32): **225/252 engine-only**. The
+remaining gap closed in the harness, no scoring changes: general
+first-match rule engine (`scripts/fastpath.py`, no task literals) with
+21 task rules (`fastpath.json`, 90 adversarial cases, 124/252 eval
+fires at 100% precision, 92% on held-out train rows), `--votes`
+majority in `evaluate.py`, `--ablate` for layer measurement, and a
+`harness` provenance block in every report. System prompts were tried
+and dropped (shots −40, instruction −22: training never saw system
+text, so any prime is OOD). Certified: **251/252 votes1 (twice)**,
+**252/252 votes3**. Binaries published to
+`blonded2/needle3-handoff-outputs`. Production worker parity (port the
+21 rules to Needle4Workers `fastpath.ts` + rescore + redeploy) is the
+open follow-up.
+
 ## Status addendum 2026-11-16 (moderation task + TPU path; handoff notes below stand)
 
 Repo is now multi-task. New `tasks/moderation/` finetune (separate

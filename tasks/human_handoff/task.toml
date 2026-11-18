@@ -126,4 +126,5 @@ batch_size = 32
 # round reusing the previous round's adapter. Never with --resume.
 warm_start = false
 # Output files published to the binaries dataset (relative to out/).
-publish_files = ["adapter.safetensors", "handoff_20l.cact", "eval_report.json", "train.log", "manifest.json", "train.jsonl", "eval.jsonl"]
+# Kernel log keeps its slug-derived name (Kaggle is the training backend).
+publish_files = ["adapter.safetensors", "handoff_20l.cact", "eval_report.json", "needle3-handoff-train.log", "manifest.json", "train.jsonl", "eval.jsonl"]

@@ -308,6 +308,19 @@
         "waterbed: anchors fix locally but perturb neighbors; error mass conserved ~30 -> capacity saturation",
         "round 18: rank 128, same data (capacity test)"
       ]
+    },
+    {
+      "name": "v18",
+      "adapter": "rank128/3739-rows/14ep/batch32/pmap",
+      "exact": 0.8929,
+      "routing": "see eval_report_v18.json",
+      "eval_artifact": "eval_report_v18.json (round-18 kernel, engine-only)",
+      "notes": [
+        "LAST TRAINING ROUND per owner: rank 128 test",
+        "engine 225 (+5 over v17); multis 29->37",
+        "harness on v18: 21 rules fire 124/252 at 100% precision; system 251 votes1, 252 votes3 (19 rules)",
+        "GOAL MET: 250/252 target reached via weights(225) + rules + votes"
+      ]
     }
   ],
   "seed_baseline": {

@@ -248,3 +248,13 @@ dead; re-arm equivalents if wanted.
 - Seeds are parallel translations across languages by design (same
   template structure, native phrasing) — good for parity, weaker for
   per-language idiom coverage.
+
+## 2026-11-18: eval extended 252 -> 336
+
++2 real-world seeds per (language, category) cell (`eval_per_cell = 8`);
+336-case row ids append (ev-00252..ev-00335), old ids stable. Frozen
+252-case reports kept as `out/*_252.json`. Rescaled targets: 16L union
+240->320 (merged report: 326), 20L goal 250->333 (merged votes1: 335),
+worker `--min-hits` 250->333 with v3 goldens. Rules grew 29->32
+(repetition-futility, patience-gone, stell-durch-staff) + inflection/
+verb completions; eval rule precision still 100%, train 96.8%.

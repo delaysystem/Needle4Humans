@@ -11,7 +11,8 @@
     "round-4 attempt 1: killed by own 5h stage timeout during final scoring after epoch 15/15 (config error, no eval, does not count as a round)",
     "round-7 contract: tiny schema, reason required from 5-way enum incl general, details dropped; seeds migrated (empty/D->general, R/RD keep), e01->billing e02->technical, +28 reason top-ups",
     "round-7 contract v2: ultra-minimal array args [reason], 5-way enum incl general, 389-char tools (was 978); validator enforces items+min/maxItems; engine passes array args through (verified: no schema-type suppression)",
-    "round-7b contract v3: object args, reason required from 5-way enum, full descriptions kept (876 chars); arrays unlearnable (0/20 train-sample)"
+    "round-7b contract v3: object args, reason required from 5-way enum, full descriptions kept (876 chars); arrays unlearnable (0/20 train-sample)",
+    "eval extended 252->336 on 2026-11-18 (+2 seeds/cell, eval_per_cell 8): 16L union target 240->320, 20L goal 250->333, worker min-hits 250->333; frozen 252 reports kept as *_252.json"
   ],
   "rounds": [
     {

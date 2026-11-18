@@ -17,7 +17,8 @@ categories = ["explicit", "implicit", "sarcastic", "multisentence", "edge", "neg
 # Minimum train examples per (language, category) cell after expansion.
 train_per_cell = 20
 # Exact eval examples per (language, category) cell, from the eval bank only.
-eval_per_cell = 6
+# 8 since the 336-case extension (2026-11-18): +2 real-world seeds per cell.
+eval_per_cell = 8
 # Off-topic [] share. Origin: finetuning guide, "the built-in generator
 # produces about one in eight". Ceiling raised to 0.18 in round 5: refusal
 # quality gates the 96% target and measured 95-100% at ~16% negatives.

@@ -35,9 +35,9 @@ def test_eval_rule_fires_are_all_correct():
     assert wrong == [], f"rules misfire on frozen eval: {wrong}"
 
 
-def test_16l_engine_plus_rules_union_reaches_240():
+def test_16l_engine_plus_rules_union_reaches_320():
     rules, evals, cases = _load()
-    assert len(cases) == 252
+    assert len(cases) == 336
     union = 0
     for case in cases:
         row = evals[case["id"]]
@@ -46,4 +46,4 @@ def test_16l_engine_plus_rules_union_reaches_240():
             union += calls_match(row["answers"], fired)
         else:
             union += case["tuned_hit"]
-    assert union >= 240, f"16L+rules union is {union}/252, need >= 240"
+    assert union >= 320, f"16L+rules union is {union}/336, need >= 320"

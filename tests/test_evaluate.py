@@ -1,5 +1,7 @@
 """Tests for scripts/evaluate.py scoring."""
 
+import pytest
+
 import evaluate
 
 
@@ -300,3 +302,217 @@ def test_run_agent_passes_system(monkeypatch):
     seen.clear()
     evaluate.run_agent([], None, ["q"], "base")
     assert "system" not in seen
+
+
+# ---------------------------------------------------------------------------
+# Hard coverage: calls_match matrix
+# ---------------------------------------------------------------------------
+def test_calls_match_nested_arguments():
+    good = [{"name": "t", "arguments": {"a": {"b": [1, {"c": 2}]}}}]
+    assert evaluate.calls_match(good, [dict(good[0])])
+    bad = [{"name": "t", "arguments": {"a": {"b": [1, {"c": 3}]}}}]
+    assert not evaluate.calls_match(good, bad)
+
+
+def test_calls_match_argument_key_order_irrelevant():
+    expected = [{"name": "t", "arguments": {"a": 1, "b": 2}}]
+    actual = [{"name": "t", "arguments": {"b": 2, "a": 1}}]
+    assert evaluate.calls_match(expected, actual)
+
+
+def test_calls_match_extra_actual_key_fails():
+    expected = [{"name": "t", "arguments": {"a": 1}}]
+    actual = [{"name": "t", "arguments": {"a": 1, "b": 2}}]
+    assert not evaluate.calls_match(expected, actual)
+
+
+def test_calls_match_missing_actual_key_fails():
+    expected = [{"name": "t", "arguments": {"a": 1, "b": 2}}]
+    actual = [{"name": "t", "arguments": {"a": 1}}]
+    assert not evaluate.calls_match(expected, actual)
+
+
+def test_calls_match_name_case_sensitive():
+    assert not evaluate.calls_match([{"name": "t"}], [{"name": "T"}])
+
+
+def test_calls_match_none_arguments_is_empty():
+    assert evaluate.calls_match(
+        [{"name": "t", "arguments": None}], [{"name": "t", "arguments": {}}]
+    )
+    assert not evaluate.calls_match(
+        [{"name": "t", "arguments": None}],
+        [{"name": "t", "arguments": {"a": 1}}],
+    )
+
+
+def test_calls_match_int_vs_string():
+    assert not evaluate.calls_match(
+        [{"name": "t", "arguments": {"a": 1}}],
+        [{"name": "t", "arguments": {"a": "1"}}],
+    )
+
+
+def test_calls_match_list_arguments_order_matters():
+    expected = [{"name": "t", "arguments": {"items": [1, 2]}}]
+    assert evaluate.calls_match(
+        expected, [{"name": "t", "arguments": {"items": [1, 2]}}]
+    )
+    assert not evaluate.calls_match(
+        expected, [{"name": "t", "arguments": {"items": [2, 1]}}]
+    )
+
+
+# ---------------------------------------------------------------------------
+# Hard coverage: routing_match matrix
+# ---------------------------------------------------------------------------
+def test_routing_match_missing_names_equal_none():
+    assert evaluate.routing_match([{}], [{}])
+    assert not evaluate.routing_match([{}], [{"name": "t"}])
+
+
+def test_routing_match_duplicate_names():
+    expected = [{"name": "a"}, {"name": "a"}]
+    assert evaluate.routing_match(expected, [{"name": "a"}, {"name": "a"}])
+    assert not evaluate.routing_match(expected, [{"name": "a"}])
+
+
+def test_routing_match_length_mismatch():
+    assert not evaluate.routing_match(
+        [{"name": "a"}], [{"name": "a"}, {"name": "a"}]
+    )
+
+
+def test_routing_match_unicode_names():
+    assert evaluate.routing_match(
+        [{"name": "tâche"}], [{"name": "tâche"}]
+    )
+    assert not evaluate.routing_match(
+        [{"name": "tâche"}], [{"name": "tache"}]
+    )
+
+
+def test_routing_match_middle_swap_fails():
+    expected = [{"name": "a"}, {"name": "b"}, {"name": "c"}]
+    actual = [{"name": "a"}, {"name": "c"}, {"name": "b"}]
+    assert not evaluate.routing_match(expected, actual)
+
+
+def test_routing_match_deeply_nested_arguments_ignored():
+    expected = [{"name": "t", "arguments": {"a": {"b": [1]}}}]
+    actual = [{"name": "t", "arguments": {"z": {"y": [2]}}}]
+    assert evaluate.routing_match(expected, actual)
+
+
+# ---------------------------------------------------------------------------
+# Hard coverage: summarize
+# ---------------------------------------------------------------------------
+def test_summarize_empty_results():
+    summary = evaluate.summarize([], {})
+    assert (summary["hits"], summary["total"]) == (0, 0)
+    assert summary["by_language"] == {}
+    assert (summary["negative_hits"], summary["negatives"]) == (0, 0)
+
+
+def test_summarize_all_miss():
+    results = [
+        {"id": "a", "hit": False, "expected": [{"name": "t"}]},
+        {"id": "b", "hit": False, "expected": []},
+    ]
+    manifest = {
+        "a": {"lang": "en", "category": "explicit"},
+        "b": {"lang": "en", "category": "negative"},
+    }
+    summary = evaluate.summarize(results, manifest)
+    assert (summary["hits"], summary["total"]) == (0, 2)
+    assert (summary["negative_hits"], summary["negatives"]) == (0, 1)
+
+
+def test_summarize_negatives_keyed_on_expected_only():
+    results = [
+        {"id": "a", "hit": False, "expected": [{"name": "t"}]},
+        {"id": "b", "hit": True, "expected": []},
+    ]
+    manifest = {
+        "a": {"lang": "en", "category": "explicit"},
+        "b": {"lang": "en", "category": "negative"},
+    }
+    summary = evaluate.summarize(results, manifest)
+    assert (summary["negative_hits"], summary["negatives"]) == (1, 1)
+
+
+def test_summarize_mixed_buckets():
+    results = [
+        {"id": "a", "hit": True, "expected": []},
+        {"id": "b", "hit": True, "expected": []},
+        {"id": "c", "hit": False, "expected": []},
+    ]
+    manifest = {
+        "a": {"lang": "en", "category": "x"},
+        "b": {"lang": "en", "category": "y"},
+        "c": {"lang": "de", "category": "x"},
+    }
+    summary = evaluate.summarize(results, manifest)
+    assert summary["by_language"]["en"] == {"total": 2, "hits": 2}
+    assert summary["by_category"]["x"] == {"total": 2, "hits": 1}
+
+
+# ---------------------------------------------------------------------------
+# Hard coverage: strip_required_keys
+# ---------------------------------------------------------------------------
+def test_strip_required_keys_deep_nesting():
+    node = {"a": {"b": {"required": [1], "keep": 2}}}
+    assert evaluate.strip_required_keys(node) == {"a": {"b": {"keep": 2}}}
+
+
+def test_strip_required_keys_inside_lists():
+    node = [{"required": 1, "x": 1}, {"y": [{"required": 2, "z": 3}]}]
+    assert evaluate.strip_required_keys(node) == [
+        {"x": 1},
+        {"y": [{"z": 3}]},
+    ]
+
+
+@pytest.mark.parametrize("value", [None, 5, "s", True])
+def test_strip_required_keys_scalar_passthrough(value):
+    assert evaluate.strip_required_keys(value) is value
+
+
+# ---------------------------------------------------------------------------
+# Hard coverage: majority_vote extras
+# ---------------------------------------------------------------------------
+def test_majority_vote_five_runs():
+    a = [{"name": "t"}]
+    b = []
+    assert evaluate.majority_vote([a, b, b, a, b]) == b
+
+
+def test_majority_vote_all_different_returns_first():
+    a, b, c = [[{"n": 1}]], [[{"n": 2}]], []
+    assert evaluate.majority_vote([a, b, c]) == a
+
+
+def test_majority_vote_single_run():
+    a = [{"name": "t"}]
+    assert evaluate.majority_vote([a]) == a
+
+
+def test_majority_vote_all_empty():
+    assert evaluate.majority_vote([[], [], []]) == []
+
+
+# ---------------------------------------------------------------------------
+# Hard coverage: load_prime + rate extras
+# ---------------------------------------------------------------------------
+def test_load_prime_whitespace_only_returns_none(tmp_path):
+    (tmp_path / "prime.txt").write_text("  \n ", encoding="utf-8")
+    config = {"eval": {"prime_file": "prime.txt"}}
+    assert evaluate.load_prime(config, tmp_path) is None
+
+
+def test_load_prime_config_without_eval():
+    assert evaluate.load_prime({"task": {}}, ".") is None
+
+
+def test_rate_zero_hits():
+    assert evaluate.rate(0, 5) == 0.0

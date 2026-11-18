@@ -5,6 +5,7 @@ import tomllib
 from pathlib import Path
 
 import kaggle_push
+import pytest
 
 TASKS_DIR = Path(__file__).resolve().parent.parent / "tasks"
 
@@ -76,10 +77,9 @@ def test_seed_cells_declared_in_task_config():
                     assert seed["category"] in categories, task_file
 
 
-def test_fastpath_cases_pass_where_declared():
-    import fastpath
-
-    checked = []
+def _fastpath_declarations():
+    """(task_name, spec_path, cases_path) for tasks declaring fastpath."""
+    declared = []
     for task_file in shipped_tasks():
         task_dir = task_file.parent
         eval_cfg = load_toml(task_file).get("eval", {})
@@ -89,16 +89,50 @@ def test_fastpath_cases_pass_where_declared():
             assert not cases_name, f"{task_file}: cases without a spec"
             continue
         assert cases_name, f"{task_file}: spec without cases"
-        rules = fastpath.load_rules(task_dir / spec_name)
+        declared.append(
+            (task_dir.name, task_dir / spec_name, task_dir / cases_name)
+        )
+    return declared
+
+
+def test_fastpath_files_declared_complete():
+    declared = _fastpath_declarations()
+    assert declared, "no task declares fastpath_file"
+    for name, spec_path, cases_path in declared:
+        assert spec_path.is_file(), f"{name}: missing {spec_path.name}"
+        assert cases_path.is_file(), f"{name}: missing {cases_path.name}"
+
+
+def _fastpath_case_params():
+    import fastpath
+
+    params = []
+    for name, spec_path, cases_path in _fastpath_declarations():
+        rules = fastpath.load_rules(spec_path)
         cases = [
             json.loads(line)
-            for line in (task_dir / cases_name).read_text(
-                encoding="utf-8"
-            ).splitlines()
+            for line in cases_path.read_text(encoding="utf-8").splitlines()
             if line.strip()
         ]
-        assert cases, f"{task_file}: empty cases file"
-        failures = fastpath.run_cases(rules, cases)
-        assert failures == [], "\n".join(failures)
-        checked.append(task_file.parent.name)
-    assert checked, "no task declares fastpath_file"
+        assert cases, f"{name}: empty cases file"
+        for index, case in enumerate(cases):
+            expect = (
+                "fallthrough"
+                if case.get("calls") is None
+                else "fire"
+            )
+            params.append(
+                pytest.param(
+                    rules, case,
+                    id=f"{name}-{index:03d}-{expect}",
+                )
+            )
+    return params
+
+
+@pytest.mark.parametrize("rules,case", _fastpath_case_params())
+def test_fastpath_case(rules, case):
+    import fastpath
+
+    failures = fastpath.run_cases(rules, [case])
+    assert failures == [], "\n".join(failures)

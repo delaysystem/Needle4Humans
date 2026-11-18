@@ -235,3 +235,216 @@ def test_main_refuses_overwrite_without_flag(tmp_path):
     assert train_path.read_text(encoding="utf-8") == "sentinel"
     assert generate_data.main(argv + ["--overwrite"]) == 0
     assert train_path.read_text(encoding="utf-8") != "sentinel"
+
+
+# ---------------------------------------------------------------------------
+# Hard coverage: resolve_slots
+# ---------------------------------------------------------------------------
+def test_resolve_slots_inline_lists_copied():
+    seed = make_seed(slots={"a": ["x", "y"]})
+    resolved = generate_data.resolve_slots(seed, {})
+    assert resolved == {"a": ["x", "y"]}
+    assert resolved["a"] is not seed["slots"]["a"]
+
+
+def test_resolve_slots_bank_per_language():
+    banks = {"ask": {"en": ["a"], "de": ["b", "c"]}}
+    assert generate_data.resolve_slots(make_seed(), banks)["ask"] == ["a"]
+    seed = make_seed(lang="de")
+    assert generate_data.resolve_slots(seed, banks)["ask"] == ["b", "c"]
+
+
+def test_resolve_slots_unknown_bank_dies():
+    with pytest.raises(SystemExit):
+        generate_data.resolve_slots(make_seed(slots={"a": "@nope"}), BANKS)
+
+
+def test_resolve_slots_bank_missing_language_dies():
+    with pytest.raises(SystemExit):
+        generate_data.resolve_slots(make_seed(lang="xx"), BANKS)
+
+
+def test_resolve_slots_no_slots_key():
+    seed = make_seed()
+    del seed["slots"]
+    assert generate_data.resolve_slots(seed, {}) == {}
+
+
+def test_resolve_slots_empty_slots():
+    assert generate_data.resolve_slots(make_seed(slots={}), {}) == {}
+
+
+def test_resolve_slots_bare_string_splits_chars():
+    # Current behavior: a non-@ string slot becomes its character list.
+    resolved = generate_data.resolve_slots(make_seed(slots={"a": "xy"}), {})
+    assert resolved == {"a": ["x", "y"]}
+
+
+# ---------------------------------------------------------------------------
+# Hard coverage: substitute
+# ---------------------------------------------------------------------------
+def test_substitute_plain_and_repeated():
+    assert generate_data.substitute("no-op", {}, "s") == "no-op"
+    assert (
+        generate_data.substitute("{a} and {a}", {"a": "x"}, "s") == "x and x"
+    )
+
+
+def test_substitute_missing_key_dies():
+    with pytest.raises(SystemExit):
+        generate_data.substitute("{nope}", {}, "s-1")
+
+
+def test_substitute_positional_placeholder_dies():
+    with pytest.raises(SystemExit):
+        generate_data.substitute("{}", {"a": "x"}, "s-1")
+
+
+def test_substitute_nested_structures():
+    node = {"q": ["{a}!", {"deep": "{b}?"}], "r": "{a}{b}"}
+    assert generate_data.substitute(node, {"a": "x", "b": "y"}, "s") == {
+        "q": ["x!", {"deep": "y?"}],
+        "r": "xy",
+    }
+
+
+@pytest.mark.parametrize("value", [5, 3.5, None, True, False])
+def test_substitute_non_string_passthrough(value):
+    assert generate_data.substitute(value, {"a": "x"}, "s") is value
+
+
+def test_substitute_escaped_braces():
+    assert generate_data.substitute("{{a}} {a}", {"a": "x"}, "s") == "{a} x"
+
+
+# ---------------------------------------------------------------------------
+# Hard coverage: expand_seed
+# ---------------------------------------------------------------------------
+def test_expand_seed_no_slots_single_variant():
+    variants = generate_data.expand_seed(
+        make_seed(slots={}, query="Q", reasoning="r"), {}, 7, 12)
+    assert len(variants) == 1
+    query, answers, reasoning = variants[0]
+    assert (query, reasoning) == ("Q", "r")
+
+
+def test_expand_seed_cap_zero_yields_nothing():
+    assert generate_data.expand_seed(make_seed(), BANKS, 7, 0) == []
+
+
+def test_expand_seed_cap_above_combos_keeps_all():
+    seed = make_seed(slots={"a": ["x", "y"]}, query="{a}", reasoning="{a}")
+    assert len(generate_data.expand_seed(seed, {}, 7, 99)) == 2
+
+
+def test_expand_seed_different_base_seed_same_set():
+    seed = make_seed(
+        slots={"a": [f"v{i}" for i in range(8)]}, query="{a}", reasoning="{a}"
+    )
+    first = generate_data.expand_seed(seed, {}, 7, 8)
+    second = generate_data.expand_seed(seed, {}, 8, 8)
+    assert sorted(first) == sorted(second)
+
+
+def test_expand_seed_answers_substituted_per_combo():
+    seed = make_seed(
+        slots={"r": ["billing", "general"]},
+        query="Q {r}",
+        answers=[{"name": "t", "arguments": {"reason": "{r}"}}],
+        reasoning="{r}",
+    )
+    reasons = sorted(
+        answers[0]["arguments"]["reason"]
+        for _, answers, _ in generate_data.expand_seed(seed, {}, 7, 12)
+    )
+    assert reasons == ["billing", "general"]
+
+
+@pytest.mark.parametrize("key", ["id", "lang", "category", "query", "answers"])
+def test_expand_seed_each_missing_key_dies(key):
+    seed = make_seed()
+    del seed[key]
+    with pytest.raises(SystemExit):
+        generate_data.expand_seed(seed, {}, 7, 12)
+
+
+# ---------------------------------------------------------------------------
+# Hard coverage: expand_bank + check_cell_counts
+# ---------------------------------------------------------------------------
+def test_expand_bank_empty_seeds():
+    assert generate_data.expand_bank([], {}, TOOLS, 7, 12) == []
+
+
+def test_expand_bank_provenance_and_order():
+    seeds = [
+        make_seed(id="s1", slots={}, query="Q1", reasoning="r1"),
+        make_seed(id="s2", slots={}, query="Q2", reasoning="r2"),
+    ]
+    rows = generate_data.expand_bank(seeds, {}, TOOLS, 7, 12)
+    assert [row["_meta"]["seed"] for row in rows] == ["s1", "s2"]
+    assert rows[0]["_meta"] == {
+        "seed": "s1",
+        "lang": "en",
+        "category": "explicit",
+        "variant": 0,
+    }
+    assert all(row["tools"] is TOOLS for row in rows)
+
+
+def test_expand_bank_variant_indices():
+    seed = make_seed(
+        slots={"a": ["x", "y", "z"]}, query="{a}", reasoning="{a}"
+    )
+    rows = generate_data.expand_bank([seed], {}, TOOLS, 7, 12)
+    assert sorted(row["_meta"]["variant"] for row in rows) == [0, 1, 2]
+
+
+def _meta_row(seed, lang, category):
+    return {"_meta": {"seed": seed, "lang": lang, "category": category}}
+
+
+def test_check_cell_counts_tallies():
+    rows = [
+        _meta_row("a", "en", "explicit"),
+        _meta_row("b", "en", "explicit"),
+        _meta_row("c", "de", "negative"),
+    ]
+    assert generate_data.check_cell_counts(
+        rows, ["en", "de"], ["explicit", "negative"], "train"
+    ) == {("en", "explicit"): 2, ("de", "negative"): 1}
+
+
+def test_check_cell_counts_empty():
+    assert generate_data.check_cell_counts([], ["en"], ["explicit"], "t") == {}
+
+
+def test_check_cell_counts_unknown_language_dies():
+    with pytest.raises(SystemExit):
+        generate_data.check_cell_counts(
+            [_meta_row("a", "xx", "explicit")], ["en"], ["explicit"], "train"
+        )
+
+
+def test_check_cell_counts_unknown_category_dies():
+    with pytest.raises(SystemExit):
+        generate_data.check_cell_counts(
+            [_meta_row("a", "en", "nope")], ["en"], ["explicit"], "eval"
+        )
+
+
+def test_main_eval_split_only(tmp_path):
+    task_dir = write_task(
+        tmp_path,
+        [make_seed(),
+         make_seed(id="en-negative-01", category="negative",
+                   query="T?", slots={}, answers=[], reasoning="r"),
+         make_seed(id="en-negative-02", category="negative",
+                   query="U?", slots={}, answers=[], reasoning="r")],
+        [make_seed(id="e1", slots={}, query="Q?", reasoning="r"),
+         make_seed(id="e2", category="negative", slots={}, query="H?",
+                   answers=[], reasoning="r")],
+    )
+    argv = ["--task", str(task_dir / "task.toml"), "--split", "eval"]
+    assert generate_data.main(argv) == 0
+    assert (task_dir / "out" / "eval.jsonl").is_file()
+    assert not (task_dir / "out" / "train.jsonl").is_file()

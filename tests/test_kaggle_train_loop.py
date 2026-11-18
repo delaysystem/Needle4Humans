@@ -224,3 +224,53 @@ def test_advance_past_completed_epoch():
     assert advance(3, 16, 16) == (4, 0, True)
     # Boundary on the final epoch yields an empty range (straight to save).
     assert advance(9, 16, 16) == (10, 0, True)
+
+
+def test_checkpoint_paths_format_steps(tmp_path):
+    loop = kaggle_train_loop
+    assert loop._npz_path(tmp_path, 0).name == "ckpt-000000.npz"
+    assert loop._meta_path(tmp_path, 7).name == "ckpt-000007.json"
+    assert loop._latest_path(tmp_path).name == "latest.json"
+
+
+def test_checkpoint_paths_large_step_not_truncated(tmp_path):
+    name = kaggle_train_loop._npz_path(tmp_path, 1234567).name
+    assert name == "ckpt-1234567.npz"
+
+
+def test_checkpoint_paths_join_dir(tmp_path):
+    sub = tmp_path / "ckpts"
+    assert kaggle_train_loop._npz_path(sub, 3).parent == sub
+
+
+@pytest.mark.parametrize("available", [0, 1, 8])
+def test_resolve_devices_auto_bounds(available):
+    assert kaggle_train_loop.resolve_devices("auto", available) == max(1, available)
+
+
+def test_resolve_devices_one_ignores_available():
+    assert kaggle_train_loop.resolve_devices("1", 0) == 1
+
+
+@pytest.mark.parametrize("bad", ["0", "all", "", "2 ", "auto ", "AUTO"])
+def test_resolve_devices_rejects(bad):
+    with pytest.raises(SystemExit):
+        kaggle_train_loop.resolve_devices(bad, 2)
+
+
+def test_check_backend_auto_skips_unknown_actual():
+    kaggle_train_loop.check_backend("auto", "weird-backend")
+
+
+def test_check_backend_cpu_match():
+    kaggle_train_loop.check_backend("cpu", "cpu")
+
+
+def test_advance_past_completed_epoch_overrun():
+    advance = kaggle_train_loop.advance_past_completed_epoch
+    assert advance(3, 20, 16) == (4, 0, True)
+
+
+def test_advance_past_completed_epoch_start_zero():
+    advance = kaggle_train_loop.advance_past_completed_epoch
+    assert advance(0, 0, 16) == (0, 0, False)

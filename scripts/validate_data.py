@@ -118,6 +118,7 @@ def validate_row(row: dict, tools_by_name: dict) -> list[str]:
     for tool in row["tools"]:
         if tool.get("name") not in tools_by_name:
             errors.append(f"row {row_id}: undeclared tool {tool.get('name')!r}")
+    query_text = row["query"] if isinstance(row["query"], str) else ""
     for answer in row["answers"]:
         name = answer.get("name")
         if name not in tools_by_name:
@@ -138,7 +139,7 @@ def validate_row(row: dict, tools_by_name: dict) -> list[str]:
                 name,
                 arguments,
                 properties,
-                row["query"],
+                query_text,
                 parameters.get("required", []),
                 parameters.get("items"),
                 parameters.get("minItems"),

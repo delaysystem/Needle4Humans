@@ -193,3 +193,16 @@ def test_main_failure_budget_still_applies(tmp_path, monkeypatch):
         kaggle_poll._common, "kaggle_bin", lambda: "kaggle"
     )
     assert kaggle_poll.main(["--task", str(write_poll_task(tmp_path))]) == 1
+
+
+@pytest.mark.parametrize(
+    "text,want",
+    [
+        ("Completed", "complete"),
+        ("QUEUED", "running"),
+        ("CANCELLED", "error"),
+        ("success", "unknown"),
+    ],
+)
+def test_parse_status_extra_variants(text, want):
+    assert kaggle_poll.parse_status(text) == want

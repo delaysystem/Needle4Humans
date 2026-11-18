@@ -355,3 +355,26 @@ def test_build_loop_argv(tmp_path):
     assert "--val-every" in argv and "1" in argv
     assert "--checkpoint-dir" in argv
     assert str(tmp_path / "out" / "checkpoints") in argv
+
+
+def test_build_stage_argv_no_extra(tmp_path):
+    argv = kaggle_train_driver.build_stage_argv(
+        tmp_path / "s.py", tmp_path / "t.toml", []
+    )
+    assert argv[1:] == [str(tmp_path / "s.py"), "--task", str(tmp_path / "t.toml")]
+
+
+def test_build_stage_argv_uses_current_interpreter(tmp_path):
+    import sys
+
+    argv = kaggle_train_driver.build_stage_argv(
+        tmp_path / "s.py", tmp_path / "t.toml", []
+    )
+    assert argv[0] == sys.executable
+
+
+def test_build_stage_argv_preserves_extra_order(tmp_path):
+    argv = kaggle_train_driver.build_stage_argv(
+        tmp_path / "s.py", tmp_path / "t.toml", ["--b", "2", "--a", "1"]
+    )
+    assert argv[-4:] == ["--b", "2", "--a", "1"]

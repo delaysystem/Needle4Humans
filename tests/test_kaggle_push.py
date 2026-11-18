@@ -134,3 +134,62 @@ def test_build_push_argv(tmp_path):
     assert kaggle_push.build_push_argv("kaggle", tmp_path, 3600) == [
         "kaggle", "kernels", "push", "-p", str(tmp_path), "-t", "3600",
     ]
+
+
+def test_render_kernel_metadata_resume_and_warm_start_dies():
+    import pytest
+
+    config = make_config()
+    config["kaggle"]["warm_start"] = True
+    config["kaggle"]["output_dataset"] = "mini-outputs"
+    config["kaggle"]["checkpoints_dataset"] = "mini-ckpts"
+    with pytest.raises(SystemExit):
+        kaggle_push.render_kernel_metadata(config, resume=True)
+
+
+def test_render_kernel_metadata_warm_start_needs_output_slug():
+    import pytest
+
+    config = make_config()
+    config["kaggle"]["warm_start"] = True
+    with pytest.raises(SystemExit):
+        kaggle_push.render_kernel_metadata(config)
+
+
+def test_kernel_ref_odd_names():
+    config = make_config()
+    config["kaggle"]["username"] = "o-d_d"
+    config["kaggle"]["kernel"] = "k_1-2"
+    assert kaggle_push.kernel_ref(config) == "o-d_d/k_1-2"
+
+
+def test_stage_kernel_cleans_existing_staging(tmp_path):
+    from pathlib import Path
+
+    task_dir = tmp_path / "t"
+    task_dir.mkdir()
+    staging = tmp_path / "staging"
+    staging.mkdir()
+    (staging / "junk.txt").write_text("x", encoding="utf-8")
+    scripts = Path(kaggle_push.__file__).resolve().parent
+    real_task = scripts.parent / "tasks" / "human_handoff"
+    out = kaggle_push.stage_kernel(make_config(), real_task, staging)
+    assert not (out / "junk.txt").exists()
+    assert (out / "kernel-metadata.json").is_file()
+
+
+def test_render_kernel_metadata_title_multi_dash():
+    config = make_config()
+    config["kaggle"]["kernel"] = "a-b-c-train"
+    assert kaggle_push.render_kernel_metadata(config)["title"] == "a b c train"
+
+
+def test_render_kernel_metadata_cpu_resume_mounts():
+    config = make_config()
+    config["kaggle"]["gpu"] = False
+    config["kaggle"]["checkpoints_dataset"] = "mini-ckpts"
+    metadata = kaggle_push.render_kernel_metadata(config, resume=True)
+    assert metadata["enable_gpu"] == "false"
+    assert metadata["dataset_sources"] == [
+        "someone/mini-input", "someone/mini-ckpts",
+    ]

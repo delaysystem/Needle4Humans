@@ -96,3 +96,31 @@
 {"calls": null, "query": "Tell me a human will call back."}
 {"calls": null, "query": "My bill is not here yet, whatever."}
 {"calls": null, "query": "I was warned twice about this."}
+{"calls": null, "query": "No quiero un humano."}
+{"calls": null, "query": "Ich will keinen Menschen."}
+{"calls": null, "query": "I want to become a consultant."}
+{"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "I want to be connected to a human."}
+{"calls": [], "query": "My Schwester ist support agent, she told me to try here."}
+{"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "Can you mich weiterleiten???"}
+{"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "STOP    BOT    GIVE    HUMAN"}
+{"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "Transfer... me... please?"}
+{"calls": [], "query": "WHAT PAYMENT METHODS DO YOU ACCEPT???"}
+{"calls": [], "query": "  My sister is a support agent.  "}
+{"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "stop bot give human"}
+{"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "sToP bOt GiVe HuMaN"}
+{"calls": null, "query": "We manufacture parts for printers."}
+{"calls": null, "query": "My billfold is empty."}
+{"calls": null, "query": "Invoice me later."}
+{"calls": null, "query": "Refundable tickets only."}
+{"calls": null, "query": "Stopwatch broken, need a fix."}
+{"calls": null, "query": "Non-stop support would be nice."}
+{"calls": null, "query": "My sister is asking for a raise."}
+{"calls": null, "query": "I support my sister."}
+{"calls": null, "query": "The transfer completed successfully."}
+{"calls": null, "query": "Bank transfer received, thanks!"}
+{"calls": null, "query": "Please transfer €50 to my savings."}
+{"calls": null, "query": "STOP! This bot is actually helpful."}
+{"calls": null, "query": "BOT! Come here!"}
+{"calls": null, "query": "My balance is zero."}
+{"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "STOP BOT GIVE HUMAN NOW!!!"}
+{"calls": [{"arguments": {"reason": "general"}, "name": "request_human_handoff"}], "query": "Veuillez me transférer vers un humain."}

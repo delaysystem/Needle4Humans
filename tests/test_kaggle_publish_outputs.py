@@ -43,3 +43,30 @@ def test_stage_output_dataset_missing_dies(tmp_path):
         kaggle_publish_outputs.stage_output_dataset(
             make_config(), tmp_path / "t", tmp_path / "staging"
         )
+
+
+def test_stage_output_dataset_cleans_staging(tmp_path):
+    out_dir = tmp_path / "t" / "out"
+    out_dir.mkdir(parents=True)
+    (out_dir / "a.bin").write_text("x", encoding="utf-8")
+    (out_dir / "report.json").write_text("{}", encoding="utf-8")
+    staging = tmp_path / "staging"
+    staging.mkdir()
+    (staging / "junk.txt").write_text("x", encoding="utf-8")
+    kaggle_publish_outputs.stage_output_dataset(
+        make_config(), tmp_path / "t", staging
+    )
+    assert not (staging / "junk.txt").exists()
+
+
+def test_stage_output_dataset_names_all_missing_sorted(tmp_path, capsys):
+    import pytest
+
+    out_dir = tmp_path / "t" / "out"
+    out_dir.mkdir(parents=True)
+    with pytest.raises(SystemExit):
+        kaggle_publish_outputs.stage_output_dataset(
+            make_config(), tmp_path / "t", tmp_path / "staging"
+        )
+    err = capsys.readouterr().err
+    assert err.index("a.bin") < err.index("report.json")

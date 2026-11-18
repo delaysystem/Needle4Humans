@@ -160,3 +160,33 @@ def test_stage_input_dataset_copies_bundle(tmp_path):
         metadata = json.load(handle)
     assert metadata["id"] == "someone/mini-input"
     assert metadata["title"] == "mini input"
+
+
+def test_dataset_exists_true_and_false(monkeypatch):
+    import subprocess
+
+    import _kaggle
+
+    monkeypatch.setattr(
+        subprocess, "run",
+        lambda *a, **k: subprocess.CompletedProcess([], 0, "", ""),
+    )
+    assert _kaggle.dataset_exists("kaggle", "o/s") is True
+    monkeypatch.setattr(
+        subprocess, "run",
+        lambda *a, **k: subprocess.CompletedProcess([], 1, "", "nope"),
+    )
+    assert _kaggle.dataset_exists("o/s", "o/s") is False
+
+
+def test_write_dataset_metadata_content(tmp_path):
+    import json
+
+    import _kaggle
+
+    staging = tmp_path / "deep" / "stage"
+    _kaggle.write_dataset_metadata(staging, "o/s", "s title")
+    body = json.loads((staging / "dataset-metadata.json").read_text(encoding="utf-8"))
+    assert body["id"] == "o/s"
+    assert body["title"] == "s title"
+    assert body["licenses"] == [{"name": _kaggle.DATASET_LICENSE}]
